@@ -9,7 +9,7 @@ import {
 // --- CONFIGURATION ---
 // ⚠️ IMPORTANT: In your Cursor file, UNCOMMENT the line below for the AI to work on Vercel:
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
-const apiKey = ""; // Keep this line here for this preview only.
+//const apiKey = ""; // Keep this line here for this preview only.
 
 // --- CV DATA ---
 const cvData = {
