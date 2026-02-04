@@ -1,6 +1,9 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* Force "class" strategy for dark mode so your toggle button works.
+   This overrides the default system preference behavior.
+*/
+@variant dark (&:where(.dark, .dark *));
 
 html, body {
   height: 100%;
@@ -9,7 +12,7 @@ html, body {
   background-color: #fafaf9; /* matches stone-50 */
 }
 
-/* Dark mode support */
+/* Dark mode background support */
 @media (prefers-color-scheme: dark) {
   html, body {
     background-color: #0c0a09; /* matches stone-950 */
