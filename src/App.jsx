@@ -7,8 +7,9 @@ import {
 } from 'lucide-react';
 
 // --- CONFIGURATION ---
-// PASTE YOUR API KEY HERE within the quotes
-const apiKey = ""; 
+// ⚠️ IMPORTANT: Uncomment the line below when deploying to Vercel to enable the AI Chat.
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY || ""; 
+const apiKey = "";
 
 // --- CV DATA ---
 const cvData = {
@@ -510,15 +511,36 @@ const CareerView = ({ scrollState }) => {
 };
 
 const ProjectsView = () => (
-  <div className="animate-in fade-in duration-500 pb-32 relative flex flex-col items-center justify-center min-h-[50vh]">
-     <div className="text-center space-y-4">
-        <div className="w-16 h-16 bg-stone-100 dark:bg-stone-800 rounded-2xl flex items-center justify-center mx-auto mb-4 text-stone-400">
-           <Layers size={32} />
-        </div>
-        <h2 className="text-2xl font-bold text-stone-900 dark:text-white">Projects</h2>
-        <p className="text-stone-500 dark:text-stone-400 max-w-xs mx-auto">
-          I'm currently curating a selection of 0-to-1 builds and deep dives. Check back soon for detailed case studies.
+  <div className="animate-in fade-in duration-500 pb-32 relative">
+     <div className="mt-8 mb-10">
+        <h2 className="text-3xl font-bold text-stone-900 dark:text-white mb-4">Case Studies</h2>
+        <p className="text-stone-500 dark:text-stone-400 max-w-xl text-lg leading-relaxed">
+          I'm currently documenting the deep dives into my recent 0-to-1 builds. Here is a preview of what's coming.
         </p>
+     </div>
+
+     <div className="grid gap-6 md:grid-cols-2">
+        {cvData.experience.slice(0, 2).map((job, i) => (
+           <div key={i} className="group relative bg-white dark:bg-stone-900 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 hover:border-blue-200 dark:hover:border-blue-900 transition-all text-left">
+              <div className="flex justify-between items-start mb-6">
+                 <div className="p-3 bg-stone-100 dark:bg-stone-800 rounded-2xl group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors">
+                    <Folder size={24} className="text-stone-400 group-hover:text-blue-500 transition-colors" />
+                 </div>
+                 <span className="px-3 py-1 bg-stone-100 dark:bg-stone-800 text-stone-500 text-[10px] font-bold rounded-full uppercase tracking-wide">Coming Soon</span>
+              </div>
+              
+              <h3 className="font-bold text-xl text-stone-900 dark:text-white mb-3">{job.company}</h3>
+              <p className="text-stone-500 dark:text-stone-400 text-sm leading-relaxed mb-6">
+                {job.summary}
+              </p>
+              
+              {/* Fake "Locked" Link */}
+              <div className="flex items-center gap-2 text-sm font-medium text-stone-300 dark:text-stone-600 cursor-not-allowed">
+                 <span>Read Case Study</span>
+                 <ChevronRight size={16} />
+              </div>
+           </div>
+        ))}
      </div>
   </div>
 );
