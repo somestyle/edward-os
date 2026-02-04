@@ -635,7 +635,7 @@ const ContactView = () => (
     </div>
     
     <div className="grid gap-4 md:grid-cols-2 relative z-10">
-      <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="flex items-center gap-4 bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-800 hover:border-blue-300 transition-colors group">
+      <a href="https://www.linkedin.com/in/edwardchu1/" target="_blank" rel="noreferrer" className="flex items-center gap-4 bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-800 hover:border-blue-300 transition-colors group">
         <div className="bg-blue-600 text-white p-3 rounded-xl">
           <Linkedin size={24} />
         </div>
@@ -646,7 +646,7 @@ const ContactView = () => (
         <ExternalLink size={16} className="ml-auto text-stone-300" />
       </a>
 
-      <a href="https://adplist.org" target="_blank" rel="noreferrer" className="flex items-center gap-4 bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-800 hover:border-blue-300 transition-colors group">
+      <a href="https://adplist.org/mentors/edward-chu" target="_blank" rel="noreferrer" className="flex items-center gap-4 bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-800 hover:border-blue-300 transition-colors group">
         <div className="bg-stone-900 dark:bg-white text-white dark:text-stone-900 p-3 rounded-xl">
           <Briefcase size={24} />
         </div>
@@ -672,9 +672,9 @@ const ContactView = () => (
              </p>
            </div>
         </div>
-        <button className="whitespace-nowrap px-6 py-3 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-xl font-bold hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors">
+        <a href="mailto:ed@edwardchu.xyz" className="whitespace-nowrap px-6 py-3 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-xl font-bold hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors">
           Send Message
-        </button>
+        </a>
       </div>
     </div>
   </div>
