@@ -7,9 +7,9 @@ import {
 } from 'lucide-react';
 
 // --- CONFIGURATION ---
-// ⚠️ IMPORTANT: Uncomment the line below in Cursor before deploying to Vercel:
-// const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
-const apiKey = ""; // Keep this line for local preview, remove it when deploying.
+// ⚠️ IMPORTANT: In your Cursor file, UNCOMMENT the line below for the AI to work on Vercel:
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
+const apiKey = ""; // Keep this line here for this preview only.
 
 // --- CV DATA ---
 const cvData = {
@@ -397,7 +397,7 @@ const CareerView = ({ scrollState }) => {
         }`}
       >
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-stone-900 dark:text-white transition-opacity duration-300">
+          <h2 className="text-3xl font-bold text-stone-900 dark:text-white transition-opacity duration-300 tracking-tight">
             Career
           </h2>
           <div className="bg-white dark:bg-stone-900 p-1 rounded-lg border border-stone-200 dark:border-stone-800 shadow-sm flex">
@@ -510,40 +510,59 @@ const CareerView = ({ scrollState }) => {
   );
 };
 
-const ProjectsView = () => (
-  <div className="animate-in fade-in duration-500 pb-32 relative">
-     <div className="mt-8 mb-10">
-        <h2 className="text-3xl font-bold text-stone-900 dark:text-white mb-4">Case Studies</h2>
-        <p className="text-stone-500 dark:text-stone-400 max-w-xl text-lg leading-relaxed">
-          I'm currently documenting the deep dives into my recent 0-to-1 builds. Here is a preview of what's coming.
-        </p>
-     </div>
+const ProjectsView = ({ scrollState }) => {
+  // Smart Header Logic
+  const isAtTop = scrollState.y < 50; 
+  const showBackground = !isAtTop;
 
-     <div className="grid gap-6 md:grid-cols-2">
-        {cvData.experience.slice(0, 2).map((job, i) => (
-           <div key={i} className="group relative bg-white dark:bg-stone-900 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 hover:border-blue-200 dark:hover:border-blue-900 transition-all text-left">
-              <div className="flex justify-between items-start mb-6">
-                 <div className="p-3 bg-stone-100 dark:bg-stone-800 rounded-2xl group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors">
-                    <Folder size={24} className="text-stone-400 group-hover:text-blue-500 transition-colors" />
-                 </div>
-                 <span className="px-3 py-1 bg-stone-100 dark:bg-stone-800 text-stone-500 text-[10px] font-bold rounded-full uppercase tracking-wide">Coming Soon</span>
-              </div>
-              
-              <h3 className="font-bold text-xl text-stone-900 dark:text-white mb-3">{job.company}</h3>
-              <p className="text-stone-500 dark:text-stone-400 text-sm leading-relaxed mb-6">
-                {job.summary}
-              </p>
-              
-              {/* Fake "Locked" Link */}
-              <div className="flex items-center gap-2 text-sm font-medium text-stone-300 dark:text-stone-600 cursor-not-allowed">
-                 <span>Read Case Study</span>
-                 <ChevronRight size={16} />
-              </div>
-           </div>
-        ))}
-     </div>
-  </div>
-);
+  return (
+    <div className="animate-in fade-in duration-500 pb-32 relative">
+       
+       {/* Consistent Sticky Header - mb-4 to reduce spacing */}
+       <div 
+        className={`sticky top-0 z-30 -mx-6 px-6 md:-mx-12 md:px-12 py-4 mb-4 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          showBackground 
+            ? 'bg-stone-50/90 dark:bg-stone-950/90 backdrop-blur-xl border-b border-stone-200 dark:border-stone-800 shadow-sm' 
+            : 'bg-transparent border-b border-transparent'
+        }`}
+      >
+        <h2 className="text-3xl font-bold text-stone-900 dark:text-white tracking-tight">
+          Projects
+        </h2>
+      </div>
+
+       <div className="mb-10 relative z-10">
+          <p className="text-stone-500 dark:text-stone-400 max-w-full text-base leading-relaxed">
+            I'm currently documenting the deep dives into my recent 0-to-1 builds. Here is a preview of what's coming.
+          </p>
+       </div>
+
+       <div className="grid gap-6 md:grid-cols-2 relative z-10">
+          {cvData.experience.slice(0, 2).map((job, i) => (
+             <div key={i} className="group relative bg-white dark:bg-stone-900 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 hover:border-blue-200 dark:hover:border-blue-900 transition-all text-left">
+                <div className="flex justify-between items-start mb-6">
+                   <div className="p-3 bg-stone-100 dark:bg-stone-800 rounded-2xl group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors">
+                      <Folder size={24} className="text-stone-400 group-hover:text-blue-500 transition-colors" />
+                   </div>
+                   <span className="px-3 py-1 bg-stone-100 dark:bg-stone-800 text-stone-500 text-[10px] font-bold rounded-full uppercase tracking-wide">Coming Soon</span>
+                </div>
+                
+                <h3 className="font-bold text-xl text-stone-900 dark:text-white mb-3">{job.company}</h3>
+                <p className="text-stone-500 dark:text-stone-400 text-sm leading-relaxed mb-6">
+                  {job.summary}
+                </p>
+                
+                {/* Fake "Locked" Link */}
+                <div className="flex items-center gap-2 text-sm font-medium text-stone-300 dark:text-stone-600 cursor-not-allowed">
+                   <span>Read Case Study</span>
+                   <ChevronRight size={16} />
+                </div>
+             </div>
+          ))}
+       </div>
+    </div>
+  );
+};
 
 const ChatView = () => {
   const [messages, setMessages] = useState([
@@ -552,10 +571,15 @@ const ChatView = () => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef(null);
+  const inputRef = useRef(null); 
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -588,9 +612,20 @@ const ChatView = () => {
     }
   };
 
+  const hasStarted = messages.length > 1;
+
   return (
     <div className="flex flex-col h-full animate-in fade-in duration-500 relative">
       
+      {/* 3. Header: Consistent Typography, Hide on Start */}
+      {!hasStarted && (
+        <div className="shrink-0 -mx-6 px-6 md:-mx-12 md:px-12 py-4 z-30">
+           <h2 className="text-3xl font-bold text-stone-900 dark:text-white tracking-tight">
+              Ask Edward's AI
+            </h2>
+        </div>
+      )}
+
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto pr-2 pb-4 scroll-smooth relative z-10">
         <div className="space-y-4 pt-4">
@@ -618,20 +653,22 @@ const ChatView = () => {
         </div>
       </div>
 
-      {/* Input Area - Redesigned Taller with Internal Button + Laser Beam */}
+      {/* Input Area */}
       <div className="pt-4 bg-stone-50 dark:bg-stone-950 z-20 pb-32 md:pb-20 relative">
         <form onSubmit={handleSend} className="relative">
           {/* Laser Beam Container */}
           <div className="relative rounded-2xl overflow-hidden p-[2px]">
-            {/* Animated Rotating Gradient (The Laser Beam - Always Visible) */}
+            {/* Animated Rotating Gradient */}
             <div className="absolute inset-[-100%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_90deg,transparent_0_340deg,#3B82F6_360deg)] opacity-100" />
             
-            {/* Inner Content Card (Input Wrapper) */}
-            <div className="relative bg-white dark:bg-stone-900 rounded-[14px] flex items-center">
+            {/* Inner Content Card (Input Wrapper) - Use inset ring for focus state instead of outline */}
+            <div className="relative bg-white dark:bg-stone-900 rounded-[14px] flex items-center transition-all duration-200 focus-within:ring-1 focus-within:ring-inset focus-within:ring-stone-200 dark:focus-within:ring-stone-700">
               <input 
+                ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask AI anything..."
+                autoFocus
                 className="w-full bg-transparent border-none pl-5 pr-14 h-16 text-sm md:text-base focus:ring-0 outline-none text-stone-900 dark:text-white placeholder-stone-400"
               />
               <button 
@@ -648,59 +685,79 @@ const ChatView = () => {
   );
 };
 
-const ContactView = () => (
-  <div className="space-y-6 animate-in fade-in duration-500 pb-32 relative">
+const ContactView = ({ scrollState }) => {
+  // Use scrollState for consistent sticky header logic
+  const isAtTop = scrollState.y < 50; 
+  const showBackground = !isAtTop;
 
-    <div className="relative z-10">
-      <h2 className="text-3xl font-bold text-stone-900 dark:text-white">Let's Connect.</h2>
-      <p className="text-stone-500 dark:text-stone-400 max-w-lg">I am currently open for conversation regarding leadership roles in AI, Design Systems, and FinTech.</p>
-    </div>
-    
-    <div className="grid gap-4 md:grid-cols-2 relative z-10">
-      <a href="https://www.linkedin.com/in/edwardchu1/" target="_blank" rel="noreferrer" className="flex items-center gap-4 bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-800 hover:border-blue-300 transition-colors group">
-        <div className="bg-blue-600 text-white p-3 rounded-xl">
-          <Linkedin size={24} />
-        </div>
-        <div>
-          <h3 className="font-bold text-stone-900 dark:text-white">LinkedIn</h3>
-          <p className="text-xs text-stone-400 group-hover:text-blue-500 transition-colors">Professional Profile</p>
-        </div>
-        <ExternalLink size={16} className="ml-auto text-stone-300" />
-      </a>
+  return (
+    <div className="animate-in fade-in duration-500 pb-32 relative">
 
-      <a href="https://adplist.org/mentors/edward-chu" target="_blank" rel="noreferrer" className="flex items-center gap-4 bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-800 hover:border-blue-300 transition-colors group">
-        <div className="bg-stone-900 dark:bg-white text-white dark:text-stone-900 p-3 rounded-xl">
-          <Briefcase size={24} />
-        </div>
-        <div>
-          <h3 className="font-bold text-stone-900 dark:text-white">ADPList</h3>
-          <p className="text-xs text-stone-400 group-hover:text-blue-500 transition-colors">Mentorship & Booking</p>
-        </div>
-        <ExternalLink size={16} className="ml-auto text-stone-300" />
-      </a>
-    </div>
+      {/* Consistent Sticky Header - mb-4 to reduce spacing */}
+      <div 
+        className={`sticky top-0 z-30 -mx-6 px-6 md:-mx-12 md:px-12 py-4 mb-4 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          showBackground 
+            ? 'bg-stone-50/90 dark:bg-stone-950/90 backdrop-blur-xl border-b border-stone-200 dark:border-stone-800 shadow-sm' 
+            : 'bg-transparent border-b border-transparent'
+        }`}
+      >
+        <h2 className="text-3xl font-bold text-stone-900 dark:text-white tracking-tight">
+          Let's Connect
+        </h2>
+      </div>
 
-    {/* New Lighter Email Me Section */}
-    <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 p-6 rounded-3xl shadow-sm mt-4 hover:border-blue-200 dark:hover:border-blue-900 transition-colors relative z-10">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-           <div className="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 p-4 rounded-2xl">
-             <Mail size={24} />
-           </div>
-           <div>
-             <span className="font-bold text-lg text-stone-900 dark:text-white">Email Me</span>
-             <p className="text-stone-500 dark:text-stone-400 text-sm max-w-sm mt-1">
-               Interested in discussing a role, a 0-to-1 opportunity, or a consulting project?
-             </p>
-           </div>
-        </div>
-        <a href="mailto:ed@edwardchu.xyz" className="whitespace-nowrap px-6 py-3 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-xl font-bold hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors">
-          Send Message
+      <div className="relative z-10 mb-8">
+        <p className="text-stone-500 dark:text-stone-400 max-w-full text-base leading-relaxed">
+          I’m currently open to new opportunities and collaborations. Whether you have a complex problem to solve or just want to chat about the future of design, I’d love to hear from you.
+        </p>
+      </div>
+      
+      <div className="grid gap-4 md:grid-cols-2 relative z-10">
+        <a href="https://www.linkedin.com/in/edwardchu1/" target="_blank" rel="noreferrer" className="flex items-center gap-4 bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-800 hover:border-blue-300 transition-colors group">
+          <div className="bg-blue-600 text-white p-3 rounded-xl">
+            <Linkedin size={24} />
+          </div>
+          <div>
+            <h3 className="font-bold text-stone-900 dark:text-white">LinkedIn</h3>
+            <p className="text-xs text-stone-400 group-hover:text-blue-500 transition-colors">Professional Profile</p>
+          </div>
+          <ExternalLink size={16} className="ml-auto text-stone-300" />
+        </a>
+
+        <a href="https://adplist.org/mentors/edward-chu" target="_blank" rel="noreferrer" className="flex items-center gap-4 bg-white dark:bg-stone-900 p-4 rounded-2xl shadow-sm border border-stone-100 dark:border-stone-800 hover:border-blue-300 transition-colors group">
+          <div className="bg-stone-900 dark:bg-white text-white dark:text-stone-900 p-3 rounded-xl">
+            <Briefcase size={24} />
+          </div>
+          <div>
+            <h3 className="font-bold text-stone-900 dark:text-white">ADPList</h3>
+            <p className="text-xs text-stone-400 group-hover:text-blue-500 transition-colors">Mentorship & Booking</p>
+          </div>
+          <ExternalLink size={16} className="ml-auto text-stone-300" />
         </a>
       </div>
+
+      {/* New Lighter Email Me Section */}
+      <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 p-6 rounded-3xl shadow-sm mt-4 hover:border-blue-200 dark:hover:border-blue-900 transition-colors relative z-10">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+             <div className="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 p-4 rounded-2xl">
+               <Mail size={24} />
+             </div>
+             <div>
+               <span className="font-bold text-lg text-stone-900 dark:text-white">Email Me</span>
+               <p className="text-stone-500 dark:text-stone-400 text-sm max-w-sm mt-1">
+                 Interested in discussing a role, a 0-to-1 opportunity, or a consulting project?
+               </p>
+             </div>
+          </div>
+          <a href="mailto:ed@edwardchu.xyz" className="whitespace-nowrap px-6 py-3 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-xl font-bold hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors">
+            Send Message
+          </a>
+        </div>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
@@ -733,7 +790,7 @@ export default function App() {
         {/* Scrollable Container - The background should be here to be scrollable but full width */}
         <div 
           onScroll={handleScroll}
-          className={`flex-1 overflow-y-auto overflow-x-hidden ${activeTab === 'chat' ? 'overflow-hidden' : ''} relative`}
+          className={`flex-1 overflow-y-auto overflow-x-hidden ${activeTab === 'chat' ? 'overflow-hidden' : ''} relative pt-[env(safe-area-inset-top)] h-[100dvh]`}
         >
            
            {/* New Flickering Grid Background - Reduced size & restricted height */}
@@ -749,9 +806,9 @@ export default function App() {
            <div className={`w-full max-w-3xl mx-auto p-6 md:p-12 relative z-10 ${activeTab === 'chat' ? 'h-full' : ''}`}>
               {activeTab === 'home' && <HomeView onNavigate={setActiveTab} />}
               {activeTab === 'career' && <CareerView scrollState={scrollState} />}
-              {activeTab === 'projects' && <ProjectsView />}
+              {activeTab === 'projects' && <ProjectsView scrollState={scrollState} />}
               {activeTab === 'chat' && <ChatView />}
-              {activeTab === 'contact' && <ContactView />}
+              {activeTab === 'contact' && <ContactView scrollState={scrollState} />}
            </div>
         </div>
       </main>
