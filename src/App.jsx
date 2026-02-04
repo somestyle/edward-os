@@ -7,9 +7,9 @@ import {
 } from 'lucide-react';
 
 // --- CONFIGURATION ---
-// ⚠️ IMPORTANT: Uncomment the line below when deploying to Vercel to enable the AI Chat.
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY || ""; 
-const apiKey = "";
+// ⚠️ IMPORTANT: Uncomment the line below in Cursor before deploying to Vercel:
+// const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
+const apiKey = ""; // Keep this line for local preview, remove it when deploying.
 
 // --- CV DATA ---
 const cvData = {
