@@ -308,8 +308,7 @@ const HomeView = ({ onNavigate }) => (
         </div>
         
         {/* About Me Section */}
-        <h2 className="text-xl font-bold text-stone-900 dark:text-white mb-4 mt-12">About me</h2>
-        <div className="space-y-4 text-stone-500 dark:text-stone-400 text-sm leading-relaxed max-w-xl">
+        <div className="space-y-4 text-stone-500 dark:text-stone-400 text-sm leading-relaxed max-w-xl mt-12">
           <p>
             I enjoy working through complex systems and workflows, especially when the problem is messy and the solution isn’t obvious at first. I like taking constraint-heavy challenges and shaping them into products that feel clear, elegant, and sustainable as they scale.
           </p>
@@ -369,8 +368,8 @@ const HomeView = ({ onNavigate }) => (
             <Sparkles size={22} />
           </div>
           <div className="flex-1">
-            <p className="font-bold text-lg text-stone-900 dark:text-white">AMA with my AI twin</p>
-            <p className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">Ask my work experience, design thinking or what I'm up to recently!</p>
+            <p className="font-bold text-lg text-stone-900 dark:text-white">Ask my AI twin about my work</p>
+            <p className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">Learn more about my experience, design thinking, and problem-solving.</p>
           </div>
           <div className="bg-stone-50 dark:bg-stone-800 p-2 rounded-full text-stone-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
             <ChevronRight size={20} />
