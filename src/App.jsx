@@ -9,10 +9,11 @@ import {
 import { SYSTEM_PROMPT } from './ai-config';
 
 // --- CONFIGURATION ---
-// ⚠️ IMPORTANT: In your Cursor file, UNCOMMENT the line below for the AI to work on Vercel:
+// ⚠️ IMPORTANT: In your Cursor file, UNCOMMENT the lines below for the AI to work on Vercel:
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
+//const apiKey = ""; // Keep this line here for this preview only.
+
 console.log("Gemini key loaded?", Boolean(import.meta.env.VITE_GEMINI_API_KEY));
-// const apiKey = ""; // Keep this line here for this preview only.
 
 // --- CV DATA ---
 const cvData = {
