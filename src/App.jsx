@@ -5,6 +5,8 @@ import {
   Layout, Moon, Sun, GraduationCap, Layers,
   BookOpen, Mail, Linkedin, ExternalLink, Folder
 } from 'lucide-react';
+// Import the separated system prompt
+import { SYSTEM_PROMPT } from './ai-config';
 
 // --- CONFIGURATION ---
 // ⚠️ IMPORTANT: In your Cursor file, UNCOMMENT the line below for the AI to work on Vercel:
@@ -136,22 +138,6 @@ const cvData = {
     "Interaction Design", "AI-driven Features", "Prototyping", "Strategy"
   ]
 };
-
-// --- AI SYSTEM PROMPT ---
-const SYSTEM_PROMPT = `
-You are the AI Avatar for Edward Chu, a Staff Product Designer & UX Leader.
-Your goal is to answer questions about Edward's career, specifically his work at Adopt AI, SamaCare, and Tier1.
-
-CORE CONTEXT:
-- Experience: 20+ years in Product Design.
-- Current Role: Founding Staff Product Designer at Adopt AI (Oct 2024 - Present).
-- Key Skills: 0-to-1 Builds, AI Agents, Generative UI, Design Systems, Team Leadership.
-- Education: Master in UX (MICA), Bachelor Advertising (OCAD).
-
-TONE: Professional, confident, concise, and slightly witty. 
-If asked about "Adopt AI", emphasize the "0-to-1 Copilot" and "Reducing UI Drift".
-If asked about leadership, mention building teams at Tier1 and Flybits.
-`;
 
 // --- COMPONENTS ---
 
@@ -309,13 +295,9 @@ const HomeView = ({ onNavigate }) => (
         </div>
         
         {/* About Me Section */}
-        <div className="space-y-4 text-stone-500 dark:text-stone-400 text-sm leading-relaxed max-w-xl mt-12">
-          <p>
-            I enjoy working through complex systems and workflows, especially when the problem is messy and the solution isn’t obvious at first. I like taking constraint-heavy challenges and shaping them into products that feel clear, elegant, and sustainable as they scale.
-          </p>
-          <p>
-            My focus is on reducing friction, improving decision-making, and designing experiences people can trust as systems evolve.
-          </p>
+        <h2 className="text-xl font-bold text-stone-900 dark:text-white mb-4 mt-12">About me</h2>
+        <div className="space-y-4 text-stone-500 dark:text-stone-400 text-sm leading-relaxed max-w-xl whitespace-pre-wrap">
+          {cvData.about}
         </div>
 
         {/* Key Experience Chips */}
@@ -369,8 +351,8 @@ const HomeView = ({ onNavigate }) => (
             <Sparkles size={22} />
           </div>
           <div className="flex-1">
-            <p className="font-bold text-lg text-stone-900 dark:text-white">Ask my AI twin about my work</p>
-            <p className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">Learn more about my experience, design thinking, and problem-solving.</p>
+            <p className="font-bold text-lg text-stone-900 dark:text-white">AMA with my AI twin</p>
+            <p className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">Ask my work experience, design thinking or what I'm up to recently!</p>
           </div>
           <div className="bg-stone-50 dark:bg-stone-800 p-2 rounded-full text-stone-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
             <ChevronRight size={20} />
@@ -616,7 +598,7 @@ const ChatView = () => {
 
     try {
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
