@@ -9,7 +9,7 @@ import {
 // --- CONFIGURATION ---
 // ⚠️ IMPORTANT: In your Cursor file, UNCOMMENT the line below for the AI to work on Vercel:
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
-//const apiKey = ""; // Keep this line here for this preview only.
+// const apiKey = ""; // Keep this line here for this preview only.
 
 // --- CV DATA ---
 const cvData = {
@@ -307,10 +307,16 @@ const HomeView = ({ onNavigate }) => (
           </p>
         </div>
         
-        {/* About Me Paragraph */}
-        <p className="text-stone-500 dark:text-stone-400 text-sm leading-relaxed max-w-xl">
-          I design complex, high-stakes products where automation, control, and trust must coexist. My focus is on reducing system friction, clarifying decision paths, and translating ambiguous technical constraints into usable, scalable product experiences.
-        </p>
+        {/* About Me Section */}
+        <h2 className="text-xl font-bold text-stone-900 dark:text-white mb-4 mt-12">About me</h2>
+        <div className="space-y-4 text-stone-500 dark:text-stone-400 text-sm leading-relaxed max-w-xl">
+          <p>
+            I enjoy working through complex systems and workflows, especially when the problem is messy and the solution isn’t obvious at first. I like taking constraint-heavy challenges and shaping them into products that feel clear, elegant, and sustainable as they scale.
+          </p>
+          <p>
+            My focus is on reducing friction, improving decision-making, and designing experiences people can trust as systems evolve.
+          </p>
+        </div>
 
         {/* Key Experience Chips */}
         <div className="flex flex-wrap gap-2 mt-5">
@@ -326,13 +332,16 @@ const HomeView = ({ onNavigate }) => (
     {/* Recent Experience Section */}
     <div className="relative z-10">
       <div className="flex justify-between items-baseline mb-6">
-        <h2 className="text-sm font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider">Recent Roles</h2>
-        <button onClick={() => onNavigate('career')} className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">View Full Career</button>
+        <h2 className="text-sm font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider">Recent roles shaping my work today</h2>
       </div>
       
       <div className="space-y-1">
         {cvData.experience.slice(0, 3).map((job, i) => (
-          <div key={i} className="group flex items-baseline justify-between py-3 border-b border-stone-100 dark:border-stone-800 last:border-0 hover:bg-stone-50 dark:hover:bg-stone-900/50 rounded-lg px-2 -mx-2 transition-colors">
+          <div 
+            key={i} 
+            onClick={() => onNavigate('career')}
+            className="group flex items-baseline justify-between py-3 border-b border-stone-100 dark:border-stone-800 last:border-0 hover:bg-stone-50 dark:hover:bg-stone-900/50 rounded-lg px-2 -mx-2 transition-colors cursor-pointer"
+          >
             <div className="flex flex-col md:flex-row md:items-baseline md:gap-3">
               <div className="flex items-center gap-2">
                 <h3 className="font-bold text-stone-900 dark:text-white text-base">{job.company}</h3>
@@ -360,8 +369,8 @@ const HomeView = ({ onNavigate }) => (
             <Sparkles size={22} />
           </div>
           <div className="flex-1">
-            <p className="font-bold text-lg text-stone-900 dark:text-white">Start a conversation</p>
-            <p className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">Curious about my process? Ask my AI digital twin.</p>
+            <p className="font-bold text-lg text-stone-900 dark:text-white">AMA with my AI twin</p>
+            <p className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">Ask my work experience, design thinking or what I'm up to recently!</p>
           </div>
           <div className="bg-stone-50 dark:bg-stone-800 p-2 rounded-full text-stone-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
             <ChevronRight size={20} />
@@ -369,6 +378,21 @@ const HomeView = ({ onNavigate }) => (
         </div>
       </div>
     </div>
+
+    {/* Footer */}
+    <footer className="mt-20 mb-8 text-center relative z-10">
+      <p className="text-xs text-stone-400 dark:text-stone-500 mb-2 leading-relaxed">
+        This site was designed by me and built with{' '}
+        <a href="https://react.dev/" target="_blank" rel="noreferrer" className="hover:text-stone-600 dark:hover:text-stone-300 underline underline-offset-2 decoration-stone-200 dark:decoration-stone-700 transition-colors">React</a>,{' '}
+        <a href="https://tailwindcss.com/" target="_blank" rel="noreferrer" className="hover:text-stone-600 dark:hover:text-stone-300 underline underline-offset-2 decoration-stone-200 dark:decoration-stone-700 transition-colors">Tailwind CSS</a>,{' '}
+        <a href="https://vercel.com/" target="_blank" rel="noreferrer" className="hover:text-stone-600 dark:hover:text-stone-300 underline underline-offset-2 decoration-stone-200 dark:decoration-stone-700 transition-colors">Vercel</a>,{' '}
+        <a href="https://cursor.com/" target="_blank" rel="noreferrer" className="hover:text-stone-600 dark:hover:text-stone-300 underline underline-offset-2 decoration-stone-200 dark:decoration-stone-700 transition-colors">Cursor</a>, and the{' '}
+        <a href="https://ai.google.dev/" target="_blank" rel="noreferrer" className="hover:text-stone-600 dark:hover:text-stone-300 underline underline-offset-2 decoration-stone-200 dark:decoration-stone-700 transition-colors">Gemini API</a>.
+      </p>
+      <p className="text-[10px] text-stone-300 dark:text-stone-600">
+        © 2026 Edward Chu. All rights reserved.
+      </p>
+    </footer>
 
   </div>
 );
