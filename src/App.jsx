@@ -9,6 +9,7 @@ import {
 // --- CONFIGURATION ---
 // ⚠️ IMPORTANT: In your Cursor file, UNCOMMENT the line below for the AI to work on Vercel:
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
+console.log("Gemini key loaded?", Boolean(import.meta.env.VITE_GEMINI_API_KEY));
 // const apiKey = ""; // Keep this line here for this preview only.
 
 // --- CV DATA ---
@@ -615,7 +616,7 @@ const ChatView = () => {
 
     try {
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
