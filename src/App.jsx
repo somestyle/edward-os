@@ -24,7 +24,7 @@ const cvData = {
       role: "Founding Staff Product Designer",
       period: "Oct 2024 - Present",
       location: "San Francisco, CA",
-      summary: "Leading end-to-end 0-to-1 product design for AI Copilot solutions.",
+      summary: "End-to-end product design for an AI copilot platform, spanning agent workflows, tooling, and system UX.",
       highlights: [
         "Led 0-to-1 design of AI Copilot solutions across SaaS platforms.",
         "Collaborated with CEO/CTO on product vision and ML integration.",
@@ -37,7 +37,7 @@ const cvData = {
       role: "Staff Product Designer",
       period: "Aug 2022 - Oct 2024",
       location: "San Francisco, CA",
-      summary: "Sole designer leading product design for Series B growth.",
+      summary: "Sole designer leading healthcare workflows and expanding product offerings through Series B growth.",
       highlights: [
         "Independently led design for 2+ years, contributing to Series B funding.",
         "Designed a Chrome Extension that reduced churn.",
@@ -544,7 +544,7 @@ const ProjectsView = ({ scrollState }) => {
 
        <div className="mb-10 relative z-10">
           <p className="text-stone-500 dark:text-stone-400 max-w-full text-base leading-relaxed">
-            I'm currently documenting the deep dives into my recent 0-to-1 builds. Here is a preview of what's coming.
+            These are selected recent projects. Full case studies are in progress and will be added soon.
           </p>
        </div>
 
@@ -757,7 +757,7 @@ const ContactView = ({ scrollState }) => {
              <div>
                <span className="font-bold text-lg text-stone-900 dark:text-white">Email Me</span>
                <p className="text-stone-500 dark:text-stone-400 text-sm max-w-sm mt-1">
-                 Interested in discussing a role, a 0-to-1 opportunity, or a consulting project?
+                 Interested in discussing a role, a project, or a potential collaboration?
                </p>
              </div>
           </div>
