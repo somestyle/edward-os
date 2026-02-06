@@ -367,7 +367,7 @@ const HomeView = ({ onNavigate }) => (
     </div>
 
     {/* Footer */}
-    <footer className="mt-20 mb-8 text-center relative z-10">
+    <footer className="mt-12 mb-8 text-center relative z-10">
       <p className="text-xs text-stone-400 dark:text-stone-500 mb-2 leading-relaxed">
         This site was designed by me and built with{' '}
         <a href="https://react.dev/" target="_blank" rel="noreferrer" className="hover:text-stone-600 dark:hover:text-stone-300 underline underline-offset-2 decoration-stone-200 dark:decoration-stone-700 transition-colors">React</a>,{' '}
