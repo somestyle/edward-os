@@ -5,8 +5,56 @@ import {
   Layout, Moon, Sun, GraduationCap, Layers,
   BookOpen, Mail, Linkedin, ExternalLink, Folder
 } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 // Import the separated system prompt
 import { SYSTEM_PROMPT } from './ai-config';
+
+// --- Typewriter streaming hook ---
+function useTypewriter(fullText, { speedMs = 15, enabled = true } = {}) {
+  const [displayedLength, setDisplayedLength] = useState(0);
+  const fullLength = fullText?.length ?? 0;
+
+  useEffect(() => {
+    if (!enabled || fullLength === 0) {
+      setDisplayedLength(0);
+      return;
+    }
+    setDisplayedLength(0);
+  }, [enabled, fullText]);
+
+  useEffect(() => {
+    if (!enabled || fullLength === 0) return;
+    if (displayedLength >= fullLength) return;
+    const t = setTimeout(() => setDisplayedLength((n) => Math.min(n + 1, fullLength)), speedMs);
+    return () => clearTimeout(t);
+  }, [enabled, fullLength, displayedLength, speedMs]);
+
+  const displayed = fullText?.slice(0, displayedLength) ?? '';
+  const isComplete = fullLength > 0 && displayedLength >= fullLength;
+  return [displayed, isComplete];
+}
+
+// --- Markdown renderer for chat (bold, links, etc.) ---
+function MarkdownRenderer({ children, className = '' }) {
+  if (typeof children !== 'string') return <span className={className}>{children}</span>;
+  return (
+    <span className={className}>
+      <ReactMarkdown
+        components={{
+          a: ({ href, children }) => (
+            <a href={href} target="_blank" rel="noreferrer" className="underline text-inherit font-medium hover:opacity-80">
+              {children}
+            </a>
+          ),
+          strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+          p: ({ children }) => <span className="block">{children}</span>,
+        }}
+      >
+        {children}
+      </ReactMarkdown>
+    </span>
+  );
+}
 
 // --- CONFIGURATION ---
 // ⚠️ IMPORTANT: In your Cursor file, UNCOMMENT the lines below for the AI to work on Vercel:
@@ -581,12 +629,26 @@ const ChatView = () => {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [streamingForIndex, setStreamingForIndex] = useState(null);
+  const [streamingFullText, setStreamingFullText] = useState("");
   const scrollRef = useRef(null);
-  const inputRef = useRef(null); 
+  const inputRef = useRef(null);
+
+  const [typewriterText, typewriterComplete] = useTypewriter(streamingFullText, {
+    speedMs: 15,
+    enabled: streamingForIndex !== null && streamingFullText.length > 0,
+  });
+
+  useEffect(() => {
+    if (typewriterComplete && streamingForIndex !== null) {
+      setStreamingForIndex(null);
+      setStreamingFullText("");
+    }
+  }, [typewriterComplete, streamingForIndex]);
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading]);
+  }, [messages, loading, typewriterText]);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -616,13 +678,17 @@ const ChatView = () => {
       const data = await response.json();
       const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "I'm processing that... try asking differently?";
       setMessages(prev => [...prev, { role: 'system', text: reply }]);
+      setLoading(false);
+      setStreamingFullText(reply);
+      setStreamingForIndex(messages.length);
     } catch (err) {
       setMessages(prev => [...prev, { role: 'system', text: "Connection error. Please check your API key." }]);
-    } finally {
       setLoading(false);
     }
   };
 
+  const isStreaming = streamingForIndex !== null;
+  const isBusy = loading || isStreaming;
   const hasStarted = messages.length > 1;
 
   return (
@@ -643,11 +709,17 @@ const ChatView = () => {
           {messages.map((msg, i) => (
             <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[85%] md:max-w-[75%] p-4 rounded-2xl text-sm leading-relaxed shadow-sm ${
-                msg.role === 'user' 
-                  ? 'bg-blue-600 text-white rounded-br-none' 
+                msg.role === 'user'
+                  ? 'bg-blue-600 text-white rounded-br-none'
                   : 'bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-200 border border-stone-100 dark:border-stone-700 rounded-bl-none'
               }`}>
-                {msg.text}
+                {msg.role === 'user' ? (
+                  msg.text
+                ) : (
+                  <MarkdownRenderer>
+                    {i === streamingForIndex ? typewriterText : msg.text}
+                  </MarkdownRenderer>
+                )}
               </div>
             </div>
           ))}
@@ -680,10 +752,11 @@ const ChatView = () => {
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask AI anything..."
                 autoFocus
-                className="w-full bg-transparent border-none pl-5 pr-14 h-16 text-sm md:text-base focus:ring-0 outline-none text-stone-900 dark:text-white placeholder-stone-400"
+                disabled={isBusy}
+                className="w-full bg-transparent border-none pl-5 pr-14 h-16 text-sm md:text-base focus:ring-0 outline-none text-stone-900 dark:text-white placeholder-stone-400 disabled:opacity-60 disabled:cursor-not-allowed"
               />
               <button 
-                disabled={!input.trim() || loading}
+                disabled={!input.trim() || isBusy}
                 className="absolute right-3 top-1/2 -translate-y-1/2 bg-stone-900 dark:bg-white text-white dark:text-stone-900 p-3 rounded-xl disabled:opacity-50 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors shadow-sm"
               >
                 <Send size={18} />
