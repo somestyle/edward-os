@@ -676,7 +676,7 @@ const ChatView = () => {
         }
       );
       if (response.status === 429) {
-        setMessages(prev => [...prev, { role: 'system', text: "I've reached my daily capacity for live conversations today. I can't chat right now, but my static portfolio and case studies have all the details you need." }]);
+        setMessages(prev => [...prev, { role: 'system', text: "I've been chatting a little too much today and reached my limit. Check out the rest of the site to learn more about my experience and background in the meantime." }]);
         setLoading(false);
         return;
       }
