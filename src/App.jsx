@@ -675,6 +675,16 @@ const ChatView = () => {
           }),
         }
       );
+      if (response.status === 429) {
+        setMessages(prev => [...prev, { role: 'system', text: "I've reached my daily capacity for live conversations today. I can't chat right now, but my static portfolio and case studies have all the details you need." }]);
+        setLoading(false);
+        return;
+      }
+      if (response.status === 500) {
+        setMessages(prev => [...prev, { role: 'system', text: "I'm having trouble connecting to my AI services right now. While I'm offline, you can reach the real me at [ed@edwardchu.xyz](mailto:ed@edwardchu.xyz)." }]);
+        setLoading(false);
+        return;
+      }
       const data = await response.json();
       const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "I'm processing that... try asking differently?";
       setMessages(prev => [...prev, { role: 'system', text: reply }]);
