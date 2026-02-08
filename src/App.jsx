@@ -700,23 +700,22 @@ const ChatView = () => {
       );
       if (response.status === 429) {
         setMessages(prev => [...prev, { role: 'system', text: "I've been chatting a little too much today and reached my limit. Check out the rest of the site to learn more about my experience and background in the meantime." }]);
-        setLoading(false);
         return;
       }
       if (response.status === 500) {
         setMessages(prev => [...prev, { role: 'system', text: "I'm having trouble connecting to my AI services right now. While I'm offline, you can reach the real me at [ed@edwardchu.xyz](mailto:ed@edwardchu.xyz)." }]);
-        setLoading(false);
         return;
       }
       const data = await response.json();
       const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "I'm processing that... try asking differently?";
       setMessages(prev => [...prev, { role: 'system', text: reply }]);
-      setLoading(false);
       setStreamingFullText(reply);
       setStreamingForIndex(messages.length);
     } catch (err) {
       setMessages(prev => [...prev, { role: 'system', text: "Connection error. Please check your API key." }]);
+    } finally {
       setLoading(false);
+      inputRef.current?.focus();
     }
   };
 
@@ -805,8 +804,7 @@ const ChatView = () => {
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask AI anything..."
                 autoFocus
-                disabled={isBusy}
-                className="w-full bg-transparent border-none pl-5 pr-14 h-16 text-sm md:text-base focus:ring-0 outline-none text-stone-900 dark:text-white placeholder-stone-400 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full bg-transparent border-none pl-5 pr-14 h-16 text-sm md:text-base focus:ring-0 outline-none text-stone-900 dark:text-white placeholder-stone-400"
               />
               <button 
                 disabled={!input.trim() || isBusy}
