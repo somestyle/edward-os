@@ -71,6 +71,7 @@ const cvData = {
       company: "Adopt AI",
       role: "Founding Staff Product Designer",
       period: "Oct 2024 - Present",
+      tagline: "Agentic execution and workflow platform for SaaS teams",
       location: "San Francisco, CA",
       summary: "End-to-end product design for an AI copilot platform, spanning agent workflows, tooling, and system UX.",
       highlights: [
@@ -84,6 +85,7 @@ const cvData = {
       company: "SamaCare",
       role: "Staff Product Designer",
       period: "Aug 2022 - Oct 2024",
+      tagline: "Healthcare SaaS platform for complex authorization and operations workflows",
       location: "San Francisco, CA",
       summary: "Sole designer leading healthcare workflows and expanding product offerings through Series B growth.",
       highlights: [
@@ -97,6 +99,7 @@ const cvData = {
       company: "Kea AI",
       role: "Head of Product Design",
       period: "Mar 2021 - Aug 2022",
+      tagline: "Voice AI platform that automates phone orders, checkout, and upsell for businesses",
       location: "San Francisco, CA",
       summary: "Led design of flagship operation console and design systems.",
       highlights: [
@@ -339,17 +342,14 @@ const HomeView = ({ onNavigate }) => (
         
         <div className="mb-6">
           <p className="text-lg md:text-xl text-stone-800 dark:text-stone-200 leading-relaxed font-medium">
-            I’m a <span className="font-semibold text-stone-900 dark:text-white">Staff Product Designer and design leader</span> working on agentic systems across tooling, deployment, observability, and end-user experience.
+            I’m a <span className="font-semibold text-stone-900 dark:text-white">Staff Product Designer and design leader</span> working on agentic systems and workflow-driven products across both business and end-user experiences.
           </p>
         </div>
         
         {/* About Me Section */}
         <div className="space-y-3 text-stone-500 dark:text-stone-400 text-sm leading-relaxed max-w-xl mt-8">
           <p>
-            I enjoy working through complex systems and workflows, especially when the problem is messy and the solution isn't obvious at first.
-          </p>
-          <p>
-            I like taking constraint-heavy challenges and shaping them into products that feel clear, elegant, and sustainable as they scale. A lot of my work focuses on reducing friction, improving decision-making, and designing systems people can actually trust and use day to day.
+            I design and ship constraint-heavy systems where workflows are ambiguous, stakes are high, and trust matters. I lead products from 0 to 1 through scale, translating complex logic and automation into clear, usable experiences.
           </p>
         </div>
 
@@ -370,22 +370,27 @@ const HomeView = ({ onNavigate }) => (
         <h2 className="text-sm font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider">Recent roles shaping my work today</h2>
       </div>
       
-      <div className="space-y-1">
+      <div className="space-y-0">
         {cvData.experience.slice(0, 3).map((job, i) => (
           <div 
             key={i} 
             onClick={() => onNavigate('career')}
-            className="group flex items-baseline justify-between py-3 border-b border-stone-100 dark:border-stone-800 last:border-0 hover:bg-stone-50 dark:hover:bg-stone-900/50 rounded-lg px-2 -mx-2 transition-colors cursor-pointer"
+            className="group flex flex-col py-4 border-b border-stone-100 dark:border-stone-800 last:border-0 hover:bg-stone-50 dark:hover:bg-stone-900/50 rounded-lg px-2 -mx-2 transition-colors cursor-pointer"
           >
-            <div className="flex flex-col md:flex-row md:items-baseline md:gap-3">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-col md:flex-row md:items-baseline md:justify-between md:gap-3">
+              <div className="flex flex-col md:flex-row md:items-baseline md:gap-3">
                 <h3 className="font-bold text-stone-900 dark:text-white text-base">{job.company}</h3>
+                <span className="text-sm text-stone-500 dark:text-stone-400 font-medium">{job.role}</span>
               </div>
-              <span className="text-sm text-stone-500 dark:text-stone-400 font-medium">{job.role}</span>
+              <span className="text-xs font-medium text-stone-400 dark:text-stone-500 mt-0.5 md:mt-0 md:whitespace-nowrap">
+                {job.period}
+              </span>
             </div>
-            <span className="text-xs font-medium text-stone-400 dark:text-stone-500 whitespace-nowrap ml-4">
-              {job.period}
-            </span>
+            {job.tagline && (
+              <p className="text-sm text-stone-500 dark:text-stone-400 mt-1.5 leading-snug">
+                {job.tagline}
+              </p>
+            )}
           </div>
         ))}
       </div>
@@ -625,7 +630,7 @@ const ProjectsView = ({ scrollState }) => {
 
 const ChatView = () => {
   const [messages, setMessages] = useState([
-    { role: 'system', text: "Hello! I'm Edward's AI. I can tell you about his leadership style, his 0-to-1 work at Adopt AI, or his design philosophy. What's on your mind?" }
+    { role: 'system', text: "Ask me about my recent work, design approach, and how I take products from 0 to 1 through scale." }
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -708,7 +713,7 @@ const ChatView = () => {
       {!hasStarted && (
         <div className="shrink-0 -mx-6 px-6 md:-mx-12 md:px-12 py-4 z-30">
            <h2 className="text-3xl font-bold text-stone-900 dark:text-white tracking-tight">
-              Ask Edward's AI
+              Edward's AI
             </h2>
         </div>
       )}
