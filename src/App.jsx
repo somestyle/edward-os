@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { 
   Send, Sparkles, ChevronRight, User, 
   Home, Briefcase, Award, Zap,
@@ -32,6 +32,29 @@ function useTypewriter(fullText, { speedMs = 15, enabled = true } = {}) {
   const displayed = fullText?.slice(0, displayedLength) ?? '';
   const isComplete = fullLength > 0 && displayedLength >= fullLength;
   return [displayed, isComplete];
+}
+
+// --- Typewriter component: reveals text char-by-char and calls onComplete when done ---
+function TypewriterText({ content, onComplete, speedMs = 20 }) {
+  const [displayed, isComplete] = useTypewriter(content, { speedMs, enabled: !!content });
+  const onCompleteRef = useRef(onComplete);
+  const hasCalledRef = useRef(false);
+  onCompleteRef.current = onComplete;
+  useEffect(() => {
+    if (!content || content.length === 0) {
+      if (!hasCalledRef.current && onCompleteRef.current) {
+        hasCalledRef.current = true;
+        onCompleteRef.current();
+      }
+      return;
+    }
+    if (isComplete && !hasCalledRef.current && onCompleteRef.current) {
+      hasCalledRef.current = true;
+      onCompleteRef.current();
+    }
+  }, [content, isComplete]);
+  if (!content || content.length === 0) return null;
+  return <MarkdownRenderer>{displayed}</MarkdownRenderer>;
 }
 
 // --- Markdown renderer for chat (bold, links, etc.) ---
@@ -649,7 +672,6 @@ const ChatView = () => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [streamingForIndex, setStreamingForIndex] = useState(null);
-  const [streamingFullText, setStreamingFullText] = useState("");
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -657,21 +679,17 @@ const ChatView = () => {
     sessionStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
   }, [messages]);
 
-  const [typewriterText, typewriterComplete] = useTypewriter(streamingFullText, {
-    speedMs: 15,
-    enabled: streamingForIndex !== null && streamingFullText.length > 0,
-  });
-
-  useEffect(() => {
-    if (typewriterComplete && streamingForIndex !== null) {
-      setStreamingForIndex(null);
-      setStreamingFullText("");
-    }
-  }, [typewriterComplete, streamingForIndex]);
+  const handleTypewriterComplete = useCallback(() => {
+    setLoading(false);
+    setStreamingForIndex(null);
+    requestAnimationFrame(() => {
+      inputRef.current?.focus();
+    });
+  }, []);
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading, typewriterText]);
+  }, [messages, loading, streamingForIndex]);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -686,6 +704,7 @@ const ChatView = () => {
     setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
     setLoading(true);
 
+    let unlockInFinally = true;
     try {
       const history = messages.map((msg) => ({
         role: msg.role === 'user' ? 'user' : 'model',
@@ -714,14 +733,19 @@ const ChatView = () => {
       }
       const data = await response.json();
       const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "I'm processing that... try asking differently?";
-      setMessages(prev => [...prev, { role: 'system', text: reply }]);
-      setStreamingFullText(reply);
-      setStreamingForIndex(messages.length);
+      setMessages(prev => {
+        const next = [...prev, { role: 'system', text: reply }];
+        setStreamingForIndex(next.length - 1);
+        return next;
+      });
+      unlockInFinally = false;
     } catch (err) {
       setMessages(prev => [...prev, { role: 'system', text: "Connection error. Please check your API key." }]);
     } finally {
-      setLoading(false);
-      inputRef.current?.focus();
+      if (unlockInFinally) {
+        setLoading(false);
+        inputRef.current?.focus();
+      }
     }
   };
 
@@ -773,15 +797,19 @@ const ChatView = () => {
               }`}>
                 {msg.role === 'user' ? (
                   msg.text
+                ) : i === streamingForIndex ? (
+                  <TypewriterText
+                    content={msg.text}
+                    onComplete={handleTypewriterComplete}
+                    speedMs={20}
+                  />
                 ) : (
-                  <MarkdownRenderer>
-                    {i === streamingForIndex ? typewriterText : msg.text}
-                  </MarkdownRenderer>
+                  <MarkdownRenderer>{msg.text}</MarkdownRenderer>
                 )}
               </div>
             </div>
           ))}
-          {loading && (
+          {loading && streamingForIndex === null && (
             <div className="flex justify-start">
               <div className="bg-white dark:bg-stone-800 border border-stone-100 dark:border-stone-700 p-4 rounded-2xl rounded-bl-none shadow-sm flex gap-2">
                 <div className="w-2 h-2 bg-stone-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
