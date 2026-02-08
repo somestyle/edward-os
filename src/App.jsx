@@ -687,13 +687,19 @@ const ChatView = () => {
     setLoading(true);
 
     try {
+      const history = messages.map((msg) => ({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.text }],
+      }));
+      history.push({ role: 'user', parts: [{ text: userMsg }] });
+
       const response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            contents: [{ parts: [{ text: userMsg }] }],
+            contents: history,
             systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
           }),
         }
