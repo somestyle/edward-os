@@ -628,16 +628,34 @@ const ProjectsView = ({ scrollState }) => {
   );
 };
 
+const CHAT_STORAGE_KEY = 'edward_chat_history';
+const DEFAULT_INTRO = { role: 'system', text: "Ask me about my recent work, design approach, and how I take products from 0 to 1 through scale." };
+
+function loadChatFromSession() {
+  try {
+    const raw = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(CHAT_STORAGE_KEY) : null;
+    if (!raw) return [DEFAULT_INTRO];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed) || parsed.length === 0) return [DEFAULT_INTRO];
+    const valid = parsed.every((m) => m && typeof m.role === 'string' && typeof m.text === 'string');
+    return valid ? parsed : [DEFAULT_INTRO];
+  } catch {
+    return [DEFAULT_INTRO];
+  }
+}
+
 const ChatView = () => {
-  const [messages, setMessages] = useState([
-    { role: 'system', text: "Ask me about my recent work, design approach, and how I take products from 0 to 1 through scale." }
-  ]);
+  const [messages, setMessages] = useState(loadChatFromSession);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [streamingForIndex, setStreamingForIndex] = useState(null);
   const [streamingFullText, setStreamingFullText] = useState("");
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
+
+  useEffect(() => {
+    sessionStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
+  }, [messages]);
 
   const [typewriterText, typewriterComplete] = useTypewriter(streamingFullText, {
     speedMs: 15,
@@ -706,6 +724,11 @@ const ChatView = () => {
   const isBusy = loading || isStreaming;
   const hasStarted = messages.length > 1;
 
+  const clearChat = () => {
+    setMessages([DEFAULT_INTRO]);
+    sessionStorage.removeItem(CHAT_STORAGE_KEY);
+  };
+
   return (
     <div className="flex flex-col h-full animate-in fade-in duration-500 relative">
       
@@ -715,6 +738,21 @@ const ChatView = () => {
            <h2 className="text-3xl font-bold text-stone-900 dark:text-white tracking-tight">
               Edward's AI
             </h2>
+        </div>
+      )}
+      {hasStarted && (
+        <div className="shrink-0 -mx-6 px-6 md:-mx-12 md:px-12 py-3 z-30 flex items-center justify-between">
+          <h2 className="text-xl font-bold text-stone-900 dark:text-white tracking-tight">
+            Edward's AI
+          </h2>
+          <button
+            type="button"
+            onClick={clearChat}
+            disabled={isBusy}
+            className="text-sm font-medium text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Clear chat
+          </button>
         </div>
       )}
 
