@@ -674,6 +674,7 @@ const ChatView = () => {
   const [streamingForIndex, setStreamingForIndex] = useState(null);
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
+  const abortControllerRef = useRef(null);
 
   useEffect(() => {
     sessionStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
@@ -705,6 +706,8 @@ const ChatView = () => {
     setLoading(true);
 
     let unlockInFinally = true;
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
     try {
       const history = messages.map((msg) => ({
         role: msg.role === 'user' ? 'user' : 'model',
@@ -721,6 +724,7 @@ const ChatView = () => {
             contents: history,
             systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
           }),
+          signal,
         }
       );
       if (response.status === 429) {
@@ -740,8 +744,11 @@ const ChatView = () => {
       });
       unlockInFinally = false;
     } catch (err) {
-      setMessages(prev => [...prev, { role: 'system', text: "Connection error. Please check your API key." }]);
+      if (err?.name !== 'AbortError') {
+        setMessages(prev => [...prev, { role: 'system', text: "Connection error. Please check your API key." }]);
+      }
     } finally {
+      abortControllerRef.current = null;
       if (unlockInFinally) {
         setLoading(false);
         inputRef.current?.focus();
@@ -754,8 +761,14 @@ const ChatView = () => {
   const hasStarted = messages.length > 1;
 
   const clearChat = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    setLoading(false);
+    setStreamingForIndex(null);
     setMessages([DEFAULT_INTRO]);
     sessionStorage.removeItem(CHAT_STORAGE_KEY);
+    inputRef.current?.focus();
   };
 
   return (
@@ -777,7 +790,6 @@ const ChatView = () => {
           <button
             type="button"
             onClick={clearChat}
-            disabled={isBusy}
             className="text-sm font-medium text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Clear chat
