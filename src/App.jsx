@@ -672,9 +672,10 @@ const ChatView = () => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [streamingForIndex, setStreamingForIndex] = useState(null);
-  const scrollRef = useRef(null);
   const inputRef = useRef(null);
   const abortControllerRef = useRef(null);
+  const lastUserMessageRef = useRef(null);
+  const messagesContainerRef = useRef(null);
 
   useEffect(() => {
     sessionStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
@@ -688,9 +689,16 @@ const ChatView = () => {
     });
   }, []);
 
+  // Snap the user's question to the top when they send it
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading, streamingForIndex]);
+    if (loading && lastUserMessageRef.current) {
+      // Snap the user's question to the top
+      lastUserMessageRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  }, [loading, messages.length]);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -798,10 +806,18 @@ const ChatView = () => {
       )}
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto pr-2 pb-4 scroll-smooth relative z-10">
+      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto pr-2 pb-4 relative z-10">
         <div className="space-y-4 pt-4">
-          {messages.map((msg, i) => (
-            <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+          {messages.map((msg, i) => {
+            // Find the last user message in the entire list
+            const lastUserMessageIndex = messages.map((m, idx) => m.role === 'user' ? idx : -1).filter(idx => idx !== -1).pop();
+            const isLastUserMessage = msg.role === 'user' && i === lastUserMessageIndex;
+            return (
+            <div 
+              key={i} 
+              ref={isLastUserMessage ? lastUserMessageRef : null}
+              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} ${msg.role === 'user' ? 'scroll-mt-32' : ''}`}
+            >
               <div className={`max-w-[85%] md:max-w-[75%] p-4 rounded-2xl text-sm leading-relaxed shadow-sm ${
                 msg.role === 'user'
                   ? 'bg-blue-600 text-white rounded-br-none'
@@ -820,7 +836,8 @@ const ChatView = () => {
                 )}
               </div>
             </div>
-          ))}
+            );
+          })}
           {loading && streamingForIndex === null && (
             <div className="flex justify-start">
               <div className="bg-white dark:bg-stone-800 border border-stone-100 dark:border-stone-700 p-4 rounded-2xl rounded-bl-none shadow-sm flex gap-2">
@@ -830,7 +847,8 @@ const ChatView = () => {
               </div>
             </div>
           )}
-          <div ref={scrollRef} />
+          {/* Scroll spacer to allow last message to scroll to top */}
+          <div className="shrink-0 h-[50vh]"></div>
         </div>
       </div>
 
