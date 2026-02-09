@@ -18,3 +18,30 @@ html, body {
     background-color: #0c0a09; /* matches stone-950 */
   }
 }
+
+/* Custom scrollbar styling - minimal and modern (ChatGPT/MacOS style) */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #e7e5e4; /* Tailwind stone-200 */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #a8a29e; /* Darker on hover */
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-thumb {
+  background-color: #44403c; /* Dark gray for dark mode */
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: #57534e; /* Slightly lighter on hover in dark mode */
+}
