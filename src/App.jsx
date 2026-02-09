@@ -868,7 +868,7 @@ const ChatView = () => {
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask AI anything..."
                 autoFocus
-                className="w-full bg-transparent border-none pl-5 pr-14 h-16 text-sm md:text-base focus:ring-0 outline-none text-stone-900 dark:text-white placeholder-stone-400"
+                className="w-full bg-transparent border-none pl-5 pr-14 h-16 text-base md:text-sm focus:ring-0 outline-none text-stone-900 dark:text-white placeholder-stone-400"
               />
               <button 
                 disabled={!input.trim() || isBusy}
@@ -982,7 +982,7 @@ export default function App() {
   };
 
   return (
-    <div className={`flex h-screen bg-stone-50 dark:bg-stone-950 font-sans text-stone-900 dark:text-white overflow-hidden transition-colors duration-300 ${darkMode ? 'dark' : ''}`}>
+    <div className={`flex h-[100dvh] pb-[env(safe-area-inset-bottom)] bg-stone-50 dark:bg-stone-950 font-sans text-stone-900 dark:text-white overflow-hidden transition-colors duration-300 ${darkMode ? 'dark' : ''}`}>
       
       {/* --- MAIN CONTENT AREA --- */}
       <main className="flex-1 flex flex-col h-full relative overflow-hidden">
