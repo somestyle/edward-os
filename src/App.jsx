@@ -580,6 +580,23 @@ const CareerView = ({ scrollState }) => {
         )}
       </div>
 
+      {/* Additional Clients & Advisory Work — only in Detailed mode */}
+      {isDetailed && (
+        <div className="mb-12 relative z-10">
+          <div className="bg-white dark:bg-stone-900 p-6 rounded-2xl border border-stone-100 dark:border-stone-800 shadow-sm">
+            <h3 className="text-sm font-semibold text-stone-600 dark:text-stone-400 uppercase tracking-wider mb-2">
+              Additional Clients & Advisory Work
+            </h3>
+            <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed mb-3 max-w-2xl">
+              Selected product and design engagements across fintech, healthcare, and consumer products, spanning early-stage exploration and advisory support.
+            </p>
+            <p className="text-xs text-stone-400 dark:text-stone-500 font-normal">
+              SomeDesign, Elion Health, Toronto Raptors × Tangerine, UrbanEater, Blinki.io, L1bre
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Education & Skills Section */}
       <div className="grid md:grid-cols-2 gap-6 relative z-10">
         
