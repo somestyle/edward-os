@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { 
-  Send, Sparkles, ChevronRight, User, 
+  Send, Sparkles, ChevronRight, ChevronDown, User, 
   Home, Briefcase, Award, Zap,
   Layout, Moon, Sun, GraduationCap, Layers,
   BookOpen, Mail, Linkedin, ExternalLink, Folder
@@ -93,114 +93,108 @@ const cvData = {
     {
       company: "Adopt AI",
       role: "Founding Staff Product Designer",
-      period: "Oct 2024 - Present",
-      tagline: "Agentic execution and workflow platform for SaaS teams",
-      location: "San Francisco, CA",
-      summary: "End-to-end product design for an AI copilot platform, spanning agent workflows, tooling, and system UX.",
+      period: "Nov 2024 – Present",
+      summary: "End-to-end product design for an AI copilot platform spanning agent workflows, tooling, and system UX.",
       highlights: [
-        "Led 0-to-1 design of AI Copilot solutions across SaaS platforms.",
-        "Collaborated with CEO/CTO on product vision and ML integration.",
-        "Designed agentic workflows reducing UI drift by 90%."
+        "Led 0–1 design of an agentic copilot across both customer console and end-user experiences",
+        "Owned core system surfaces including Tools, Actions, Agents, Data, and integration setup flows",
+        "Designed interaction patterns enabling AI-driven actions, orchestration, and natural language control",
+        "Translated ambiguous customer needs and technical constraints into clear product decisions balancing automation and user control",
+        "Partnered closely with CEO, CTO, and engineering to define product direction and ship foundational platform capabilities"
       ],
-      tags: ["AI Agents", "0-to-1", "Strategy"]
+      tags: ["AI Agents", "0–1", "System UX", "Platform Design", "SaaS"]
     },
     {
       company: "SamaCare",
       role: "Staff Product Designer",
-      period: "Aug 2022 - Oct 2024",
-      tagline: "Healthcare SaaS platform for complex authorization and operations workflows",
-      location: "San Francisco, CA",
+      period: "Aug 2022 – Oct 2024",
       summary: "Sole designer leading healthcare workflows and expanding product offerings through Series B growth.",
       highlights: [
-        "Independently led design for 2+ years, contributing to Series B funding.",
-        "Designed a Chrome Extension that reduced churn.",
-        "Overhauled prior auth workflows, reducing friction by 40%."
+        "First and sole designer for a healthcare SaaS platform managing prior authorization, benefit verification, and enrollment workflows",
+        "Designed complex, state-heavy, multi-role workflows in a regulated healthcare environment",
+        "Led discovery, prototyping, and usability testing to simplify decision paths and improve system clarity",
+        "Built a Chrome extension to extend core workflows and improve day-to-day operational efficiency"
       ],
-      tags: ["Healthcare", "Series B", "Growth"]
+      tags: ["Healthcare", "Regulated UX", "Workflow Design", "Chrome Extension", "SaaS"]
     },
     {
       company: "Kea AI",
       role: "Head of Product Design",
-      period: "Mar 2021 - Aug 2022",
-      tagline: "Voice AI platform that automates phone orders, checkout, and upsell for businesses",
-      location: "San Francisco, CA",
-      summary: "Led design of flagship operation console and design systems.",
+      period: "Mar 2021 – Aug 2022",
+      summary: "Led design for the company's flagship AI product and foundational design systems.",
       highlights: [
-        "Designed flagship operation console for B2B2C model.",
-        "Built company design system and voice UX patterns.",
-        "Established AI suggestion interfaces."
+        "Led 0–1 design for an AI product spanning multiple user roles and workflows",
+        "Built the company's first design system and established scalable interaction patterns",
+        "Defined conversational and suggestion-driven UX patterns to support AI learning and iteration"
       ],
-      tags: ["Leadership", "Design Systems", "AI"]
+      tags: ["AI", "0–1", "Design Systems", "Conversational UX", "Leadership"]
+    },
+    {
+      company: "Tier1 Financial Solutions (acquired by SS&C Technologies)",
+      role: "UX Manager and Lead Product Designer",
+      period: "Jan 2017 – Apr 2020",
+      summary: "First designer hired; built design foundations for enterprise financial platforms prior to acquisition.",
+      highlights: [
+        "Led design for portfolio management and trading platforms used by institutional financial services teams",
+        "Designed complex, state-heavy workflows across desktop and mobile while balancing regulatory constraints",
+        "Established foundational design practices, team norms, and review culture as the organization scaled"
+      ],
+      tags: ["Enterprise SaaS", "Fintech", "Design Leadership", "Complex Systems"]
     },
     {
       company: "Flybits",
       role: "Product Design Manager",
-      period: "Jul 2020 - Mar 2021",
-      location: "Toronto, ON",
-      summary: "Led a team of 5 designers and improved collaborative processes.",
+      period: "Jul 2020 – Mar 2021",
+      summary: "Led product design for a B2B fintech platform focused on customer engagement and personalization.",
       highlights: [
-        "Managed 5 designers and established cross-functional processes.",
-        "Created 'Designer Circle' to improve team synergy.",
-        "Implemented UserTesting.com and WCAG AA accessibility audits."
+        "Partnered cross-functionally with product and engineering during a period of platform growth",
+        "Contributed to evolving design culture and collaboration practices"
       ],
-      tags: ["Management", "Accessibility", "FinTech"]
+      tags: ["Fintech", "B2B SaaS", "Product Design", "Team Leadership"]
     },
     {
-      company: "Tier1 Financial",
-      role: "UX Manager & Lead Product Designer",
-      period: "Jan 2017 - Apr 2020",
-      location: "Toronto, ON",
-      summary: "First designer hire; built and led a team of 5 for Enterprise SaaS.",
-      highlights: [
-        "Built and mentored a UX team of 5 from scratch.",
-        "Designed unified top bar and comprehensive Design System.",
-        " contributed to $34M funding and multiple industry awards."
-      ],
-      tags: ["Enterprise", "Team Building", "SaaS"]
-    },
-    {
-      company: "Hubub Inc",
+      company: "Hubub Inc.",
       role: "UX/UI Designer",
-      period: "Apr 2016 - Oct 2016",
-      summary: "Redesigned SaaS wealth management platforms.",
+      period: "Apr 2016 – Oct 2016",
+      summary: "Redesigned SaaS wealth management platforms to improve usability and system coherence.",
       highlights: [
-        "Redesigned wealth management platform for InStream Solutions.",
-        "Designed workflows for L1bre (government initiative)."
+        "Redesigned core wealth management workflows for institutional users",
+        "Improved information architecture and interaction clarity across complex financial products"
       ],
-      tags: ["Wealth Tech", "UI Design"]
+      tags: ["Wealth Tech", "UX/UI", "Information Architecture"]
     },
     {
       company: "Toronto Star",
-      role: "Digital Designer – Team Lead",
-      period: "Mar 2015 - Apr 2016",
-      summary: "Led design pods for StarTouch iPad app.",
+      role: "Digital Designer, Team Lead",
+      period: "Mar 2015 – Apr 2016",
+      summary: "Led design pods for the StarTouch iPad app.",
       highlights: [
-        "Refined StarTouch iPad app experience.",
-        "Led 2 pods and developed templates for 25+ designers."
+        "Designed and refined the StarTouch iPad app experience",
+        "Led small design pods and developed reusable templates for editorial workflows"
       ],
-      tags: ["Media", "Mobile App", "Leadership"]
+      tags: ["Media", "Mobile Design", "Team Leadership"]
     },
     {
       company: "Cityhunter App",
       role: "UX Architect",
-      period: "Jun 2012 - Sep 2014",
+      period: "Jun 2012 – Sep 2014",
       summary: "Redirected company strategy from web to mobile.",
       highlights: [
-        "Pivoted company from web portal to mobile app strategy.",
-        "Designed full scope for mobile app and admin platform."
+        "Led the shift from web to mobile app strategy",
+        "Designed end-to-end mobile and admin platform experiences"
       ],
-      tags: ["Mobile Strategy", "Architecture"]
+      tags: ["Mobile", "0–1", "UX Architecture", "Product Strategy"]
     },
     {
       company: "BMO Capital Markets",
       role: "Desktop Specialist Lead",
-      period: "Jun 2011 - Jul 2014",
-      summary: "Led team analyzing data for financial applications.",
+      period: "Jun 2011 – Jul 2014",
+      summary: "Led design and analysis for financial desktop applications.",
       highlights: [
-        "Designed effective visual representations for financial data.",
-        "Supervised desktop specialist team."
+        "Designed effective visual representations for complex financial data",
+        "Supported and supervised desktop specialist workflows"
       ],
-      tags: ["Finance", "Data Viz"]
+      tags: ["Finance", "Data Visualization", "Desktop UX"]
     }
   ],
   education: [
@@ -409,9 +403,9 @@ const HomeView = ({ onNavigate }) => (
                 {job.period}
               </span>
             </div>
-            {job.tagline && (
+            {(job.tagline || job.summary) && (
               <p className="text-sm text-stone-500 dark:text-stone-400 mt-1.5 leading-snug">
-                {job.tagline}
+                {job.tagline || job.summary}
               </p>
             )}
           </div>
@@ -460,98 +454,130 @@ const HomeView = ({ onNavigate }) => (
   </div>
 );
 
+const BRIEF_ROLE_COUNT = 4; // Adopt AI, SamaCare, Kea AI, Tier1
+
 const CareerView = ({ scrollState }) => {
   const [isDetailed, setIsDetailed] = useState(false);
-  
-  // Smart Header Logic - Always Visible Sticky
-  const isAtTop = scrollState.y < 50; 
-  
-  // Always show header, just toggle background opacity
-  const headerVisible = true;
+  const [expandedIndex, setExpandedIndex] = useState(() =>
+    cvData.experience.map((_, i) => i < BRIEF_ROLE_COUNT)
+  );
+
+  const isAtTop = scrollState.y < 50;
   const showBackground = !isAtTop;
+
+  const toggleExpanded = (i) => setExpandedIndex((prev) => prev.map((v, idx) => idx === i ? !v : v));
+
+  const briefRoles = cvData.experience.slice(0, BRIEF_ROLE_COUNT);
+  const allRoles = cvData.experience;
 
   return (
     <div className="animate-in fade-in duration-500 pb-32 relative">
 
       {/* Sticky Header */}
       <div 
-        className={`sticky top-0 z-30 -mx-6 px-6 md:-mx-12 md:px-12 py-4 mb-8 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] transform ${
-          headerVisible ? 'translate-y-0 opacity-100' : ''
-        } ${
+        className={`sticky top-0 z-30 -mx-6 px-6 md:-mx-12 md:px-12 py-4 mb-8 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           showBackground 
             ? 'bg-stone-50/90 dark:bg-stone-950/90 backdrop-blur-xl border-b border-stone-200 dark:border-stone-800 shadow-sm' 
             : 'bg-transparent border-b border-transparent'
         }`}
       >
-        <div className="flex justify-between items-center">
-          <h2 className="text-3xl font-bold text-stone-900 dark:text-white transition-opacity duration-300 tracking-tight">
-            Career
-          </h2>
-          <div className="bg-white dark:bg-stone-900 p-1 rounded-lg border border-stone-200 dark:border-stone-800 shadow-sm flex">
-            <button 
-              onClick={() => setIsDetailed(false)}
-              className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${!isDetailed ? 'bg-stone-900 dark:bg-stone-700 text-white shadow-sm' : 'text-stone-400 hover:text-stone-600 dark:hover:text-stone-300'}`}
-            >
-              Brief
-            </button>
-            <button 
-              onClick={() => setIsDetailed(true)}
-              className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${isDetailed ? 'bg-stone-900 dark:bg-stone-700 text-white shadow-sm' : 'text-stone-400 hover:text-stone-600 dark:hover:text-stone-300'}`}
-            >
-              Detailed
-            </button>
+        <div className="flex flex-col gap-2">
+          <div className="flex justify-between items-center">
+            <h2 className="text-3xl font-bold text-stone-900 dark:text-white tracking-tight">
+              Career
+            </h2>
+            <div className="bg-white dark:bg-stone-900 p-1 rounded-lg border border-stone-200 dark:border-stone-800 shadow-sm flex">
+              <button 
+                onClick={() => setIsDetailed(false)}
+                className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${!isDetailed ? 'bg-stone-900 dark:bg-stone-700 text-white shadow-sm' : 'text-stone-400 hover:text-stone-600 dark:hover:text-stone-300'}`}
+              >
+                Brief (Recent)
+              </button>
+              <button 
+                onClick={() => setIsDetailed(true)}
+                className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${isDetailed ? 'bg-stone-900 dark:bg-stone-700 text-white shadow-sm' : 'text-stone-400 hover:text-stone-600 dark:hover:text-stone-300'}`}
+              >
+                Detailed (Full History)
+              </button>
+            </div>
           </div>
+          <p className="text-xs text-stone-400 dark:text-stone-500">
+            Brief shows recent roles. Detailed shows full history.
+          </p>
         </div>
       </div>
 
-      {/* Experience Timeline */}
+      {/* Experience: Brief (4 roles) or Detailed (accordion) */}
       <div className="space-y-4 md:space-y-6 mb-12 relative z-10">
         <h3 className="text-xs font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider mb-2">Work History</h3>
-        {cvData.experience.map((job, i) => (
-          <div key={i} className="bg-white dark:bg-stone-900 p-6 rounded-2xl border border-stone-100 dark:border-stone-800 shadow-sm hover:shadow-md transition-all hover:border-blue-100 dark:hover:border-blue-900/30">
-            <div className="flex flex-col md:flex-row md:items-center justify-between mb-2 gap-1">
-              <div>
-                <h3 className="font-bold text-stone-900 dark:text-white text-lg">{job.company}</h3>
-                <p className="text-blue-600 dark:text-blue-400 font-medium text-sm">{job.role}</p>
-              </div>
-              <span className="text-xs font-medium bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 px-2 py-1 rounded w-fit">
-                {job.period}
-              </span>
-            </div>
-            
-            <p className="text-sm text-stone-500 dark:text-stone-400 mb-3 leading-relaxed">{job.summary}</p>
-            
-            {/* Detailed View Content */}
-            {isDetailed && (
-              <div className="mt-4 pt-4 border-t border-stone-100 dark:border-stone-800 animate-in fade-in slide-in-from-top-2 duration-300">
-                <ul className="space-y-2 mb-4">
-                  {job.highlights.map((point, idx) => (
-                    <li key={idx} className="text-xs text-stone-600 dark:text-stone-400 flex gap-2 leading-relaxed">
-                      <span className="text-blue-400 mt-1 flex-shrink-0">•</span>
-                      <span>{point}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="flex flex-wrap gap-2">
-                  {job.tags.map(tag => (
-                    <span key={tag} className="text-[10px] bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-500 dark:text-stone-400 px-2 py-1 rounded-md">
-                      {tag}
-                    </span>
-                  ))}
+
+        {!isDetailed ? (
+          /* Brief (Recent) mode: 4 roles only, no bullets */
+          briefRoles.map((job, i) => (
+            <div key={i} className="bg-white dark:bg-stone-900 p-6 rounded-2xl border border-stone-100 dark:border-stone-800 shadow-sm hover:shadow-md transition-all hover:border-blue-100 dark:hover:border-blue-900/30">
+              <div className="flex flex-col md:flex-row md:items-center justify-between mb-2 gap-1">
+                <div>
+                  <h3 className="font-bold text-stone-900 dark:text-white text-lg">{job.company}</h3>
+                  <p className="text-blue-600 dark:text-blue-400 font-medium text-sm">{job.role}</p>
                 </div>
+                <span className="text-xs font-medium bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 px-2 py-1 rounded w-fit">
+                  {job.period}
+                </span>
               </div>
-            )}
-            
-            {!isDetailed && (
-              <div 
-                className="flex items-center gap-1 text-xs text-blue-500 dark:text-blue-400 font-medium mt-2 cursor-pointer hover:text-blue-700 w-fit" 
-                onClick={() => setIsDetailed(true)}
+              <p className="text-sm text-stone-500 dark:text-stone-400 leading-relaxed">{job.summary}</p>
+              {job.tags && job.tags.length > 0 && (
+                <p className="text-[10px] text-stone-400 dark:text-stone-500 mt-2 truncate">
+                  {job.tags.join(" · ")}
+                </p>
+              )}
+            </div>
+          ))
+        ) : (
+          /* Detailed (Full History) mode: all roles, accordion */
+          allRoles.map((job, i) => (
+            <div key={i} className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-100 dark:border-stone-800 shadow-sm hover:shadow-md transition-all hover:border-blue-100 dark:hover:border-blue-900/30 overflow-hidden">
+              <button
+                type="button"
+                onClick={() => toggleExpanded(i)}
+                className="w-full p-6 text-left flex flex-col md:flex-row md:items-center justify-between gap-2"
               >
-                Show details <ChevronRight size={12} />
-              </div>
-            )}
-          </div>
-        ))}
+                <div>
+                  <h3 className="font-bold text-stone-900 dark:text-white text-lg">{job.company}</h3>
+                  <p className="text-blue-600 dark:text-blue-400 font-medium text-sm">{job.role}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-medium bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 px-2 py-1 rounded w-fit">
+                    {job.period}
+                  </span>
+                  <ChevronDown 
+                    size={18} 
+                    className={`text-stone-400 transition-transform duration-200 flex-shrink-0 ${expandedIndex[i] ? 'rotate-180' : ''}`} 
+                  />
+                </div>
+              </button>
+              {expandedIndex[i] && (
+                <div className="px-6 pb-6 pt-0 border-t border-stone-100 dark:border-stone-800 animate-in fade-in slide-in-from-top-2 duration-200">
+                  <p className="text-sm text-stone-500 dark:text-stone-400 mb-4 leading-relaxed">{job.summary}</p>
+                  <ul className="space-y-2 mb-4">
+                    {job.highlights.map((point, idx) => (
+                      <li key={idx} className="text-xs text-stone-600 dark:text-stone-400 flex gap-2 leading-relaxed">
+                        <span className="text-blue-400 mt-1 flex-shrink-0">•</span>
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="flex flex-wrap gap-2">
+                    {job.tags.map((tag) => (
+                      <span key={tag} className="text-[10px] bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-500 dark:text-stone-400 px-2 py-1 rounded-md">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))
+        )}
       </div>
 
       {/* Education & Skills Section */}
