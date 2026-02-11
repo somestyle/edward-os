@@ -80,11 +80,7 @@ function MarkdownRenderer({ children, className = '' }) {
 }
 
 // --- CONFIGURATION ---
-// ⚠️ IMPORTANT: In your Cursor file, UNCOMMENT the lines below for the AI to work on Vercel:
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
-//const apiKey = ""; // Keep this line here for this preview only.
-
-console.log("Gemini key loaded?", Boolean(import.meta.env.VITE_GEMINI_API_KEY));
+// Chat uses /api/chat (Vercel serverless) so the Gemini API key stays on the server.
 
 // --- CV DATA ---
 const cvData = {
@@ -766,18 +762,15 @@ const ChatView = () => {
       }));
       history.push({ role: 'user', parts: [{ text: userMsg }] });
 
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: history,
-            systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-          }),
-          signal,
-        }
-      );
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: history,
+          systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+        }),
+        signal,
+      });
       if (response.status === 429) {
         setMessages(prev => [...prev, { role: 'system', text: "I've been chatting a little too much today and reached my limit. Check out the rest of the site to learn more about my experience and background in the meantime." }]);
         return;
@@ -796,7 +789,7 @@ const ChatView = () => {
       unlockInFinally = false;
     } catch (err) {
       if (err?.name !== 'AbortError') {
-        setMessages(prev => [...prev, { role: 'system', text: "Connection error. Please check your API key." }]);
+        setMessages(prev => [...prev, { role: 'system', text: "Connection error. Please try again." }]);
       }
     } finally {
       abortControllerRef.current = null;
