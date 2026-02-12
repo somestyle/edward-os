@@ -401,7 +401,7 @@ const HomeView = ({ onNavigate }) => (
             </div>
             {(job.tagline || job.summary) && (
               <p className="text-sm text-stone-500 dark:text-stone-400 mt-1.5 leading-snug">
-                {job.tagline || job.summary}
+                {(job.tagline || job.summary).replace(/\.$/, '')}
               </p>
             )}
           </div>
