@@ -45,3 +45,17 @@ html, body {
 .dark ::-webkit-scrollbar-thumb:hover {
   background-color: #57534e; /* Slightly lighter on hover in dark mode */
 }
+
+/* Waving hand emoji - light shake/wiggle */
+@keyframes wave {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(14deg); }
+  40% { transform: rotate(-10deg); }
+  60% { transform: rotate(10deg); }
+  80% { transform: rotate(-6deg); }
+}
+
+.wave-emoji {
+  display: inline-block;
+  animation: wave 0.6s ease-in-out 1;
+}
