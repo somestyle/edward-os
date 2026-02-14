@@ -343,14 +343,7 @@ const DockIcon = ({ active, onClick, icon: Icon, label }) => (
   </div>
 );
 
-// Theme menu bubble: Style (segmented), Color (circles), Mode (toggle)
-const ACCENT_OPTIONS = [
-  { id: 'blue', label: 'Blue', className: 'bg-blue-500', ring: 'ring-blue-500' },
-  { id: 'purple', label: 'Purple', className: 'bg-purple-500', ring: 'ring-purple-500' },
-  { id: 'emerald', label: 'Emerald', className: 'bg-emerald-500', ring: 'ring-emerald-500' },
-  { id: 'orange', label: 'Orange', className: 'bg-orange-500', ring: 'ring-orange-500' },
-];
-
+// Theme menu bubble: Style (segmented), Mode (toggle)
 // Accent hex values for CSS variable --accent (Tailwind 500 shades)
 const ACCENT_HEX = {
   blue: '#3b82f6',
@@ -364,8 +357,6 @@ const THEME_STORAGE_KEY = 'edward-os-theme';
 const ThemeMenu = ({
   style,
   onStyleChange,
-  accent,
-  onAccentChange,
   darkMode,
   onDarkModeChange,
   className = '',
@@ -401,25 +392,6 @@ const ThemeMenu = ({
             >
               {s}
             </button>
-          ))}
-        </div>
-      </div>
-      {/* Color */}
-      <div>
-        <p className="text-[11px] font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wider mb-2">Color</p>
-        <div className="flex gap-3 justify-center">
-          {ACCENT_OPTIONS.map(({ id, className: circleClass, ring }) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => onAccentChange(id)}
-              aria-label={id}
-              className={`
-                w-9 h-9 rounded-full ${circleClass} transition-all
-                ring-2 ring-offset-2 ring-offset-white dark:ring-offset-stone-900
-                ${accent === id ? `${ring} ring-offset-2` : 'ring-transparent hover:scale-110'}
-              `}
-            />
           ))}
         </div>
       </div>
@@ -1269,8 +1241,6 @@ export default function App() {
               <ThemeMenu
                 style={themeStyle}
                 onStyleChange={setThemeStyle}
-                accent={themeAccent}
-                onAccentChange={setThemeAccent}
                 darkMode={darkMode}
                 onDarkModeChange={setDarkMode}
               />

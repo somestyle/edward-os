@@ -29,6 +29,11 @@
   --panel-border: none;
   --panel-shadow: none;
   --shadow-inset: none;
+  /* Dock bar (set per theme) */
+  --dock-bg: var(--bg-panel);
+  --dock-border: 1px solid rgba(0, 0, 0, 0.08);
+  --dock-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --dock-radius: 9999px;
 }
 
 .dark {
@@ -53,6 +58,10 @@
   --panel-bg: var(--bg-panel);
   --panel-border: var(--glass-border);
   --panel-shadow: var(--glass-shadow);
+  --dock-bg: rgba(255, 255, 255, 0.85);
+  --dock-border: 1px solid rgba(255, 255, 255, 0.35);
+  --dock-shadow: var(--glass-shadow);
+  --dock-radius: 9999px;
 }
 
 .theme-glass.dark {
@@ -62,6 +71,10 @@
   --text-secondary: #a8a29e;
   --glass-border: 1px solid rgba(255, 255, 255, 0.08);
   --panel-border: var(--glass-border);
+  --dock-bg: rgba(0, 0, 0, 0.75);
+  --dock-border: 1px solid rgba(255, 255, 255, 0.12);
+  --dock-shadow: var(--glass-shadow);
+  --dock-radius: 9999px;
 }
 
 /* ---------------------------------------------------------------------------
@@ -79,6 +92,10 @@
   --panel-border: none;
   --panel-shadow: 9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5);
   --shadow-inset: inset 3px 3px 6px rgba(163, 177, 198, 0.5), inset -3px -3px 6px rgba(255, 255, 255, 0.6);
+  --dock-bg: #e4e4e0;
+  --dock-border: 1px solid rgba(0, 0, 0, 0.06);
+  --dock-shadow: 9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5);
+  --dock-radius: 9999px;
 }
 
 .theme-neo.dark {
@@ -90,6 +107,10 @@
   --panel-border: none;
   --panel-shadow: 5px 5px 10px #0b0a09, -5px -5px 10px #2d2826;
   --shadow-inset: inset 3px 3px 6px #0b0a09, inset -3px -3px 6px #2d2826;
+  --dock-bg: #1c1917;
+  --dock-border: 1px solid rgba(255, 255, 255, 0.06);
+  --dock-shadow: 5px 5px 10px #0b0a09, -5px -5px 10px #2d2826;
+  --dock-radius: 9999px;
 }
 
 /* Neo: buttons look pressed into the surface when active */
@@ -113,6 +134,10 @@
   --panel-shadow: 4px 4px 0px #0a0a0a;
   --font-mono: "Courier New", Courier, monospace;
   font-family: var(--font-mono);
+  --dock-bg: #ffffff;
+  --dock-border: 2px solid #0a0a0a;
+  --dock-shadow: 4px 4px 0px #0a0a0a;
+  --dock-radius: 0;
 }
 
 .theme-retro.dark {
@@ -122,6 +147,10 @@
   --text-secondary: #a8a29e;
   --panel-border: 2px solid #fafaf9;
   --panel-shadow: 4px 4px 0px #fafaf9;
+  --dock-bg: #171717;
+  --dock-border: 2px solid #fafaf9;
+  --dock-shadow: 4px 4px 0px #fafaf9;
+  --dock-radius: 0;
 }
 
 /* Retro: force sharp corners and 2px borders on panels */
@@ -177,4 +206,22 @@ html, body {
 .wave-emoji {
   display: inline-block;
   animation: wave 0.6s ease-in-out 1;
+}
+
+/* ---------------------------------------------------------------------------
+   Dock bar — uses theme variables; one rule for all themes
+   --------------------------------------------------------------------------- */
+.app-dock {
+  background: var(--dock-bg);
+  border: var(--dock-border);
+  box-shadow: var(--dock-shadow);
+  border-radius: var(--dock-radius);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Neo: solid surface, no blur so the opaque background and double shadow read correctly */
+.theme-neo .app-dock {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
