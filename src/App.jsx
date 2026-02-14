@@ -351,7 +351,7 @@ const HomeView = ({ onNavigate }) => (
     {/* Intro Section */}
     <div className="mt-8 relative z-10">
       <div>
-        <h1 className="text-3xl md:text-4xl font-bold text-stone-900 dark:text-white mb-3 tracking-tight">Hi, I'm Edward.</h1>
+        <h1 className="text-3xl md:text-4xl font-bold text-stone-900 dark:text-white mb-3 tracking-tight">👋 Hi, I'm Edward.</h1>
         
         <div className="mb-6">
           <p className="text-lg md:text-xl text-stone-800 dark:text-stone-200 leading-relaxed font-medium">
