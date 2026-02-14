@@ -609,10 +609,14 @@ const CareerView = ({ scrollState }) => {
             <div key={i} className="bg-white dark:bg-stone-900 p-6 rounded-2xl border border-stone-100 dark:border-stone-800 shadow-sm hover:shadow-md transition-all hover:border-blue-100 dark:hover:border-blue-900/30">
               <div className="flex flex-col md:flex-row md:items-center justify-between mb-2 gap-1">
                 <div>
-                  <h3 className="font-bold text-stone-900 dark:text-white text-lg">{job.company}</h3>
+                  <h3 className="font-bold text-stone-900 dark:text-white text-lg">
+                    {job.company.includes(' (acquired by') ? (
+                      <> {job.company.split(' (acquired by')[0]} <span className="text-sm font-normal text-stone-600 dark:text-stone-400">(acquired by {job.company.split(' (acquired by')[1]}</span> </>
+                    ) : job.company}
+                  </h3>
                   <p className="text-blue-600 dark:text-blue-400 font-medium text-sm">{job.role}</p>
                 </div>
-                <span className="text-xs font-medium bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 px-2 py-1 rounded w-fit">
+                <span className="text-xs font-medium bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 px-2 py-1 rounded w-fit whitespace-nowrap">
                   {job.period}
                 </span>
               </div>
@@ -634,11 +638,15 @@ const CareerView = ({ scrollState }) => {
                 className="w-full p-6 text-left flex flex-col md:flex-row md:items-center justify-between gap-2"
               >
                 <div>
-                  <h3 className="font-bold text-stone-900 dark:text-white text-lg">{job.company}</h3>
+                  <h3 className="font-bold text-stone-900 dark:text-white text-lg">
+                    {job.company.includes(' (acquired by') ? (
+                      <> {job.company.split(' (acquired by')[0]} <span className="text-sm font-normal text-stone-600 dark:text-stone-400">(acquired by {job.company.split(' (acquired by')[1]}</span> </>
+                    ) : job.company}
+                  </h3>
                   <p className="text-blue-600 dark:text-blue-400 font-medium text-sm">{job.role}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 px-2 py-1 rounded w-fit">
+                  <span className="text-xs font-medium bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 px-2 py-1 rounded w-fit whitespace-nowrap shrink-0">
                     {job.period}
                   </span>
                   <ChevronDown 
