@@ -3,7 +3,7 @@ import {
   Send, Sparkles, ChevronRight, ChevronDown, User, 
   Home, Briefcase, Award, Zap,
   Layout, Moon, Sun, GraduationCap, Layers,
-  BookOpen, Mail, Linkedin, ExternalLink, Folder
+  BookOpen, Mail, Linkedin, ExternalLink, Folder, Paintbrush
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 // Import the separated system prompt
@@ -340,6 +340,105 @@ const DockIcon = ({ active, onClick, icon: Icon, label }) => (
         <span className="md:hidden absolute -bottom-1 w-1 h-1 bg-stone-900 dark:bg-white rounded-full"></span>
       )}
     </button>
+  </div>
+);
+
+// Theme menu bubble: Style (segmented), Color (circles), Mode (toggle)
+const ACCENT_OPTIONS = [
+  { id: 'blue', label: 'Blue', className: 'bg-blue-500', ring: 'ring-blue-500' },
+  { id: 'purple', label: 'Purple', className: 'bg-purple-500', ring: 'ring-purple-500' },
+  { id: 'emerald', label: 'Emerald', className: 'bg-emerald-500', ring: 'ring-emerald-500' },
+  { id: 'orange', label: 'Orange', className: 'bg-orange-500', ring: 'ring-orange-500' },
+];
+
+const ThemeMenu = ({
+  style,
+  onStyleChange,
+  accent,
+  onAccentChange,
+  darkMode,
+  onDarkModeChange,
+  className = '',
+}) => (
+  <div
+    className={`
+      absolute left-1/2 -translate-x-1/2 bottom-full mb-3 w-72 z-[60]
+      bg-white/90 dark:bg-stone-900/95 backdrop-blur-2xl
+      border border-stone-200 dark:border-stone-700
+      shadow-2xl rounded-2xl overflow-hidden
+      animate-in fade-in slide-in-from-bottom-2 duration-200
+      ${className}
+    `}
+  >
+    {/* Bubble tail */}
+    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/90 dark:bg-stone-900/95 border-r border-b border-stone-200 dark:border-stone-700 rotate-45" />
+    <div className="relative p-4 space-y-4">
+      {/* Style */}
+      <div>
+        <p className="text-[11px] font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wider mb-2">Style</p>
+        <div className="p-1 bg-stone-100 dark:bg-stone-800 rounded-xl flex">
+          {['Glass', 'Neo', 'Retro'].map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => onStyleChange(s.toLowerCase())}
+              className={`
+                flex-1 py-2 text-xs font-bold rounded-lg transition-all
+                ${style === s.toLowerCase()
+                  ? 'bg-white dark:bg-stone-700 text-stone-900 dark:text-white shadow-sm'
+                  : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200'}
+              `}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      </div>
+      {/* Color */}
+      <div>
+        <p className="text-[11px] font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wider mb-2">Color</p>
+        <div className="flex gap-3 justify-center">
+          {ACCENT_OPTIONS.map(({ id, className: circleClass, ring }) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => onAccentChange(id)}
+              aria-label={id}
+              className={`
+                w-9 h-9 rounded-full ${circleClass} transition-all
+                ring-2 ring-offset-2 ring-offset-white dark:ring-offset-stone-900
+                ${accent === id ? `${ring} ring-offset-2` : 'ring-transparent hover:scale-110'}
+              `}
+            />
+          ))}
+        </div>
+      </div>
+      {/* Mode */}
+      <div>
+        <p className="text-[11px] font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wider mb-2">Mode</p>
+        <button
+          type="button"
+          onClick={() => onDarkModeChange(!darkMode)}
+          className="w-full p-2.5 rounded-xl bg-stone-100 dark:bg-stone-800 flex items-center justify-between gap-3 transition-colors hover:bg-stone-50 dark:hover:bg-stone-700/80"
+        >
+          <span className="text-sm font-medium text-stone-700 dark:text-stone-200">
+            {darkMode ? 'Dark' : 'Light'}
+          </span>
+          <div className="flex items-center gap-2">
+            <Sun size={16} className={darkMode ? 'text-stone-400' : 'text-stone-700 dark:text-stone-300'} />
+            <div
+              className={`
+                w-9 h-5 rounded-full p-0.5 flex transition-colors
+                ${darkMode ? 'justify-end bg-stone-900 dark:bg-stone-600' : 'justify-start bg-stone-300 dark:bg-stone-500'}
+              `}
+            >
+              <div className="w-4 h-4 rounded-full bg-white shadow-sm shrink-0 transition-transform" />
+            </div>
+            <Moon size={16} className={darkMode ? 'text-stone-700 dark:text-stone-300' : 'text-stone-400'} />
+          </div>
+        </button>
+      </div>
+    </div>
   </div>
 );
 
@@ -997,8 +1096,12 @@ const ContactView = ({ scrollState }) => {
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [darkMode, setDarkMode] = useState(false);
+  const [themeMenuOpen, setThemeMenuOpen] = useState(false);
+  const [themeStyle, setThemeStyle] = useState('glass');
+  const [themeAccent, setThemeAccent] = useState('blue');
   const [scrollState, setScrollState] = useState({ dir: 'up', y: 0 });
   const lastScrollY = useRef(0);
+  const themeMenuRef = useRef(null);
 
   // Toggle Dark Mode
   useEffect(() => {
@@ -1008,6 +1111,18 @@ export default function App() {
       document.documentElement.classList.remove('dark');
     }
   }, [darkMode]);
+
+  // Close theme menu when clicking outside
+  useEffect(() => {
+    if (!themeMenuOpen) return;
+    const handleClick = (e) => {
+      if (themeMenuRef.current && !themeMenuRef.current.contains(e.target)) {
+        setThemeMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [themeMenuOpen]);
 
   // Scroll Handler
   const handleScroll = (e) => {
@@ -1086,13 +1201,37 @@ export default function App() {
           {/* Divider */}
           <div className="w-px h-8 bg-stone-200 dark:bg-stone-700 mx-2"></div>
 
-          {/* Theme Toggle in Dock */}
-          <DockIcon 
-            active={false}
-            onClick={() => setDarkMode(!darkMode)}
-            icon={darkMode ? Sun : Moon} 
-            label={darkMode ? "Light Mode" : "Dark Mode"}
-          />
+          {/* Theme (Paintbrush) – opens ThemeMenu bubble */}
+          <div ref={themeMenuRef} className="relative group flex flex-col items-center">
+            <div className="hidden md:block absolute -top-14 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-50 scale-95 group-hover:scale-100">
+              <div className="bg-stone-900 dark:bg-white text-white dark:text-stone-900 text-xs font-bold py-1.5 px-3 rounded-lg shadow-xl whitespace-nowrap">
+                Theme
+                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-stone-900 dark:bg-white rotate-45"></div>
+              </div>
+            </div>
+            {themeMenuOpen && (
+              <ThemeMenu
+                style={themeStyle}
+                onStyleChange={setThemeStyle}
+                accent={themeAccent}
+                onAccentChange={setThemeAccent}
+                darkMode={darkMode}
+                onDarkModeChange={setDarkMode}
+              />
+            )}
+            <button
+              onClick={() => setThemeMenuOpen((o) => !o)}
+              className={`
+                relative w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-all duration-300 ease-out
+                md:hover:scale-125 md:hover:mx-2 md:hover:-translate-y-2
+                ${themeMenuOpen
+                  ? 'bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-white shadow-inner ring-1 ring-black/5 dark:ring-white/10'
+                  : 'text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-200 hover:bg-stone-50 dark:hover:bg-white/5'}
+              `}
+            >
+              <Paintbrush size={24} strokeWidth={themeMenuOpen ? 2.5 : 2} />
+            </button>
+          </div>
         </div>
       </div>
 
