@@ -351,6 +351,16 @@ const ACCENT_OPTIONS = [
   { id: 'orange', label: 'Orange', className: 'bg-orange-500', ring: 'ring-orange-500' },
 ];
 
+// Accent hex values for CSS variable --accent (Tailwind 500 shades)
+const ACCENT_HEX = {
+  blue: '#3b82f6',
+  purple: '#a855f7',
+  emerald: '#10b981',
+  orange: '#f97316',
+};
+
+const THEME_STORAGE_KEY = 'edward-os-theme';
+
 const ThemeMenu = ({
   style,
   onStyleChange,
@@ -1093,17 +1103,46 @@ const ContactView = ({ scrollState }) => {
   );
 };
 
+function loadThemePreferences() {
+  try {
+    const raw = localStorage.getItem(THEME_STORAGE_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    return {
+      themeStyle: ['glass', 'neo', 'retro'].includes(data.themeStyle) ? data.themeStyle : 'glass',
+      accentColor: ['blue', 'purple', 'emerald', 'orange'].includes(data.accentColor) ? data.accentColor : 'blue',
+      darkMode: !!data.darkMode,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => loadThemePreferences()?.darkMode ?? false);
   const [themeMenuOpen, setThemeMenuOpen] = useState(false);
-  const [themeStyle, setThemeStyle] = useState('glass');
-  const [themeAccent, setThemeAccent] = useState('blue');
+  const [themeStyle, setThemeStyle] = useState(() => loadThemePreferences()?.themeStyle ?? 'glass');
+  const [themeAccent, setThemeAccent] = useState(() => loadThemePreferences()?.accentColor ?? 'blue');
   const [scrollState, setScrollState] = useState({ dir: 'up', y: 0 });
   const lastScrollY = useRef(0);
   const themeMenuRef = useRef(null);
 
-  // Toggle Dark Mode
+  // Persist theme preferences to localStorage
+  useEffect(() => {
+    localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify({
+      themeStyle,
+      accentColor: themeAccent,
+      darkMode,
+    }));
+  }, [themeStyle, themeAccent, darkMode]);
+
+  // Apply --accent CSS variable when accent color changes
+  useEffect(() => {
+    document.documentElement.style.setProperty('--accent', ACCENT_HEX[themeAccent] ?? ACCENT_HEX.blue);
+  }, [themeAccent]);
+
+  // Toggle Dark Mode (class on <html> for Tailwind dark:)
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
@@ -1133,8 +1172,10 @@ export default function App() {
   };
 
   return (
-    <div className={`flex h-[100dvh] pb-[env(safe-area-inset-bottom)] bg-stone-50 dark:bg-stone-950 font-sans text-stone-900 dark:text-white overflow-hidden transition-colors duration-300 ${darkMode ? 'dark' : ''}`}>
-      
+    <div
+      className={`theme-${themeStyle} flex h-[100dvh] pb-[env(safe-area-inset-bottom)] font-sans text-stone-900 dark:text-white overflow-hidden transition-colors duration-300 ${darkMode ? 'dark' : ''}`}
+      style={{ background: 'var(--bg-app)' }}
+    >
       {/* --- MAIN CONTENT AREA --- */}
       <main className="flex-1 flex flex-col h-full relative overflow-hidden">
         {/* Scrollable Container - The background should be here to be scrollable but full width */}
@@ -1165,7 +1206,7 @@ export default function App() {
 
       {/* --- UNIFIED FLOATING DOCK (Mobile & Desktop) --- */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-auto">
-        <div className="flex items-center gap-1 bg-white/90 dark:bg-black/80 backdrop-blur-2xl border border-stone-200 dark:border-stone-700 shadow-2xl rounded-full p-2 pr-6 pl-6">
+        <div className="app-dock flex items-center gap-1 p-2 pr-6 pl-6">
           
           <DockIcon 
             active={activeTab === 'home'} 
