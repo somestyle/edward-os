@@ -993,7 +993,7 @@ const ChatView = () => {
       </div>
 
       {/* Input Area */}
-      <div className="pt-4 bg-stone-50 dark:bg-stone-950 z-20 pb-32 md:pb-20 relative">
+      <div className="pt-4 bg-[var(--bg-app)] transition-colors duration-300 z-20 pb-32 md:pb-20 relative">
         <form onSubmit={handleSend} className="relative">
           {/* Laser Beam Container */}
           <div className="relative rounded-2xl overflow-hidden p-[2px]">
