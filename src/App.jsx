@@ -584,13 +584,13 @@ const CareerView = ({ scrollState }) => {
                 onClick={() => setIsDetailed(false)}
                 className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${!isDetailed ? 'bg-stone-900 dark:bg-stone-700 text-white shadow-sm' : 'text-stone-400 hover:text-stone-600 dark:hover:text-stone-300'}`}
               >
-                Brief (Recent)
+                Brief
               </button>
               <button 
                 onClick={() => setIsDetailed(true)}
                 className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${isDetailed ? 'bg-stone-900 dark:bg-stone-700 text-white shadow-sm' : 'text-stone-400 hover:text-stone-600 dark:hover:text-stone-300'}`}
               >
-                Detailed (Full History)
+                Detailed
               </button>
             </div>
           </div>
