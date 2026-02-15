@@ -363,7 +363,8 @@ const ThemeMenu = ({
 }) => (
   <div
     className={`
-      absolute left-1/2 -translate-x-1/2 bottom-full mb-3 w-72 z-[60]
+      absolute right-0 bottom-full mb-3 z-[60]
+      w-72 max-w-[min(18rem,calc(100vw-2rem))]
       bg-white/90 dark:bg-stone-900/95 backdrop-blur-2xl
       border border-stone-200 dark:border-stone-700
       shadow-2xl rounded-2xl overflow-hidden
@@ -371,8 +372,8 @@ const ThemeMenu = ({
       ${className}
     `}
   >
-    {/* Bubble tail */}
-    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/90 dark:bg-stone-900/95 border-r border-b border-stone-200 dark:border-stone-700 rotate-45" />
+    {/* Bubble tail: right-aligned to point at the theme icon */}
+    <div className="absolute -bottom-2 right-4 w-4 h-4 bg-white/90 dark:bg-stone-900/95 border-r border-b border-stone-200 dark:border-stone-700 rotate-45" />
     <div className="relative p-4 space-y-4">
       {/* Style */}
       <div>
