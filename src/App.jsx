@@ -1119,11 +1119,11 @@ const CHANGELOG_ENTRIES = [
     title: 'Launch',
     items: [
       'v1.0 Launch: Public release of Edward OS.',
-      "AI Persona: Integrated Gemini 1.5 Flash with a custom 'Pro-casual' system prompt.",
+      "AI Persona: Integrated Gemini 2.5 Flash with a custom 'Pro-casual' system prompt.",
       'Theming: Built the Theme Engine (Modern / Retro) and Dark Mode.',
       'Content: Added deep-dive Career history and Projects teaser view.',
       "Visuals: Added 'Laser Beam' borders, Flickering Grid background, and Waving Hand animation.",
-      'Infrastructure: Added PostHog analytics and optimized Vercel deployment.',
+      'Infrastructure: Added analytics and optimized Vercel deployment.',
     ],
   },
 ];
