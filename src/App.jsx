@@ -379,7 +379,7 @@ const ThemeMenu = ({
       <div>
         <p className="text-[11px] font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wider mb-2">Style</p>
         <div className="p-1 bg-stone-100 dark:bg-stone-800 rounded-xl flex">
-          {['Glass', 'Neo', 'Retro'].map((s) => (
+          {['Modern', 'Retro'].map((s) => (
             <button
               key={s}
               type="button"
@@ -1105,7 +1105,7 @@ function loadThemePreferences() {
     if (!raw) return null;
     const data = JSON.parse(raw);
     return {
-      themeStyle: ['glass', 'neo', 'retro'].includes(data.themeStyle) ? data.themeStyle : 'glass',
+      themeStyle: data.themeStyle === 'retro' ? 'retro' : 'modern',
       accentColor: ['blue', 'purple', 'emerald', 'orange'].includes(data.accentColor) ? data.accentColor : 'blue',
       darkMode: !!data.darkMode,
     };
@@ -1118,7 +1118,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [darkMode, setDarkMode] = useState(() => loadThemePreferences()?.darkMode ?? false);
   const [themeMenuOpen, setThemeMenuOpen] = useState(false);
-  const [themeStyle, setThemeStyle] = useState(() => loadThemePreferences()?.themeStyle ?? 'glass');
+  const [themeStyle, setThemeStyle] = useState(() => loadThemePreferences()?.themeStyle ?? 'modern');
   const [themeAccent, setThemeAccent] = useState(() => loadThemePreferences()?.accentColor ?? 'blue');
   const [scrollState, setScrollState] = useState({ dir: 'up', y: 0 });
   const lastScrollY = useRef(0);

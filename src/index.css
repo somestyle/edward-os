@@ -7,9 +7,7 @@
 
 /* ---------------------------------------------------------------------------
    Design tokens as CSS variables.
-   Theme classes override these. Two distinct models:
-   - Glass: translucent panel + blur + thin border + floating shadow
-   - Neo:   solid panel (matches page) + no border + double (neumorphic) shadow
+   Theme classes: .theme-modern (blur/glass), .theme-retro (brutalist)
    --------------------------------------------------------------------------- */
 :root {
   --bg-app: #fafaf9;
@@ -21,14 +19,12 @@
   --accent: #3b82f6;
   --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-  /* Glass model */
+  /* Modern (glass) model */
   --glass-border: 1px solid rgba(255, 255, 255, 0.2);
   --glass-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  /* Neo model (set per theme) */
   --panel-bg: var(--bg-panel);
-  --panel-border: none;
-  --panel-shadow: none;
-  --shadow-inset: none;
+  --panel-border: var(--glass-border);
+  --panel-shadow: var(--glass-shadow);
   /* Dock bar (set per theme) */
   --dock-bg: var(--bg-panel);
   --dock-border: 1px solid rgba(0, 0, 0, 0.08);
@@ -44,9 +40,9 @@
 }
 
 /* ---------------------------------------------------------------------------
-   .theme-glass — transparency & blur, thin translucent white border, floating shadow
+   .theme-modern — transparency & blur, thin translucent white border, floating shadow
    --------------------------------------------------------------------------- */
-.theme-glass {
+.theme-modern {
   --bg-app: #fafaf9;
   --bg-panel: rgba(255, 255, 255, 0.85);
   --text-primary: #1c1917;
@@ -64,7 +60,7 @@
   --dock-radius: 9999px;
 }
 
-.theme-glass.dark {
+.theme-modern.dark {
   --bg-app: #0c0a09;
   --bg-panel: rgba(0, 0, 0, 0.75);
   --text-primary: #fafaf9;
@@ -75,48 +71,6 @@
   --dock-border: 1px solid rgba(255, 255, 255, 0.12);
   --dock-shadow: var(--glass-shadow);
   --dock-radius: 9999px;
-}
-
-/* ---------------------------------------------------------------------------
-   .theme-neo — neumorphism: solid panel (exact page color), no borders,
-   heavy double shadow (light top-left, dark bottom-right). Buttons: inset when active.
-   --------------------------------------------------------------------------- */
-.theme-neo {
-  --bg-app: #e4e4e0;
-  --bg-panel: #e4e4e0;
-  --text-primary: #1c1917;
-  --text-secondary: #57534e;
-  --radius: 0.75rem;
-  --radius-sm: 0.5rem;
-  --panel-bg: var(--bg-app);
-  --panel-border: none;
-  --panel-shadow: 9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5);
-  --shadow-inset: inset 3px 3px 6px rgba(163, 177, 198, 0.5), inset -3px -3px 6px rgba(255, 255, 255, 0.6);
-  --dock-bg: #e4e4e0;
-  --dock-border: 1px solid rgba(0, 0, 0, 0.06);
-  --dock-shadow: 9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5);
-  --dock-radius: 9999px;
-}
-
-.theme-neo.dark {
-  --bg-app: #1c1917;
-  --bg-panel: #1c1917;
-  --text-primary: #fafaf9;
-  --text-secondary: #a8a29e;
-  --panel-bg: var(--bg-app);
-  --panel-border: none;
-  --panel-shadow: 5px 5px 10px #0b0a09, -5px -5px 10px #2d2826;
-  --shadow-inset: inset 3px 3px 6px #0b0a09, inset -3px -3px 6px #2d2826;
-  --dock-bg: #1c1917;
-  --dock-border: 1px solid rgba(255, 255, 255, 0.06);
-  --dock-shadow: 5px 5px 10px #0b0a09, -5px -5px 10px #2d2826;
-  --dock-radius: 9999px;
-}
-
-/* Neo: buttons look pressed into the surface when active */
-.theme-neo .app-dock button:active,
-.theme-neo button:active {
-  box-shadow: var(--shadow-inset);
 }
 
 /* ---------------------------------------------------------------------------
@@ -218,10 +172,4 @@ html, body {
   border-radius: var(--dock-radius);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-}
-
-/* Neo: solid surface, no blur so the opaque background and double shadow read correctly */
-.theme-neo .app-dock {
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
 }
