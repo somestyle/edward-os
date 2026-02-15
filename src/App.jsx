@@ -359,6 +359,7 @@ const ThemeMenu = ({
   onStyleChange,
   darkMode,
   onDarkModeChange,
+  onChangelogClick,
   className = '',
 }) => (
   <div
@@ -421,6 +422,17 @@ const ThemeMenu = ({
           </div>
         </button>
       </div>
+      {onChangelogClick && (
+        <div className="pt-2 mt-2 border-t border-stone-100 dark:border-stone-800">
+          <button
+            type="button"
+            onClick={onChangelogClick}
+            className="text-xs text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300 transition-colors"
+          >
+            v1.2 (Changelog)
+          </button>
+        </div>
+      )}
     </div>
   </div>
 );
@@ -1099,6 +1111,73 @@ const ContactView = ({ scrollState }) => {
   );
 };
 
+// --- RELEASE NOTES / CHANGELOG (hidden view, no dock icon) ---
+const CHANGELOG_ENTRIES = [
+  {
+    version: '1.0',
+    date: 'Feb 2026',
+    title: 'Launch',
+    items: [
+      'v1.0 Launch: Public release of Edward OS.',
+      "AI Persona: Integrated Gemini 1.5 Flash with a custom 'Pro-casual' system prompt.",
+      'Theming: Built the Theme Engine (Modern / Retro) and Dark Mode.',
+      'Content: Added deep-dive Career history and Projects teaser view.',
+      "Visuals: Added 'Laser Beam' borders, Flickering Grid background, and Waving Hand animation.",
+      'Infrastructure: Added PostHog analytics and optimized Vercel deployment.',
+    ],
+  },
+];
+
+const ReleaseNotesView = ({ scrollState }) => {
+  const isAtTop = scrollState?.y < 50;
+  const showBackground = !isAtTop;
+
+  return (
+    <div className="animate-in fade-in duration-500 pb-32 relative">
+      <div
+        className={`sticky top-0 z-30 -mx-6 px-6 md:-mx-12 md:px-12 py-4 mb-8 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          showBackground
+            ? 'bg-stone-50/90 dark:bg-stone-950/90 backdrop-blur-xl border-b border-stone-200 dark:border-stone-800 shadow-sm'
+            : 'bg-transparent border-b border-transparent'
+        }`}
+      >
+        <h2 className="text-3xl font-bold text-stone-900 dark:text-white tracking-tight">
+          Changelog
+        </h2>
+        <p className="text-sm text-stone-500 dark:text-stone-400 mt-1">
+          Recent updates to this site
+        </p>
+      </div>
+
+      <div className="relative z-10">
+        <div className="relative pl-6 border-l-2 border-stone-200 dark:border-stone-700 space-y-8">
+          {CHANGELOG_ENTRIES.map((entry, i) => (
+            <div key={i} className="relative -left-6">
+              <div className="absolute left-0 w-3 h-3 rounded-full bg-stone-400 dark:bg-stone-500 border-2 border-white dark:border-stone-900 -translate-x-[7px] mt-1.5" />
+              <div className="pl-4">
+                <div className="flex flex-wrap items-baseline gap-2 mb-1">
+                  <span className="text-xs font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider">
+                    v{entry.version}
+                  </span>
+                  <span className="text-xs text-stone-400 dark:text-stone-500">{entry.date}</span>
+                </div>
+                <h3 className="font-bold text-stone-900 dark:text-white text-lg mb-2">
+                  {entry.title}
+                </h3>
+                <ul className="space-y-1.5 text-sm text-stone-600 dark:text-stone-300 leading-relaxed list-disc list-inside">
+                  {entry.items.map((item, j) => (
+                    <li key={j}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 function loadThemePreferences() {
   try {
     const raw = localStorage.getItem(THEME_STORAGE_KEY);
@@ -1196,6 +1275,7 @@ export default function App() {
               {activeTab === 'projects' && <ProjectsView scrollState={scrollState} />}
               {activeTab === 'chat' && <ChatView />}
               {activeTab === 'contact' && <ContactView scrollState={scrollState} />}
+              {activeTab === 'changelog' && <ReleaseNotesView scrollState={scrollState} />}
            </div>
         </div>
       </main>
@@ -1252,6 +1332,10 @@ export default function App() {
                 onStyleChange={setThemeStyle}
                 darkMode={darkMode}
                 onDarkModeChange={setDarkMode}
+                onChangelogClick={() => {
+                  setActiveTab('changelog');
+                  setThemeMenuOpen(false);
+                }}
               />
             )}
             <button
