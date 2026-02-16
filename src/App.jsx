@@ -1114,16 +1114,26 @@ const ContactView = ({ scrollState }) => {
 // --- RELEASE NOTES / CHANGELOG (hidden view, no dock icon) ---
 const CHANGELOG_ENTRIES = [
   {
-    version: '1.0',
-    date: 'Feb 2026',
-    title: 'Launch',
+    version: '1.1',
+    date: 'Mid Feb 2026',
+    title: 'Intelligence & Refinement',
     items: [
-      'v1.0 Launch: Public release of Edward OS.',
-      "AI Persona: Integrated Gemini 2.5 Flash with a custom 'Pro-casual' system prompt.",
-      'Theming: Built the Theme Engine (Modern / Retro) and Dark Mode.',
-      'Content: Added deep-dive Career history and Projects teaser view.',
-      "Visuals: Added 'Laser Beam' borders, Flickering Grid background, and Waving Hand animation.",
-      'Infrastructure: Added analytics and optimized Vercel deployment.',
+      'AI Persona: Refined the agent\'s voice using Gemini 2.5 Flash with a "Pro-casual" system prompt and rich Markdown rendering.',
+      'Theme Engine: Built a custom styling engine supporting dynamic "Modern" and "Retro" aesthetic modes.',
+      'Visual FX: Added "Laser Beam" borders, interactive Flickering Grid background, and entry animations.',
+      'Infrastructure: Integrated analytics for privacy-focused observability.',
+      'Meta: Added this Changelog to track product evolution.',
+    ],
+  },
+  {
+    version: '1.0',
+    date: 'Early Feb 2026',
+    title: 'Initial Launch',
+    items: [
+      'Core OS: Public release of Edward OS with Home, Career, and Contact views.',
+      'Conversational UI: Integrated initial Gemini AI agent for natural language interaction.',
+      'System: Implemented responsive layout and system-aware Dark Mode.',
+      'Stack: Built and deployed using React, Tailwind CSS, and Vercel.',
     ],
   },
 ];
@@ -1159,7 +1169,7 @@ const ReleaseNotesView = ({ scrollState }) => {
                   <span className="text-xs font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider">
                     v{entry.version}
                   </span>
-                  <span className="text-xs text-stone-400 dark:text-stone-500">{entry.date}</span>
+                  <span className="text-xs text-stone-400 dark:text-stone-500">• {entry.date}</span>
                 </div>
                 <h3 className="font-bold text-stone-900 dark:text-white text-lg mb-2">
                   {entry.title}
