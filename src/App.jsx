@@ -1089,7 +1089,7 @@ const ContactView = ({ scrollState }) => {
       </div>
 
       {/* New Lighter Email Me Section */}
-      <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 p-6 rounded-3xl shadow-sm mt-4 hover:border-blue-200 dark:hover:border-blue-900 transition-colors relative z-10">
+      <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 p-6 rounded-3xl shadow-sm mt-4 hover:border-blue-200 dark:hover:border-blue-900 transition-colors relative z-10 cursor-pointer">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
              <div className="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 p-4 rounded-2xl">
