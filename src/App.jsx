@@ -1102,9 +1102,13 @@ const ContactView = ({ scrollState }) => {
                </p>
              </div>
           </div>
-          <a href="mailto:ed@edwardchu.xyz" className="whitespace-nowrap px-6 py-3 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-xl font-bold hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors">
+          <button
+            type="button"
+            onClick={() => { window.location.href = 'mailto:' + 'ed' + '@' + 'edwardchu.xyz'; }}
+            className="whitespace-nowrap px-6 py-3 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-xl font-bold hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors"
+          >
             Send Message
-          </a>
+          </button>
         </div>
       </div>
     </div>
