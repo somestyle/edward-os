@@ -1025,7 +1025,7 @@ const ChatView = () => {
               />
               <button 
                 disabled={!input.trim() || isBusy}
-                className="absolute right-3 top-1/2 -translate-y-1/2 bg-stone-900 dark:bg-white text-white dark:text-stone-900 p-3 rounded-xl disabled:opacity-50 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors shadow-sm"
+                className="absolute right-3 top-1/2 -translate-y-1/2 bg-gradient-to-tr from-blue-500 to-sky-500 text-white p-3 rounded-xl disabled:opacity-50 disabled:from-stone-400 disabled:to-stone-500 hover:from-blue-600 hover:to-sky-600 transition-all shadow-lg shadow-blue-500/20"
               >
                 <Send size={18} />
               </button>
