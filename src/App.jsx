@@ -1089,7 +1089,11 @@ const ContactView = ({ scrollState }) => {
       </div>
 
       {/* New Lighter Email Me Section */}
-      <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 p-6 rounded-3xl shadow-sm mt-4 hover:border-blue-200 dark:hover:border-blue-900 transition-colors relative z-10 cursor-pointer">
+      <button
+        type="button"
+        onClick={() => { window.location.href = 'mailto:' + 'ed' + '@' + 'edwardchu.xyz'; }}
+        className="w-full text-left bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 p-6 rounded-3xl shadow-sm mt-4 hover:border-blue-200 dark:hover:border-blue-900 transition-colors relative z-10 cursor-pointer group"
+      >
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
              <div className="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 p-4 rounded-2xl">
@@ -1102,15 +1106,11 @@ const ContactView = ({ scrollState }) => {
                </p>
              </div>
           </div>
-          <button
-            type="button"
-            onClick={() => { window.location.href = 'mailto:' + 'ed' + '@' + 'edwardchu.xyz'; }}
-            className="whitespace-nowrap px-6 py-3 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-xl font-bold hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors"
-          >
+          <span className="whitespace-nowrap px-6 py-3 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-xl font-bold group-hover:bg-stone-800 dark:group-hover:bg-stone-200 transition-colors">
             Send Message
-          </button>
+          </span>
         </div>
-      </div>
+      </button>
     </div>
   );
 };
