@@ -366,7 +366,7 @@ const ThemeMenu = ({
     className={`
       absolute right-0 bottom-full mb-3 z-[60]
       w-72 max-w-[min(18rem,calc(100vw-2rem))]
-      bg-white/90 dark:bg-stone-900/95 backdrop-blur-2xl
+      bg-white/95 dark:bg-stone-900/98 backdrop-blur-2xl
       border border-stone-200 dark:border-stone-700
       shadow-2xl rounded-2xl overflow-hidden
       animate-in fade-in slide-in-from-bottom-2 duration-200
@@ -374,7 +374,7 @@ const ThemeMenu = ({
     `}
   >
     {/* Bubble tail: right-aligned to point at the theme icon */}
-    <div className="absolute -bottom-2 right-4 w-4 h-4 bg-white/90 dark:bg-stone-900/95 border-r border-b border-stone-200 dark:border-stone-700 rotate-45" />
+    <div className="absolute -bottom-2 right-4 w-4 h-4 bg-white/95 dark:bg-stone-900/98 border-r border-b border-stone-200 dark:border-stone-700 rotate-45" />
     <div className="relative p-4 space-y-4">
       {/* Style */}
       <div>
@@ -1106,7 +1106,7 @@ const ContactView = ({ scrollState }) => {
                </p>
              </div>
           </div>
-          <span className="whitespace-nowrap px-6 py-3 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-xl font-bold group-hover:bg-stone-800 dark:group-hover:bg-stone-200 transition-colors">
+          <span className="whitespace-nowrap px-6 py-3 bg-gradient-to-tr from-blue-500 to-sky-500 text-white rounded-xl font-bold shadow-lg shadow-blue-500/20 group-hover:from-blue-600 group-hover:to-sky-600 transition-all">
             Send Message
           </span>
         </div>
