@@ -812,9 +812,9 @@ const ProjectsView = ({ scrollState }) => {
             </div>
             <h3 className="font-bold text-xl text-stone-900 dark:text-white mb-3">Blunt App</h3>
             <p className="text-stone-500 dark:text-stone-400 text-sm leading-relaxed mb-6">
-              Working on a new app that helps users focus and avoid any excuses to get s*it done.
+              A savage AI life coach that roasts your bad habits with data, sarcasm, and zero sympathy.
             </p>
-            <p className="text-sm font-medium text-stone-400 dark:text-stone-500">Launching soon</p>
+            <p className="text-sm font-medium text-stone-400 dark:text-stone-500">Stay tuned</p>
           </div>
        </div>
     </div>
