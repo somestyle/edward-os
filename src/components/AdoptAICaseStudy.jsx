@@ -203,7 +203,7 @@ export default function AdoptAICaseStudy({ onClose }) {
         .cs-root {
           position:fixed; inset:0; z-index:50;
           overflow-y:auto; overflow-x:hidden;
-          background:#faf9f7; color:#1c1917;
+          background:#fcfbfa; color:#1c1917;
           font-family:'DM Sans',ui-sans-serif,system-ui,sans-serif;
           -webkit-font-smoothing:antialiased;
           scroll-behavior:smooth;
@@ -215,7 +215,7 @@ export default function AdoptAICaseStudy({ onClose }) {
           position:sticky; top:0; z-index:40;
           height:52px; padding:0 48px;
           display:flex; align-items:center; justify-content:space-between;
-          background:rgba(250,249,247,.92);
+          background:rgba(252,251,250,.92);
           backdrop-filter:blur(20px);
           border-bottom:1px solid transparent;
           transition:border-color .25s;
@@ -253,7 +253,7 @@ export default function AdoptAICaseStudy({ onClose }) {
           background:
             radial-gradient(ellipse 65% 50% at 70% 0%, rgba(219,234,254,.82) 0%, transparent 60%),
             radial-gradient(ellipse 40% 35% at 0% 85%, rgba(220,252,231,.65) 0%, transparent 55%),
-            linear-gradient(to bottom, rgba(250,249,247,0) 0%, rgba(250,249,247,.9) 100%);
+            linear-gradient(to bottom, rgba(252,251,250,0) 0%, rgba(252,251,250,.9) 100%);
         }
         .cs-hero-inner { position:relative; z-index:2; }
 
@@ -368,7 +368,7 @@ export default function AdoptAICaseStudy({ onClose }) {
           box-shadow:0 1px 6px rgba(0,0,0,.04);
         }
         .cs-diff-head {
-          padding:11px 20px; background:#faf9f7;
+          padding:11px 20px; background:#fcfbfa;
           border-bottom:1px solid #e7e5e4;
           font-size:10px; font-weight:700; letter-spacing:.12em;
           text-transform:uppercase; color:#a8a29e;
@@ -518,7 +518,7 @@ export default function AdoptAICaseStudy({ onClose }) {
           overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,.04);
         }
         .cs-arch-head {
-          padding:14px 24px; background:#faf9f7;
+          padding:14px 24px; background:#fcfbfa;
           border-bottom:1px solid #e7e5e4;
           display:flex; align-items:center; justify-content:space-between;
         }
