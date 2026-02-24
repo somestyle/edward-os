@@ -8,6 +8,7 @@ import {
 import ReactMarkdown from 'react-markdown';
 // Import the separated system prompt
 import { SYSTEM_PROMPT } from './ai-config';
+import WidgetLauncher from './components/widgets/WidgetLauncher';
 
 // --- Typewriter streaming hook ---
 function useTypewriter(fullText, { speedMs = 15, enabled = true } = {}) {
@@ -1399,6 +1400,7 @@ export default function App() {
         </div>
       </div>
 
+      <WidgetLauncher />
     </div>
   );
 }
