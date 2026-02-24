@@ -705,6 +705,11 @@ const ProjectsView = ({ scrollState }) => {
     }
   };
 
+  const handleLock = () => {
+    setIsUnlocked(false);
+    if (typeof sessionStorage !== 'undefined') sessionStorage.removeItem(PROJECTS_UNLOCK_KEY);
+  };
+
   return (
     <div className="animate-in fade-in duration-500 pb-32 relative">
        {/* Sticky Header with password control */}
@@ -720,10 +725,15 @@ const ProjectsView = ({ scrollState }) => {
             Projects
           </h2>
           {isUnlocked ? (
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 shadow-sm">
+            <button
+              type="button"
+              onClick={handleLock}
+              title="Click to lock projects"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 shadow-sm hover:bg-stone-50 dark:hover:bg-stone-800 hover:border-stone-300 dark:hover:border-stone-700 active:scale-[0.98] cursor-pointer transition-all duration-150"
+            >
               <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
               <span className="text-xs font-bold text-stone-600 dark:text-stone-300">Unlocked</span>
-            </div>
+            </button>
           ) : (
             <div className="bg-white dark:bg-stone-900 p-1 rounded-lg border border-stone-200 dark:border-stone-800 shadow-sm flex items-center gap-1">
               <input
