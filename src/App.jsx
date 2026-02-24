@@ -461,7 +461,7 @@ const HomeView = ({ onNavigate }) => {
     {/* Footer */}
     <footer className="mt-12 mb-8 text-center relative z-10">
       <p className="text-xs text-stone-400 dark:text-stone-500 mb-2 leading-relaxed">
-        This site was designed by me and built with{' '}
+        Built with{' '}
         <a href="https://react.dev/" target="_blank" rel="noreferrer" className="hover:text-stone-600 dark:hover:text-stone-300 underline underline-offset-2 decoration-stone-200 dark:decoration-stone-700 transition-colors">React</a>,{' '}
         <a href="https://tailwindcss.com/" target="_blank" rel="noreferrer" className="hover:text-stone-600 dark:hover:text-stone-300 underline underline-offset-2 decoration-stone-200 dark:decoration-stone-700 transition-colors">Tailwind CSS</a>,{' '}
         <a href="https://vercel.com/" target="_blank" rel="noreferrer" className="hover:text-stone-600 dark:hover:text-stone-300 underline underline-offset-2 decoration-stone-200 dark:decoration-stone-700 transition-colors">Vercel</a>,{' '}
@@ -1067,6 +1067,17 @@ const ContactView = ({ scrollState }) => {
 // --- RELEASE NOTES / CHANGELOG (hidden view, no dock icon) ---
 const CHANGELOG_ENTRIES = [
   {
+    version: '1.2',
+    date: 'Late Feb 2026',
+    title: 'Widgets & Dock',
+    items: [
+      'Widgets: Added a widget launcher with Pomodoro clock, Sudoku, and Inspiration Quotes mini-apps.',
+      'Themes: Moved Theme (Style + Dark mode) into the Widgets folder; opens in the same centered modal as other widgets.',
+      'Dock: Reorganized the dock bar — Ask AI is now second (between Home and Career); Widgets folder is on the right.',
+      'Modals: Widget modals are now portaled to the viewport so they center on the full screen instead of anchoring to the dock.',
+    ],
+  },
+  {
     version: '1.1',
     date: 'Mid Feb 2026',
     title: 'Intelligence & Refinement',
@@ -1127,7 +1138,7 @@ const ReleaseNotesView = ({ scrollState }) => {
                 <h3 className="font-bold text-stone-900 dark:text-white text-lg mb-2">
                   {entry.title}
                 </h3>
-                <ul className="space-y-1.5 text-sm text-stone-600 dark:text-stone-300 leading-relaxed list-disc list-inside">
+                <ul className="space-y-1.5 text-sm text-stone-600 dark:text-stone-300 leading-relaxed list-disc list-outside pl-5">
                   {entry.items.map((item, j) => (
                     <li key={j}>{item}</li>
                   ))}

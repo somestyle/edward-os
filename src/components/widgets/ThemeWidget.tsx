@@ -17,7 +17,7 @@ export default function ThemeWidget({
   onChangelogClick,
 }: ThemeWidgetProps) {
   return (
-    <div className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm p-6 max-w-sm mx-auto">
+    <div className="w-full max-w-sm mx-auto bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm p-6 md:p-8">
       <h3 className="text-lg font-bold text-stone-900 dark:text-white mb-4 text-center">Themes</h3>
       <div className="space-y-4">
         <div>
