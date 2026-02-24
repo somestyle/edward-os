@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback, lazy, Suspense } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   Send, Sparkles, ChevronRight, ChevronDown, User, 
   Home, Briefcase, Award, Zap,
@@ -9,6 +10,8 @@ import ReactMarkdown from 'react-markdown';
 // Import the separated system prompt
 import { SYSTEM_PROMPT } from './ai-config';
 import WidgetLauncher from './components/widgets/WidgetLauncher';
+
+const AdoptAICaseStudy = lazy(() => import('./components/AdoptAICaseStudy'));
 
 // --- Typewriter streaming hook ---
 function useTypewriter(fullText, { speedMs = 15, enabled = true } = {}) {
@@ -684,6 +687,7 @@ const ProjectsView = ({ scrollState }) => {
   });
   const [passwordInput, setPasswordInput] = useState('');
   const [shake, setShake] = useState(false);
+  const [caseStudyOpen, setCaseStudyOpen] = useState(null);
   const passwordInputRef = useRef(null);
 
   useEffect(() => {
@@ -764,10 +768,17 @@ const ProjectsView = ({ scrollState }) => {
        </div>
 
        <div className="grid gap-6 md:grid-cols-2 relative z-10">
-          {cvData.experience.slice(0, 2).map((job, i) => (
+          {cvData.experience.slice(0, 2).map((job, i) => {
+            const isAdoptAI = job.company === 'Adopt AI';
+            const showCaseStudyLink = isUnlocked && isAdoptAI;
+            return (
              <div
                key={i}
-               className={`group relative bg-white dark:bg-stone-900 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 hover:border-blue-200 dark:hover:border-blue-900 transition-all text-left ${!isUnlocked ? 'opacity-75' : ''}`}
+               role={showCaseStudyLink ? 'button' : undefined}
+               tabIndex={showCaseStudyLink ? 0 : undefined}
+               onClick={showCaseStudyLink ? () => setCaseStudyOpen('adopt-ai') : undefined}
+               onKeyDown={showCaseStudyLink ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setCaseStudyOpen('adopt-ai'); } } : undefined}
+               className={`group relative bg-white dark:bg-stone-900 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 hover:border-blue-200 dark:hover:border-blue-900 transition-all text-left ${!isUnlocked ? 'opacity-75' : ''} ${showCaseStudyLink ? 'cursor-pointer' : ''}`}
              >
                 <div className="flex justify-between items-start mb-6">
                    <div className="p-3 bg-stone-100 dark:bg-stone-800 rounded-2xl group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors">
@@ -782,13 +793,21 @@ const ProjectsView = ({ scrollState }) => {
                   {job.summary}
                 </p>
                 {isUnlocked && (
-                  <div className="flex items-center gap-2 text-sm font-medium text-stone-300 dark:text-stone-600 cursor-not-allowed">
-                    <span>Coming Soon</span>
-                    <ChevronRight size={16} />
-                  </div>
+                  showCaseStudyLink ? (
+                    <div className="flex items-center gap-2 text-sm font-medium text-stone-700 dark:text-stone-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      <span>Read Case Study</span>
+                      <ChevronRight size={16} />
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 text-sm font-medium text-stone-300 dark:text-stone-600 cursor-not-allowed">
+                      <span>Coming Soon</span>
+                      <ChevronRight size={16} />
+                    </div>
+                  )
                 )}
              </div>
-          ))}
+            );
+          })}
           {/* Blunt App */}
           <div className={`group relative bg-white dark:bg-stone-900 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 hover:border-blue-200 dark:hover:border-blue-900 transition-all text-left ${!isUnlocked ? 'opacity-75' : ''}`}>
             <div className="flex justify-between items-start mb-6">
@@ -829,6 +848,19 @@ const ProjectsView = ({ scrollState }) => {
             )}
           </div>
        </div>
+
+       {caseStudyOpen === 'adopt-ai' && typeof document !== 'undefined' && createPortal(
+         <div style={{ position: 'relative', zIndex: 60 }}>
+           <Suspense fallback={
+             <div className="fixed inset-0 z-[60] flex items-center justify-center bg-stone-50 dark:bg-stone-950">
+               <span className="text-stone-400 dark:text-stone-500 text-sm">Loading case study…</span>
+             </div>
+           }>
+             <AdoptAICaseStudy onClose={() => setCaseStudyOpen(null)} />
+           </Suspense>
+         </div>,
+         document.body
+       )}
     </div>
   );
 };
