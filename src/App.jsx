@@ -3,7 +3,7 @@ import {
   Send, Sparkles, ChevronRight, ChevronDown, User, 
   Home, Briefcase, Award, Zap,
   Layout, GraduationCap, Layers,
-  BookOpen, Mail, Linkedin, ExternalLink, Folder
+  BookOpen, Mail, Linkedin, ExternalLink, Folder, Lock, LockOpen
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 // Import the separated system prompt
@@ -671,15 +671,43 @@ const CareerView = ({ scrollState }) => {
   );
 };
 
+const PROJECTS_UNLOCK_KEY = 'projects_unlocked';
+const PROJECTS_PASSWORD = 'action builder';
+
 const ProjectsView = ({ scrollState }) => {
-  // Smart Header Logic
-  const isAtTop = scrollState.y < 50; 
+  const isAtTop = scrollState.y < 50;
   const showBackground = !isAtTop;
+
+  const [isUnlocked, setIsUnlocked] = useState(() => {
+    if (typeof sessionStorage === 'undefined') return false;
+    return sessionStorage.getItem(PROJECTS_UNLOCK_KEY) === 'true';
+  });
+  const [passwordInput, setPasswordInput] = useState('');
+  const [shake, setShake] = useState(false);
+  const passwordInputRef = useRef(null);
+
+  useEffect(() => {
+    if (typeof sessionStorage !== 'undefined' && sessionStorage.getItem(PROJECTS_UNLOCK_KEY) === 'true') {
+      setIsUnlocked(true);
+    }
+  }, []);
+
+  const handleUnlock = () => {
+    const trimmed = passwordInput.trim();
+    if (trimmed.toLowerCase() === PROJECTS_PASSWORD.toLowerCase()) {
+      setIsUnlocked(true);
+      if (typeof sessionStorage !== 'undefined') sessionStorage.setItem(PROJECTS_UNLOCK_KEY, 'true');
+      setPasswordInput('');
+    } else {
+      setShake(true);
+      setPasswordInput('');
+      setTimeout(() => setShake(false), 400);
+    }
+  };
 
   return (
     <div className="animate-in fade-in duration-500 pb-32 relative">
-       
-       {/* Consistent Sticky Header - mb-4 to reduce spacing */}
+       {/* Sticky Header with password control */}
        <div 
         className={`sticky top-0 z-30 -mx-6 px-6 md:-mx-12 md:px-12 py-4 mb-4 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           showBackground 
@@ -687,9 +715,36 @@ const ProjectsView = ({ scrollState }) => {
             : 'bg-transparent border-b border-transparent'
         }`}
       >
-        <h2 className="text-3xl font-bold text-stone-900 dark:text-white tracking-tight">
-          Projects
-        </h2>
+        <div className="flex justify-between items-center">
+          <h2 className="text-3xl font-bold text-stone-900 dark:text-white tracking-tight">
+            Projects
+          </h2>
+          {isUnlocked ? (
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+              <span className="text-xs font-bold text-stone-600 dark:text-stone-300">Unlocked</span>
+            </div>
+          ) : (
+            <div className="bg-white dark:bg-stone-900 p-1 rounded-lg border border-stone-200 dark:border-stone-800 shadow-sm flex items-center gap-1">
+              <input
+                ref={passwordInputRef}
+                type="password"
+                value={passwordInput}
+                onChange={(e) => setPasswordInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleUnlock()}
+                placeholder="Password"
+                className={`px-3 py-1.5 text-xs rounded-md w-28 bg-transparent border-0 outline-none text-stone-900 dark:text-white placeholder-stone-400 focus:ring-0 ${shake ? 'animate-shake' : ''}`}
+              />
+              <button
+                type="button"
+                onClick={handleUnlock}
+                className="px-3 py-1.5 text-xs font-bold rounded-md bg-stone-900 dark:bg-stone-700 text-white shadow-sm hover:bg-stone-800 dark:hover:bg-stone-600 transition-all"
+              >
+                Unlock
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
        <div className="mb-10 relative z-10">
@@ -700,56 +755,68 @@ const ProjectsView = ({ scrollState }) => {
 
        <div className="grid gap-6 md:grid-cols-2 relative z-10">
           {cvData.experience.slice(0, 2).map((job, i) => (
-             <div key={i} className="group relative bg-white dark:bg-stone-900 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 hover:border-blue-200 dark:hover:border-blue-900 transition-all text-left">
+             <div
+               key={i}
+               className={`group relative bg-white dark:bg-stone-900 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 hover:border-blue-200 dark:hover:border-blue-900 transition-all text-left ${!isUnlocked ? 'opacity-75' : ''}`}
+             >
                 <div className="flex justify-between items-start mb-6">
                    <div className="p-3 bg-stone-100 dark:bg-stone-800 rounded-2xl group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors">
                       <Folder size={24} className="text-stone-400 group-hover:text-blue-500 transition-colors" />
                    </div>
-                   <span className="px-3 py-1 bg-stone-100 dark:bg-stone-800 text-stone-500 text-[10px] font-bold rounded-full uppercase tracking-wide">Coming Soon</span>
+                   <div className="flex items-center justify-center w-8 h-8 text-stone-400 dark:text-stone-500 transition-all duration-200">
+                     {isUnlocked ? <LockOpen size={18} /> : <Lock size={18} />}
+                   </div>
                 </div>
-                
-                <h3 className="font-bold text-xl text-stone-900 dark:text-white mb-3">{job.company}</h3>
+                <h3 className={`font-bold text-xl mb-3 transition-colors ${isUnlocked ? 'text-stone-900 dark:text-white' : 'text-stone-600 dark:text-stone-400'}`}>{job.company}</h3>
                 <p className="text-stone-500 dark:text-stone-400 text-sm leading-relaxed mb-6">
                   {job.summary}
                 </p>
-                
-                {/* Fake "Locked" Link */}
-                <div className="flex items-center gap-2 text-sm font-medium text-stone-300 dark:text-stone-600 cursor-not-allowed">
-                   <span>Read Case Study</span>
-                   <ChevronRight size={16} />
-                </div>
+                {isUnlocked && (
+                  <div className="flex items-center gap-2 text-sm font-medium text-stone-300 dark:text-stone-600 cursor-not-allowed">
+                    <span>Coming Soon</span>
+                    <ChevronRight size={16} />
+                  </div>
+                )}
              </div>
           ))}
-          {/* Blunt App - Coming soon */}
-          <div className="group relative bg-white dark:bg-stone-900 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 hover:border-blue-200 dark:hover:border-blue-900 transition-all text-left">
+          {/* Blunt App */}
+          <div className={`group relative bg-white dark:bg-stone-900 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 hover:border-blue-200 dark:hover:border-blue-900 transition-all text-left ${!isUnlocked ? 'opacity-75' : ''}`}>
             <div className="flex justify-between items-start mb-6">
               <div className="p-3 bg-stone-100 dark:bg-stone-800 rounded-2xl group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors">
                 <Folder size={24} className="text-stone-400 group-hover:text-blue-500 transition-colors" />
               </div>
-              <span className="px-3 py-1 bg-stone-100 dark:bg-stone-800 text-stone-500 text-[10px] font-bold rounded-full uppercase tracking-wide">Coming soon</span>
+              <div className="flex items-center justify-center w-8 h-8 text-stone-400 dark:text-stone-500 transition-all duration-200">
+                {isUnlocked ? <LockOpen size={18} /> : <Lock size={18} />}
+              </div>
             </div>
-            <h3 className="font-bold text-xl text-stone-900 dark:text-white mb-3">Blunt App</h3>
+            <h3 className={`font-bold text-xl mb-3 transition-colors ${isUnlocked ? 'text-stone-900 dark:text-white' : 'text-stone-600 dark:text-stone-400'}`}>Blunt App</h3>
             <p className="text-stone-500 dark:text-stone-400 text-sm leading-relaxed mb-6">
               A savage AI life coach that roasts your bad habits with data, sarcasm, and zero sympathy.
             </p>
-            <p className="text-sm font-medium text-stone-400 dark:text-stone-500">Stay tuned</p>
+            {isUnlocked && (
+              <p className="text-sm font-medium text-stone-300 dark:text-stone-600 cursor-not-allowed">Coming Soon</p>
+            )}
           </div>
-          {/* Kea AI – Case study */}
-          <div className="group relative bg-white dark:bg-stone-900 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 hover:border-blue-200 dark:hover:border-blue-900 transition-all text-left">
+          {/* Kea AI */}
+          <div className={`group relative bg-white dark:bg-stone-900 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 hover:border-blue-200 dark:hover:border-blue-900 transition-all text-left ${!isUnlocked ? 'opacity-75' : ''}`}>
             <div className="flex justify-between items-start mb-6">
               <div className="p-3 bg-stone-100 dark:bg-stone-800 rounded-2xl group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors">
                 <Folder size={24} className="text-stone-400 group-hover:text-blue-500 transition-colors" />
               </div>
-              <span className="px-3 py-1 bg-stone-100 dark:bg-stone-800 text-stone-500 text-[10px] font-bold rounded-full uppercase tracking-wide">Case Study</span>
+              <div className="flex items-center justify-center w-8 h-8 text-stone-400 dark:text-stone-500 transition-all duration-200">
+                {isUnlocked ? <LockOpen size={18} /> : <Lock size={18} />}
+              </div>
             </div>
-            <h3 className="font-bold text-xl text-stone-900 dark:text-white mb-3">Kea AI</h3>
+            <h3 className={`font-bold text-xl mb-3 transition-colors ${isUnlocked ? 'text-stone-900 dark:text-white' : 'text-stone-600 dark:text-stone-400'}`}>Kea AI</h3>
             <p className="text-stone-500 dark:text-stone-400 text-sm leading-relaxed mb-6">
               0–1 design for flagship AI product serving B2B2C users focusing on conversational UX.
             </p>
-            <div className="flex items-center gap-2 text-sm font-medium text-stone-300 dark:text-stone-600 cursor-not-allowed">
-              <span>Read Case Study</span>
-              <ChevronRight size={16} />
-            </div>
+            {isUnlocked && (
+              <div className="flex items-center gap-2 text-sm font-medium text-stone-300 dark:text-stone-600 cursor-not-allowed">
+                <span>Coming Soon</span>
+                <ChevronRight size={16} />
+              </div>
+            )}
           </div>
        </div>
     </div>
