@@ -115,21 +115,27 @@ export default function WidgetLauncher({
         typeof document !== 'undefined' &&
         createPortal(
           <div
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200 min-h-[100dvh]"
+            className={`fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200 min-h-[100dvh] ${darkMode ? 'dark' : ''}`}
             onClick={() => setModalApp(null)}
             role="dialog"
             aria-modal="true"
             aria-label="Widget"
           >
             <div
-              className="relative flex flex-col bg-stone-50 dark:bg-stone-950 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-2xl w-full max-w-md min-h-[50dvh] max-h-[90dvh] my-auto"
+              className={`relative flex flex-col w-full max-w-md min-h-[50dvh] max-h-[90dvh] my-auto ${
+                modalApp === 'theme' && themeStyle === 'retro'
+                  ? 'theme-retro rounded-none border-2 border-stone-900 dark:border-stone-100 shadow-[4px_4px_0_0_#0a0a0a] dark:shadow-[4px_4px_0_0_#fafaf9] bg-white dark:bg-stone-900'
+                  : 'bg-stone-50 dark:bg-stone-950 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-2xl'
+              }`}
               onClick={(e) => e.stopPropagation()}
             >
               <button
                 type="button"
                 onClick={() => setModalApp(null)}
                 aria-label="Close"
-                className="absolute top-3 right-3 z-10 w-10 h-10 rounded-full bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-200 flex items-center justify-center hover:bg-stone-300 dark:hover:bg-stone-600 transition-colors shrink-0"
+                className={`absolute top-3 right-3 z-10 w-10 h-10 flex items-center justify-center transition-colors shrink-0 bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-200 hover:bg-stone-300 dark:hover:bg-stone-600 ${
+                  modalApp === 'theme' && themeStyle === 'retro' ? 'rounded-none' : 'rounded-full'
+                }`}
               >
                 <X size={20} />
               </button>

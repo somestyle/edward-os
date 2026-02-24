@@ -16,20 +16,28 @@ export default function ThemeWidget({
   onDarkModeChange,
   onChangelogClick,
 }: ThemeWidgetProps) {
+  const isRetro = style === 'retro';
+  const panelClass = isRetro
+    ? 'w-full max-w-sm mx-auto bg-white dark:bg-stone-900 rounded-none border-2 border-stone-900 dark:border-stone-100 shadow-[4px_4px_0_0_#0a0a0a] dark:shadow-[4px_4px_0_0_#fafaf9] p-6 md:p-8 font-mono'
+    : 'w-full max-w-sm mx-auto bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm p-6 md:p-8';
+  const segmentClass = isRetro ? 'rounded-none' : 'rounded-xl';
+  const buttonRoundClass = isRetro ? 'rounded-none' : 'rounded-lg';
+  const modeButtonRoundClass = isRetro ? 'rounded-none' : 'rounded-xl';
+
   return (
-    <div className="w-full max-w-sm mx-auto bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm p-6 md:p-8">
+    <div className={panelClass}>
       <h3 className="text-lg font-bold text-stone-900 dark:text-white mb-4 text-center">Themes</h3>
       <div className="space-y-4">
         <div>
           <p className="text-[11px] font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wider mb-2">Style</p>
-          <div className="p-1 bg-stone-100 dark:bg-stone-800 rounded-xl flex">
+          <div className={`p-1 bg-stone-100 dark:bg-stone-800 flex ${segmentClass}`}>
             {['Modern', 'Retro'].map((s) => (
               <button
                 key={s}
                 type="button"
                 onClick={() => onStyleChange(s.toLowerCase())}
                 className={`
-                  flex-1 py-2 text-xs font-bold rounded-lg transition-all
+                  flex-1 py-2 text-xs font-bold transition-all ${buttonRoundClass}
                   ${style === s.toLowerCase()
                     ? 'bg-white dark:bg-stone-700 text-stone-900 dark:text-white shadow-sm'
                     : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200'}
@@ -45,7 +53,7 @@ export default function ThemeWidget({
           <button
             type="button"
             onClick={() => onDarkModeChange(!darkMode)}
-            className="w-full p-2.5 rounded-xl bg-stone-100 dark:bg-stone-800 flex items-center justify-between gap-3 transition-colors hover:bg-stone-50 dark:hover:bg-stone-700/80"
+            className={`w-full p-2.5 bg-stone-100 dark:bg-stone-800 flex items-center justify-between gap-3 transition-colors hover:bg-stone-50 dark:hover:bg-stone-700/80 ${modeButtonRoundClass}`}
           >
             <span className="text-sm font-medium text-stone-700 dark:text-stone-200">
               {darkMode ? 'Dark' : 'Light'}

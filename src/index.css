@@ -193,3 +193,11 @@ html, body {
 .theme-modern.dark .app-dock button:hover {
   outline: 1px solid rgba(255, 255, 255, 0.2);
 }
+
+/* Retro theme: 1px darker grey outline on dock icon hover */
+.theme-retro .app-dock button:hover {
+  outline: 1px solid rgba(0, 0, 0, 0.35);
+}
+.theme-retro.dark .app-dock button:hover {
+  outline: 1px solid rgba(255, 255, 255, 0.25);
+}
