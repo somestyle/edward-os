@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, X } from 'lucide-react';
 
 interface ThemeWidgetProps {
   style: string;
@@ -7,6 +7,7 @@ interface ThemeWidgetProps {
   darkMode: boolean;
   onDarkModeChange: (v: boolean) => void;
   onChangelogClick?: () => void;
+  onClose?: () => void;
 }
 
 export default function ThemeWidget({
@@ -15,18 +16,32 @@ export default function ThemeWidget({
   darkMode,
   onDarkModeChange,
   onChangelogClick,
+  onClose,
 }: ThemeWidgetProps) {
   const isRetro = style === 'retro';
   const panelClass = isRetro
-    ? 'w-full max-w-sm mx-auto bg-white dark:bg-stone-900 rounded-none border-2 border-stone-900 dark:border-stone-100 shadow-[4px_4px_0_0_#0a0a0a] dark:shadow-[4px_4px_0_0_#fafaf9] p-6 md:p-8 font-mono'
-    : 'w-full max-w-sm mx-auto bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm p-6 md:p-8';
+    ? 'w-full max-w-sm mx-auto relative bg-white dark:bg-stone-900 rounded-none border-2 border-stone-900 dark:border-stone-100 shadow-[4px_4px_0_0_#0a0a0a] dark:shadow-[4px_4px_0_0_#fafaf9] p-6 md:p-8 font-mono'
+    : 'w-full max-w-sm mx-auto relative bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm p-6 md:p-8';
   const segmentClass = isRetro ? 'rounded-none' : 'rounded-xl';
   const buttonRoundClass = isRetro ? 'rounded-none' : 'rounded-lg';
   const modeButtonRoundClass = isRetro ? 'rounded-none' : 'rounded-xl';
+  const hasClose = Boolean(onClose);
 
   return (
     <div className={panelClass}>
-      <h3 className="text-lg font-bold text-stone-900 dark:text-white mb-4 text-center">Themes</h3>
+      {hasClose && (
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          className={`absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center transition-colors shrink-0 bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-200 hover:bg-stone-300 dark:hover:bg-stone-600 ${
+            isRetro ? 'rounded-none' : 'rounded-full'
+          }`}
+        >
+          <X size={18} />
+        </button>
+      )}
+      <h3 className={`text-lg font-bold text-stone-900 dark:text-white mb-4 ${hasClose ? 'pr-10 text-center' : 'text-center'}`}>Themes</h3>
       <div className="space-y-4">
         <div>
           <p className="text-[11px] font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wider mb-2">Style</p>

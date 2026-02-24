@@ -37,15 +37,17 @@ export default function WidgetLauncher({
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!panelOpen) return;
     const handleClick = (e: MouseEvent) => {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
-        setPanelOpen(false);
+      if (!panelRef.current?.contains(e.target as Node)) {
+        if (panelOpen) setPanelOpen(false);
+        if (modalApp === 'theme') setModalApp(null);
       }
     };
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, [panelOpen]);
+    if (panelOpen || modalApp === 'theme') {
+      document.addEventListener('mousedown', handleClick);
+      return () => document.removeEventListener('mousedown', handleClick);
+    }
+  }, [panelOpen, modalApp]);
 
   const openApp = (id: AppId) => {
     if (id) setModalApp(id);
@@ -94,6 +96,23 @@ export default function WidgetLauncher({
             </div>
           </div>
         )}
+        {/* Theme widget as single tile above dock; close button inside the tile */}
+        {modalApp === 'theme' && themeStyle != null && onThemeStyleChange && darkMode != null && onDarkModeChange && (
+          <div
+            className="fixed left-4 right-4 bottom-20 w-auto max-w-sm mx-auto md:absolute md:bottom-full md:mb-2 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-[min(20rem,calc(100vw-2rem))] md:max-w-none md:mx-0 animate-in fade-in slide-in-from-bottom-2 duration-200"
+            style={{ zIndex: 60 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <ThemeWidget
+              style={themeStyle}
+              onStyleChange={onThemeStyleChange}
+              darkMode={darkMode}
+              onDarkModeChange={onDarkModeChange}
+              onChangelogClick={handleChangelogClick}
+              onClose={() => setModalApp(null)}
+            />
+          </div>
+        )}
         <button
           type="button"
           onClick={() => setPanelOpen((o) => !o)}
@@ -110,8 +129,9 @@ export default function WidgetLauncher({
         </button>
       </div>
 
-      {/* Modal - portaled to body so it's truly viewport-centered (avoids dock transform containing block) */}
+      {/* Modal - only for Pomodoro, Sudoku, Quotes (theme opens as panel above dock) */}
       {modalApp &&
+        modalApp !== 'theme' &&
         typeof document !== 'undefined' &&
         createPortal(
           <div
@@ -122,20 +142,14 @@ export default function WidgetLauncher({
             aria-label="Widget"
           >
             <div
-              className={`relative flex flex-col w-full max-w-md min-h-[50dvh] max-h-[90dvh] my-auto ${
-                modalApp === 'theme' && themeStyle === 'retro'
-                  ? 'theme-retro rounded-none border-2 border-stone-900 dark:border-stone-100 shadow-[4px_4px_0_0_#0a0a0a] dark:shadow-[4px_4px_0_0_#fafaf9] bg-white dark:bg-stone-900'
-                  : 'bg-stone-50 dark:bg-stone-950 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-2xl'
-              }`}
+              className="relative flex flex-col bg-stone-50 dark:bg-stone-950 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-2xl w-full max-w-md min-h-[50dvh] max-h-[90dvh] my-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <button
                 type="button"
                 onClick={() => setModalApp(null)}
                 aria-label="Close"
-                className={`absolute top-3 right-3 z-10 w-10 h-10 flex items-center justify-center transition-colors shrink-0 bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-200 hover:bg-stone-300 dark:hover:bg-stone-600 ${
-                  modalApp === 'theme' && themeStyle === 'retro' ? 'rounded-none' : 'rounded-full'
-                }`}
+                className="absolute top-3 right-3 z-10 w-10 h-10 rounded-full bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-200 flex items-center justify-center hover:bg-stone-300 dark:hover:bg-stone-600 transition-colors shrink-0"
               >
                 <X size={20} />
               </button>
@@ -143,15 +157,6 @@ export default function WidgetLauncher({
                 {modalApp === 'pomodoro' && <PomodoroWidget />}
                 {modalApp === 'sudoku' && <SudokuWidget />}
                 {modalApp === 'quotes' && <QuotesWidget />}
-                {modalApp === 'theme' && themeStyle != null && onThemeStyleChange && darkMode != null && onDarkModeChange && (
-                  <ThemeWidget
-                    style={themeStyle}
-                    onStyleChange={onThemeStyleChange}
-                    darkMode={darkMode}
-                    onDarkModeChange={onDarkModeChange}
-                    onChangelogClick={handleChangelogClick}
-                  />
-                )}
               </div>
             </div>
           </div>,
