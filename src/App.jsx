@@ -363,6 +363,24 @@ const THEME_STORAGE_KEY = 'edward-os-theme';
 
 const HomeView = ({ onNavigate }) => {
   const [waveKey, setWaveKey] = useState(0);
+  const [panchiModalOpen, setPanchiModalOpen] = useState(false);
+  const [panchiModalClosing, setPanchiModalClosing] = useState(false);
+
+  const closePanchiModal = useCallback(() => {
+    setPanchiModalClosing(true);
+    setTimeout(() => {
+      setPanchiModalOpen(false);
+      setPanchiModalClosing(false);
+    }, 150);
+  }, []);
+
+  useEffect(() => {
+    if (!panchiModalOpen) return;
+    const onEscape = (e) => { if (e.key === 'Escape') closePanchiModal(); };
+    document.addEventListener('keydown', onEscape);
+    document.body.style.overflow = 'hidden';
+    return () => { document.removeEventListener('keydown', onEscape); document.body.style.overflow = ''; };
+  }, [panchiModalOpen, closePanchiModal]);
 
   return (
   <div className="space-y-12 animate-in fade-in duration-500 pb-24 relative">
@@ -389,15 +407,8 @@ const HomeView = ({ onNavigate }) => {
           </p>
         </div>
         
-        {/* About Me Section */}
-        <div className="space-y-3 text-stone-500 dark:text-stone-400 text-sm leading-relaxed max-w-xl mt-8">
-          <p>
-            I design and ship constraint-heavy systems where workflows are ambiguous, stakes are high, and trust matters. I lead products from 0 to 1 through scale, translating complex logic and automation into clear, usable experiences.
-          </p>
-        </div>
-
         {/* Key Experience Chips */}
-        <div className="flex flex-wrap gap-2 mt-5">
+        <div className="flex flex-wrap gap-2 mt-8">
           {["0-to-1", "Design Leadership", "Agentic UX", "Systems Thinking", "B2B2C", "SaaS"].map((tag, i) => (
             <span key={i} className="px-3 py-1 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 text-xs font-semibold rounded-full border border-stone-200 dark:border-stone-700">
               {tag}
@@ -407,10 +418,109 @@ const HomeView = ({ onNavigate }) => {
       </div>
     </div>
 
+    {/* What I'm up to recently */}
+    <div className="relative z-10">
+      <h2 className="text-sm font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider mb-4">What I'm up to recently</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 text-sm text-stone-600 dark:text-stone-300">
+        {/* Left: Listening */}
+        <div>
+          <p className="font-semibold text-stone-500 dark:text-stone-400 mb-3">🎧 Listening</p>
+          <ul className="space-y-5">
+            <li>
+              <a href="https://open.spotify.com/episode/6LeYeJbwutFrQBNLJwcE6n?si=7e252f426c544cfd" target="_blank" rel="noopener noreferrer" className="block group/link hover:text-stone-900 dark:hover:text-white transition-colors underline underline-offset-2 decoration-stone-200 dark:decoration-stone-700 hover:decoration-stone-400">
+                <span className="block font-medium">Elon Musk on AGI Timeline</span>
+                <span className="text-stone-400 dark:text-stone-500 group-hover/link:text-stone-500 dark:group-hover/link:text-stone-400 text-xs inline-flex items-center gap-1 mt-0.5">
+                  Moonshots with Peter Diamandis
+                  <ExternalLink size={10} className="shrink-0 opacity-70" />
+                </span>
+              </a>
+            </li>
+            <li>
+              <a href="https://open.spotify.com/episode/7sj2zpcWmS8NqJjfjV8o31?si=33ebd2d306e143b5" target="_blank" rel="noopener noreferrer" className="block group/link hover:text-stone-900 dark:hover:text-white transition-colors underline underline-offset-2 decoration-stone-200 dark:decoration-stone-700 hover:decoration-stone-400">
+                <span className="block font-medium">A Motorcycle for the Mind</span>
+                <span className="text-stone-400 dark:text-stone-500 group-hover/link:text-stone-500 dark:group-hover/link:text-stone-400 text-xs inline-flex items-center gap-1 mt-0.5">
+                  Naval
+                  <ExternalLink size={10} className="shrink-0 opacity-70" />
+                </span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        {/* Right: Practicing + Following */}
+        <div className="space-y-5">
+          <div>
+            <p className="font-semibold text-stone-500 dark:text-stone-400 mb-1.5">☕ Practicing</p>
+            <p>Latte art, vibe coding, walking my dogs</p>
+          </div>
+          <div>
+            <p className="font-semibold text-stone-500 dark:text-stone-400 mb-2">🐵 Following</p>
+            <div className="flex items-start gap-3">
+              <button
+                type="button"
+                onClick={() => setPanchiModalOpen(true)}
+                className="shrink-0 rounded overflow-hidden border border-stone-200 dark:border-stone-700 hover:border-stone-300 dark:hover:border-stone-600 transition-colors focus:outline-none focus:ring-2 focus:ring-stone-400/50"
+              >
+                <img src="/panchi.png" alt="Panchi the Japanese macaque" className="w-10 h-10 object-cover object-center cursor-zoom-in" />
+              </button>
+              <a href="https://x.com/ichikawa_zoo/status/2025498126325612595?s=20" target="_blank" rel="noopener noreferrer" className="inline group/panchi hover:text-stone-900 dark:hover:text-white transition-colors underline underline-offset-2 decoration-stone-200 dark:decoration-stone-700 hover:decoration-stone-400">
+                Panchi the Japanese macaque at Ichikawa Zoo
+                <ExternalLink size={12} className="inline-block align-middle ml-1 opacity-70" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Panchi photo lightbox */}
+    {panchiModalOpen && (
+      <div
+        className={`fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm ${panchiModalClosing ? 'lightbox-fade-out' : 'animate-in fade-in duration-200'}`}
+        onClick={closePanchiModal}
+        role="button"
+        tabIndex={0}
+        aria-label="Close"
+      >
+        <div
+          className={`relative max-w-2xl w-full ${panchiModalClosing ? 'lightbox-fade-out' : 'lightbox-zoom-in'}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <img src="/panchi.png" alt="Panchi the Japanese macaque" className="w-full h-auto rounded-xl shadow-2xl" />
+          <button
+            type="button"
+            onClick={closePanchiModal}
+            className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-white dark:bg-stone-800 shadow-lg flex items-center justify-center text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors focus:outline-none"
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </div>
+      </div>
+    )}
+
     {/* Recent Experience Section */}
     <div className="relative z-10">
       <div className="flex justify-between items-baseline mb-6">
         <h2 className="text-sm font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider">Recent roles shaping my work today</h2>
+      </div>
+
+      {/* Ask my AI twin - below section title */}
+      <div className="group cursor-pointer mb-6" onClick={() => onNavigate('chat')}>
+        <div className="relative rounded-2xl overflow-hidden p-[2px]">
+          <div className="absolute inset-[-100%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_90deg,transparent_0_340deg,#3B82F6_360deg)] opacity-100" />
+          <div className="relative bg-white dark:bg-stone-900 rounded-[14px] p-5 shadow-sm flex items-center gap-5 h-full">
+            <div className="bg-gradient-to-tr from-blue-500 to-sky-500 text-white p-3 rounded-xl group-hover:scale-110 transition-transform shadow-lg shadow-blue-500/20">
+              <Sparkles size={22} />
+            </div>
+            <div className="flex-1">
+              <p className="font-bold text-lg text-stone-900 dark:text-white">Ask my AI twin about my work</p>
+              <p className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">Learn more about my experience, design thinking, and problem-solving.</p>
+            </div>
+            <div className="bg-stone-50 dark:bg-stone-800 p-2 rounded-full text-stone-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+              <ChevronRight size={20} />
+            </div>
+          </div>
+        </div>
       </div>
       
       <div className="space-y-0">
@@ -436,29 +546,6 @@ const HomeView = ({ onNavigate }) => {
             )}
           </div>
         ))}
-      </div>
-    </div>
-
-    {/* Search/Chat Trigger - Laser Beam Added */}
-    <div className="relative z-10 group cursor-pointer mt-8" onClick={() => onNavigate('chat')}>
-      {/* Laser Beam Container */}
-      <div className="relative rounded-2xl overflow-hidden p-[2px]">
-        {/* Animated Rotating Gradient (The Laser Beam - Always Visible) */}
-        <div className="absolute inset-[-100%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_90deg,transparent_0_340deg,#3B82F6_360deg)] opacity-100" />
-        
-        {/* Inner Content Card */}
-        <div className="relative bg-white dark:bg-stone-900 rounded-[14px] p-5 shadow-sm flex items-center gap-5 h-full">
-          <div className="bg-gradient-to-tr from-blue-500 to-sky-500 text-white p-3 rounded-xl group-hover:scale-110 transition-transform shadow-lg shadow-blue-500/20">
-            <Sparkles size={22} />
-          </div>
-          <div className="flex-1">
-            <p className="font-bold text-lg text-stone-900 dark:text-white">Ask my AI twin about my work</p>
-            <p className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">Learn more about my experience, design thinking, and problem-solving.</p>
-          </div>
-          <div className="bg-stone-50 dark:bg-stone-800 p-2 rounded-full text-stone-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-            <ChevronRight size={20} />
-          </div>
-        </div>
       </div>
     </div>
 

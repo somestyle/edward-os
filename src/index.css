@@ -174,6 +174,22 @@ html, body {
   animation: shake 0.4s ease-in-out;
 }
 
+/* Lightbox zoom-in / fade-out */
+@keyframes lightbox-zoom-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes lightbox-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+.lightbox-zoom-in {
+  animation: lightbox-zoom-in 0.2s ease-out forwards;
+}
+.lightbox-fade-out {
+  animation: lightbox-fade-out 0.15s ease-in forwards;
+}
+
 /* ---------------------------------------------------------------------------
    Dock bar — uses theme variables; one rule for all themes
    --------------------------------------------------------------------------- */
