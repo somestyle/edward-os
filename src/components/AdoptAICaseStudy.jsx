@@ -14,6 +14,7 @@ const ITERATIONS = [
     fdeCallout: false,
     wins: ["Established shared mental model early", "Confirmed need for step-level hierarchy"],
     gaps: ["Studio agent NL editing not production-ready", "No type contracts or input / output model", "Canvas became unreadable beyond 6 nodes", "Fully disconnected from WDL execution layer"],
+    mediaSrc: "/Projects/Adopt/output_visual_640_24.gif",
   },
   {
     version: "v1.5",
@@ -26,6 +27,7 @@ const ITERATIONS = [
     fdeCallout: true,
     wins: ["Sequential structure readable for PMs", "Workflow logic scannable end to end"],
     gaps: ["UI and WDL out of sync on every edit", "No test mode or debug output", "FDE had no dedicated code editing surface", "Two separate truths for two user types"],
+    mediaSrc: "/Projects/Adopt/output_blocks_640_24.gif",
   },
   {
     version: "v2",
@@ -38,6 +40,7 @@ const ITERATIONS = [
     fdeCallout: false,
     wins: ["Bidirectional sync eliminated UI and WDL drift", "Inline test and debug in one surface", "Both PMs and FDEs served from one model", "Trust restored through visible execution state"],
     gaps: [],
+    mediaSrc: "/Projects/Adopt/output_techdetail_640_24.gif",
   },
   {
     version: "v2+",
@@ -50,6 +53,7 @@ const ITERATIONS = [
     fdeCallout: false,
     wins: ["Reusable typed steps with validated contracts", "Shared vocabulary for both PMs and engineers", "Schema validation at the step level", "Architecture extensible to agent orchestration"],
     gaps: [],
+    mediaSrc: "/Projects/Adopt/output_wdledit_640_24.gif",
   },
 ];
 
@@ -185,14 +189,20 @@ export default function AdoptAICaseStudy({ onClose }) {
     return () => obs.disconnect();
   }, [metricCounted]);
 
-  const MediaBox = ({ label = "Placeholder", sub = "Add media", height = 200 }) => (
-    <div style={{ width:"100%", height, borderRadius:10, background:"#f2f1ef", border:"1.5px dashed #d6d3d1", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:6, marginTop:20 }}>
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c4b5a5" strokeWidth="1.4">
-        <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4" strokeLinecap="round"/>
-      </svg>
-      <span style={{ fontSize:12, fontWeight:600, color:"#a8a29e" }}>{label}</span>
-      <span style={{ fontSize:11, color:"#c4b5a5" }}>{sub}</span>
-    </div>
+  const MediaBox = ({ label = "Placeholder", sub = "Add media", height = 200, src, maxWidth }) => (
+    src ? (
+      <div style={{ marginTop: 20, maxWidth: maxWidth || "100%", marginLeft: "auto", marginRight: "auto" }}>
+        <img src={src} alt={label} style={{ width: "100%", height: "auto", borderRadius: 10, display: "block" }} />
+      </div>
+    ) : (
+      <div style={{ width:"100%", height, borderRadius:10, background:"#f2f1ef", border:"1.5px dashed #d6d3d1", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:6, marginTop:20 }}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c4b5a5" strokeWidth="1.4">
+          <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4" strokeLinecap="round"/>
+        </svg>
+        <span style={{ fontSize:12, fontWeight:600, color:"#a8a29e" }}>{label}</span>
+        <span style={{ fontSize:11, color:"#c4b5a5" }}>{sub}</span>
+      </div>
+    )
   );
 
   return (
@@ -287,6 +297,12 @@ export default function AdoptAICaseStudy({ onClose }) {
           font-size:clamp(15px,2vw,18px); font-weight:300;
           color:#a8a29e; letter-spacing:-.005em; margin-top:28px; margin-bottom:22px;
           opacity:0; animation:wordUp .55s .5s ease forwards;
+        }
+        .cs-hero-gif {
+          width:640px; max-width:100%; border-radius:12px;
+          margin-bottom:32px; display:block;
+          box-shadow:0 2px 12px rgba(0,0,0,.06);
+          opacity:0; animation:wordUp .55s .6s ease forwards;
         }
         .cs-hero-lead {
           font-size:16px; line-height:1.8; color:#57534e;
@@ -740,7 +756,12 @@ export default function AdoptAICaseStudy({ onClose }) {
                 <br/>
                 <em className="cs-h1-word" style={{ animationDelay:"0.4s" }}>agentic AI</em>
               </h1>
-              <p className="cs-h1-sub">Adopt AI · Action Builder</p>
+              <p className="cs-h1-sub">Adopt AI</p>
+              <img
+                src="/Projects/Adopt/output_adopt_640_24.gif"
+                alt="Adopt AI dashboard in action"
+                className="cs-hero-gif"
+              />
               <p className="cs-hero-lead">
                 When AI stops <strong>advising</strong> and starts <strong>acting</strong>, the design problem changes entirely. This is the story of how I designed a workflow system that gave enterprise teams the confidence to let AI execute on their behalf, and what it took to earn that trust across four iterations.
               </p>
@@ -910,7 +931,7 @@ export default function AdoptAICaseStudy({ onClose }) {
                         </p>
                       </div>
                     )}
-                    <MediaBox label={it.mediaLabel} sub={it.mediaSub} height={190}/>
+                    <MediaBox label={it.mediaLabel} sub={it.mediaSub} height={190} src={it.mediaSrc}/>
                   </div>
                 </div>
               ))}
@@ -942,7 +963,7 @@ export default function AdoptAICaseStudy({ onClose }) {
             <p className="cs-p">
               The v2 Action Builder is a layered system. Starting with what users can read, connecting through to what actually executes, and built to scale toward full agent orchestration.
             </p>
-            <MediaBox label="Action Builder · Final Design" sub="Production UI or walkthrough GIF · add here" height={320}/>
+            <MediaBox label="Action Builder · Final Design" sub="Production UI or walkthrough GIF · add here" height={320} src="/Projects/Adopt/output_production_640_24.gif" maxWidth={640}/>
 
             <div className="cs-arch reveal">
               <div className="cs-arch-head">
