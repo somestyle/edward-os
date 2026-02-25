@@ -2,26 +2,26 @@ import React, { useEffect, useRef, useState } from "react";
 
 /* ─── data ──────────────────────────────────────────────── */
 
-const TIMELINE_MILESTONES = [
-  { date: "Month 1", title: "Kickoff — competitive audit + interaction model v1", body: "Mapped the competitive landscape. Defined the core interaction grammar: how users initiate actions, how AI confirms intent, how results surface." },
-  { date: "Month 2–3", title: "Design system built in parallel with first prototype", body: "No existing design language. Built typography, colour, spacing, and core components from scratch while the first copilot prototype was being developed." },
-  { date: "Month 3–4", title: "First design partner sessions", body: "Joined early customer demo calls. Ran prototype walkthroughs bi-weekly. Feedback from these sessions directly shaped every major design decision." },
-  { date: "Month 5–6", title: "Weekly iteration cycle established", body: "Shipped design updates weekly based on customer sync feedback. Prototypes shown in calls, refined between sessions. This cadence held for the full 9 months." },
-  { date: "Month 7–8", title: "MVP pilots signed", body: "First design partners converted to paying pilots. The demo experience — clarity, trust, ease of setup — was cited directly in customer conversations." },
+const TIMELINE_ITEMS = [
+  { date: "Month 1", title: "Kickoff: competitive audit and interaction model v1", body: "Mapped the competitive landscape. Defined the core interaction grammar: how users initiate actions, how AI confirms intent, how results surface." },
+  { date: "Month 2-3", title: "Design system built in parallel with first prototype", body: "No existing design language. Built typography, colour, spacing, and core components from scratch while the first copilot prototype was being developed." },
+  { date: "Month 3-4", title: "First design partner sessions", body: "Joined early customer demo calls. Ran prototype walkthroughs bi-weekly. Feedback from these sessions directly shaped every major design decision." },
+  { date: "Month 5-6", title: "Weekly iteration cycle established", body: "Shipped design updates weekly based on customer sync feedback. Prototypes shown in calls, refined between sessions. This cadence held for the full 9 months." },
+  { date: "Month 7-8", title: "MVP pilots signed", body: "First design partners converted to paying pilots. The demo experience: clarity, trust, and ease of setup were cited directly in customer conversations." },
   { date: "Month 9", title: "GA launch", body: "Platform moved from pilot to general availability. Design system, interaction model, and copilot UI all production-ready and documented for the engineering team." },
 ];
 
 const APPROACH_CARDS = [
-  { n: "01", title: "Customer contact as a design input", body: "I joined demo calls and customer syncs from month one — not as an observer, but as an active participant testing prototypes and collecting feedback. Weekly iteration cycles meant design was always grounded in real customer response, not assumption." },
-  { n: "02", title: "Design system as a product accelerator", body: "Building the design system in parallel with the product — not after — meant every new feature had a consistent foundation from day one. It also made onboarding engineering faster as the team grew." },
-  { n: "03", title: "Trust as the primary design constraint", body: "For enterprise users delegating real actions to AI, trust is not a feature — it's the product. Every interface decision was evaluated against one question: does this make the AI's behaviour more legible, reviewable, and correctable?" },
+  { n: "01", title: "Customer contact as a design input", body: "I joined demo calls and customer syncs from month one, not as an observer, but as an active participant testing prototypes and collecting feedback. Weekly iteration cycles meant design was always grounded in real customer response, not assumption." },
+  { n: "02", title: "Design system as a product accelerator", body: "Building the design system in parallel with the product, not after, meant every new feature had a consistent foundation from day one. It also made onboarding engineering faster as the team grew." },
+  { n: "03", title: "Trust as the primary design constraint", body: "For enterprise users delegating real actions to AI, trust is not a feature. It is the product. Every interface decision was evaluated against one question: does this make the AI's behaviour more legible, reviewable, and correctable?" },
 ];
 
 const LEARNINGS = [
   { h: "Customer contact is a design method, not a research phase", b: "Joining demo calls and weekly syncs from month one meant feedback arrived in real time, not in batched research rounds. The cadence of iteration matched the cadence of customer contact. That alignment is hard to replicate later." },
-  { h: "Build the design system before you need it", b: "Starting the design system in parallel with the first prototype — not after the product had already diverged — meant consistency was never a catch-up exercise. Every component was born into a system, not retrofitted." },
-  { h: "For AI products, trust is the interaction model", b: "Every decision about how to surface AI behaviour — what to show, when to ask for confirmation, how to handle failure — was a trust decision first and a UX decision second. Treating them separately produces the wrong answer." },
-  { h: "Speed and quality compound when the feedback loop is short", b: "Weekly iteration cycles forced decisions to be made with just enough information. That constraint produced more focused design than longer cycles — and the compounding effect over 9 months was a product that was already validated before GA." },
+  { h: "Build the design system before you need it", b: "Starting the design system in parallel with the first prototype, not after the product had already diverged, meant consistency was never a catch-up exercise. Every component was born into a system, not retrofitted." },
+  { h: "For AI products, trust is the interaction model", b: "Every decision about how to surface AI behaviour (what to show, when to ask for confirmation, how to handle failure) was a trust decision first and a UX decision second. Treating them separately produces the wrong answer." },
+  { h: "Speed and quality compound when the feedback loop is short", b: "Weekly iteration cycles forced decisions to be made with just enough information. That constraint produced more focused design than longer cycles, and the compounding effect over 9 months was a product that was already validated before GA." },
 ];
 
 /* ─── component ──────────────────────────────────────────── */
@@ -41,6 +41,24 @@ export default function AdoptAIPlatform({ onClose }) {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("context");
   const rootRef = useRef(null);
+  const timelineRef = useRef(null);
+  const lineRef = useRef(null);
+
+  useEffect(() => {
+    const updateLine = () => {
+      if (!timelineRef.current || !lineRef.current) return;
+      const dots = timelineRef.current.querySelectorAll(".cs-timeline-dot");
+      if (!dots.length) return;
+      const lastDot = dots[dots.length - 1];
+      const containerRect = timelineRef.current.getBoundingClientRect();
+      const lastDotRect = lastDot.getBoundingClientRect();
+      const lineHeight = (lastDotRect.top - containerRect.top) + lastDotRect.height / 2;
+      lineRef.current.style.height = lineHeight + "px";
+    };
+    updateLine();
+    window.addEventListener("resize", updateLine);
+    return () => window.removeEventListener("resize", updateLine);
+  }, []);
 
   useEffect(() => {
     const el = rootRef.current;
@@ -92,12 +110,12 @@ export default function AdoptAIPlatform({ onClose }) {
         <img src={src} alt={label} style={{ width: "100%", height: "auto", borderRadius: 10, display: "block" }} />
       </div>
     ) : (
-      <div style={{ width:"100%", height, borderRadius:10, background:"#f2f1ef", border:"1.5px dashed #d6d3d1", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:6, marginTop:20 }}>
+      <div style={{ width:"100%", height, borderRadius:10, background:"#f2f1ef", border:"1.5px dashed #d6d3d1", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:6, marginTop:20, overflow:"hidden" }}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c4b5a5" strokeWidth="1.4">
           <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4" strokeLinecap="round"/>
         </svg>
         <span style={{ fontSize:12, fontWeight:600, color:"#a8a29e" }}>{label}</span>
-        <span style={{ fontSize:11, color:"#c4b5a5" }}>{sub}</span>
+        <span style={{ fontSize:11, color:"#c4b5a5", overflow:"hidden", textOverflow:"ellipsis", display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", textAlign:"center", maxWidth:"100%", padding:"0 8px" }}>{sub}</span>
       </div>
     )
   );
@@ -225,6 +243,8 @@ export default function AdoptAIPlatform({ onClose }) {
         /* ── SECTION ── */
         .cs-sec { padding:72px 0; border-bottom:1px solid #e7e5e4; }
         .cs-sec:last-of-type { border-bottom:none; }
+        .cs-sec-impact { padding-bottom:40px !important; }
+        .cs-sec-reflection { padding-top:48px !important; }
 
         .cs-kicker {
           display:inline-flex; align-items:center; gap:10px;
@@ -281,64 +301,80 @@ export default function AdoptAIPlatform({ onClose }) {
           position:relative;
           margin-top:36px;
         }
-        .cs-timeline::before {
-          content:'';
+        .cs-timeline-line {
           position:absolute;
-          left:55px;
-          top:8px;
-          bottom:8px;
+          left:148px;
+          top:0;
           width:2px;
           background:#e7e5e4;
+          height:0;
         }
-        .cs-timeline-item {
-          position:relative;
+        .cs-timeline-row {
           display:grid;
-          grid-template-columns:120px 1fr;
-          gap:24px;
-          padding:24px 0;
+          grid-template-columns:148px 24px 1fr;
+          gap:0 16px;
+          margin-bottom:40px;
           align-items:start;
         }
-        .cs-timeline-dot {
-          position:absolute;
-          left:51px;
-          top:32px;
-          width:8px;
-          height:8px;
-          border-radius:50%;
-          background:#2563eb;
-        }
         .cs-timeline-date {
+          text-align:right;
           font-size:11px;
           font-weight:700;
           letter-spacing:.1em;
           text-transform:uppercase;
           color:#a8a29e;
+          padding-right:0;
+          padding-top:4px;
+          line-height:1.2;
+          white-space:nowrap;
+        }
+        .cs-timeline-dot-col {
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          padding-top:5.5px;
+        }
+        .cs-timeline-dot {
+          width:10px;
+          height:10px;
+          border-radius:50%;
+          background:#2563eb;
+          border:2px solid #fff;
+          box-shadow:0 0 0 2px #bfdbfe;
+          flex-shrink:0;
+          position:relative;
+          z-index:1;
+        }
+        .cs-timeline-content {
+          padding-bottom:8px;
         }
         .cs-timeline-title {
           font-family:'Lora',Georgia,serif;
           font-size:15px;
           font-weight:600;
           color:#0c0a09;
-          margin-bottom:6px;
+          margin:0 0 6px 0;
+          line-height:1.4;
         }
         .cs-timeline-body {
           font-size:13px;
-          line-height:1.7;
+          line-height:1.75;
           color:#57534e;
         }
         .cs-timeline-end {
-          margin-top:24px;
-          padding:12px 16px;
+          margin-left:172px;
+          margin-top:8px;
           background:#eff6ff;
           border:1px solid #bfdbfe;
           border-radius:8px;
+          padding:12px 16px;
           font-size:13px;
           font-weight:600;
           color:#2563eb;
         }
 
         /* ── PRINCIPLES ── */
-        .cs-prin-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:36px; }
+        .cs-prin-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:36px; }
         .cs-prin {
           background:#fff; border:1px solid #e7e5e4; border-radius:12px;
           padding:26px; transition:border-color .2s, box-shadow .2s, transform .2s;
@@ -444,15 +480,16 @@ export default function AdoptAIPlatform({ onClose }) {
           .cs-meta { grid-template-columns:1fr 1fr; }
           .cs-meta-cell:nth-child(2n) { border-right:none; }
           .cs-meta-cell:nth-child(n+3) { border-top:1px solid #e7e5e4; }
-          .cs-prin-grid, .cs-impact-grid { grid-template-columns:1fr; }
+          .cs-prin-grid { grid-template-columns:1fr; }
+          .cs-impact-grid { grid-template-columns:1fr; }
           .cs-metrics { grid-template-columns:1fr; }
           .cs-metric { border-right:none; border-bottom:1px solid #e7e5e4; }
           .cs-metric:last-child { border-bottom:none; }
           .cs-two-col, .cs-work-grid { grid-template-columns:1fr !important; }
-          .cs-timeline::before { left:20px; }
-          .cs-timeline-item { grid-template-columns:1fr; padding-left:44px; }
-          .cs-timeline-dot { left:16px; }
-          .cs-timeline-date { padding-left:0; margin-bottom:4px; }
+          .cs-timeline-row { grid-template-columns:80px 20px 1fr; }
+          .cs-timeline-line { left:80px; }
+          .cs-timeline-end { margin-left:0; }
+          .cs-timeline-date { font-size:10px; }
           .cs-timeline-title, .cs-timeline-body { grid-column:1; }
           .cs-foot { flex-direction:column; gap:14px; align-items:flex-start; padding:32px 20px 56px; }
         }
@@ -494,20 +531,17 @@ export default function AdoptAIPlatform({ onClose }) {
               <span className="cs-pill cs-pill-stone">0 to Scale</span>
             </div>
             <h1 className="cs-h1">
-              {"Designing the platform.".split(" ").map((w, i) => (
-                <span key={w+i} className="cs-h1-word" style={{ animationDelay:`${i*0.1}s`, marginRight:"0.22em" }}>{w}</span>
-              ))}
+              <span className="cs-h1-word" style={{ animationDelay:"0s", marginRight:"0.22em" }}>Built from zero.</span>
               <br/>
-              <em className="cs-h1-word" style={{ animationDelay:"0.4s" }}>Before the platform existed.</em>
+              <em className="cs-h1-word" style={{ animationDelay:"0.2s" }}>Designed to scale.</em>
             </h1>
-            <p className="cs-h1-sub">Adopt AI</p>
             <MediaBox
               label="Platform Overview"
               sub="Best full-platform screenshot: copilot embedded in customer app"
               height={380}
             />
             <p className="cs-hero-lead">
-              Adopt AI needed a design language, an interaction model, and a UX definition for agentic software — before any of those things existed. This is the story of how I built them in parallel with the product, and what that process looks like when it works.
+              Adopt AI needed a design language, an interaction model, and a UX definition for agentic software before any of those things existed. This is the story of how I built them in parallel with the product, and what that process looks like when it works.
             </p>
             <div className="cs-meta">
               {[["Role","Founding Staff Designer"],["Scope","0 to 1 · Full Platform"],["Timeline","9 Months · Pilots to GA"],["Outcome","10+ Contracts · Growing MoM"]].map(([k,v])=>(
@@ -527,20 +561,20 @@ export default function AdoptAIPlatform({ onClose }) {
             <div className="cs-kicker"><span className="cs-kicker-dot"/>01 · Context</div>
             <h2 className="cs-sh">An AI copilot platform.<br/><em>No brief. No prior art.</em></h2>
             <p className="cs-p">
-              Adopt AI embeds a configurable AI copilot inside enterprise SaaS tools. Unlike advisory AI, Adopt executes workflows on the user's behalf — navigating the product, filling forms, completing tasks end-to-end. When I joined, none of the infrastructure for designing this existed: no interaction model, no design system, no established UX patterns for autonomous AI at enterprise scale.
+              Adopt AI embeds a configurable AI copilot inside enterprise SaaS tools. Unlike advisory AI, Adopt executes workflows on the user's behalf: navigating the product, filling forms, completing tasks end-to-end. When I joined, none of the infrastructure for designing this existed: no interaction model, no design system, no established UX patterns for autonomous AI at enterprise scale.
             </p>
             <p className="cs-p">
               My scope was not just UI. I needed to define what agentic UX means for this product, build the design system from scratch, and maintain a direct feedback loop with customers throughout.
             </p>
             <div className="cs-callout reveal">
               <span className="cs-callout-mark">"</span>
-              <p className="cs-callout-text">The design problem wasn't "how should this look." It was "what should this be" — and those are very different starting points.</p>
+              <p className="cs-callout-text">The design problem wasn't how should this look. It was what should this be. Those are very different starting points.</p>
               <span className="cs-callout-label">The scope of the problem</span>
             </div>
             <div className="cs-two-col reveal" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16, marginTop:32 }}>
               <MediaBox
                 label="Competitive Landscape"
-                sub="Microsoft Copilot, Salesforce Agentforce, Google Gemini — the reference set at kickoff"
+                sub="Microsoft Copilot, Salesforce Agentforce, Google Gemini: the reference set at kickoff"
                 height={240}
               />
               <MediaBox
@@ -556,16 +590,19 @@ export default function AdoptAIPlatform({ onClose }) {
             <div className="cs-kicker"><span className="cs-kicker-dot"/>02 · How It Shipped</div>
             <h2 className="cs-sh">9 months.<br/><em>From first wireframe to GA.</em></h2>
             <p className="cs-p">
-              The product moved fast. Design kept pace by staying embedded in the customer feedback loop throughout — not just at research phases.
+              The product moved fast. I stayed embedded in customer calls throughout: joining demos, running bi-weekly prototype sessions, and shipping design updates weekly. Not just at research phases. The full 9 months.
             </p>
-            <div className="cs-timeline reveal">
-              {TIMELINE_MILESTONES.map((m) => (
-                <div key={m.date} className="cs-timeline-item">
-                  <div className="cs-timeline-dot"/>
-                  <div className="cs-timeline-date">{m.date}</div>
-                  <div>
-                    <h4 className="cs-timeline-title">{m.title}</h4>
-                    <p className="cs-timeline-body">{m.body}</p>
+            <div className="cs-timeline" ref={timelineRef}>
+              <div className="cs-timeline-line" ref={lineRef} />
+              {TIMELINE_ITEMS.map((item) => (
+                <div key={item.date} className="cs-timeline-row reveal">
+                  <div className="cs-timeline-date">{item.date}</div>
+                  <div className="cs-timeline-dot-col">
+                    <div className="cs-timeline-dot" />
+                  </div>
+                  <div className="cs-timeline-content">
+                    <div className="cs-timeline-title">{item.title}</div>
+                    <div className="cs-timeline-body">{item.body}</div>
                   </div>
                 </div>
               ))}
@@ -598,17 +635,17 @@ export default function AdoptAIPlatform({ onClose }) {
             <div className="cs-kicker"><span className="cs-kicker-dot"/>04 · The Work</div>
             <h2 className="cs-sh">The platform across three contexts.<br/><em>One design system. Three deployment modes.</em></h2>
             <p className="cs-p">
-              The copilot deploys as an embedded panel inside a customer's own product, as internal enterprise tooling, or as a fully white-labelled solution under the customer's brand. The design system had to support all three without fragmenting — consistent interaction patterns, flexible theming, shared component architecture.
+              The copilot deploys as an embedded panel inside a customer's own product, as internal enterprise tooling, or as a fully white-labelled solution under the customer's brand. The design system had to support all three without fragmenting: consistent interaction patterns, flexible theming, shared component architecture.
             </p>
             <MediaBox
-              label="Copilot — Embedded in Customer Platform"
+              label="Copilot: Embedded in Customer Platform"
               sub="Best screenshot: full sidebar panel with Welcome message, Recommended Actions, Top Actions, and chat input visible"
               height={400}
             />
             <div className="cs-work-sublabel" style={{ fontSize:10, fontWeight:700, letterSpacing:".14em", textTransform:"uppercase", color:"#a8a29e", marginTop:32, marginBottom:12 }}>Platform in action</div>
             <div className="cs-work-grid reveal" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
               <MediaBox label="Conversational Action Execution" sub="Ziuri Copilot chat interface: AI conversation with Deactivate/Reassign action buttons visible" height={220} />
-              <MediaBox label="No-Code Configuration — Design Studio" sub="Design Studio panel: sidebar customization with Header, Welcome Text, Colour Palette controls visible" height={220} />
+              <MediaBox label="No-Code Configuration: Design Studio" sub="Design Studio panel: sidebar customization with Header, Welcome Text, Colour Palette controls visible" height={220} />
               <MediaBox label="Action Configuration" sub="Action components / flow builder: action config panel with routing logic visible" height={220} />
               <MediaBox label="Platform Analytics" sub="Adopt AI dashboard: Action Performance charts, Customer time spend metrics, Actions by topic donut chart" height={220} />
             </div>
@@ -618,18 +655,18 @@ export default function AdoptAIPlatform({ onClose }) {
           </section>
 
           {/* IMPACT */}
-          <section className="cs-sec reveal" id="impact">
+          <section className="cs-sec cs-sec-impact reveal" id="impact">
             <div className="cs-kicker"><span className="cs-kicker-dot"/>05 · Impact</div>
             <h2 className="cs-sh">What shipped. What it produced.<br/><em>Measured in contracts, not compliments.</em></h2>
             <p className="cs-p">
-              Nine months of weekly iteration with direct customer contact produced outcomes that were measurable from the start of pilots.
+              Weekly design iteration against live customer feedback. Nine months. The outcomes were visible from the first pilots.
             </p>
 
             <div className="cs-metrics">
               {[
                 { num:"9mo", cls:"blue", l:"Zero to GA", s:"First wireframe to general availability" },
                 { num:"10+", cls:"green", l:"Enterprise contracts", s:"Signed within 12 months of launch" },
-                { num:"MoM", cls:"orange", l:"Growing month over month", s:"Customer pipeline expanding at GA" },
+                { num:"Now", cls:"orange", l:"Growing month over month", s:"Pipeline expanding at GA and beyond" },
               ].map((m)=>(
                 <div key={m.l} className="cs-metric">
                   <div className={`cs-metric-num ${m.cls}`}>{m.num}</div>
@@ -664,18 +701,18 @@ export default function AdoptAIPlatform({ onClose }) {
                 </div>
                 <div className="cs-stat-next">
                   <div className="cs-stat-next-k">Trajectory</div>
-                  <p className="cs-stat-next-p">Pipeline is growing month over month. <strong>Design velocity</strong> — the ability to ship weekly against customer feedback — is now a recognised competitive advantage.</p>
+                  <p className="cs-stat-next-p">Pipeline is growing month over month. <strong>Design velocity</strong>, the ability to ship weekly against customer feedback, is now a recognised competitive advantage.</p>
                 </div>
               </div>
             </div>
           </section>
 
           {/* REFLECTION */}
-          <section className="cs-sec reveal" id="reflection">
+          <section className="cs-sec cs-sec-reflection reveal" id="reflection">
             <div className="cs-kicker"><span className="cs-kicker-dot"/>06 · Reflection</div>
             <h2 className="cs-sh">What I carry forward.<br/><em>From this kind of work.</em></h2>
             <p className="cs-p">
-              Building a product from zero alongside the customers who will use it produces a different kind of design knowledge. These are the things that changed how I work.
+              Building from zero with continuous customer contact produces a specific kind of design knowledge. These are the things I carry into every complex systems problem next.
             </p>
             <ul className="cs-learnings">
               {LEARNINGS.map((l, i) => (
