@@ -65,7 +65,11 @@ const ITERATIONS = [
     mediaSrc: "/Projects/Adopt/Adopt_builder2b.gif",
     mediaLabel: "v2+ · WDL Editor & Test Integration",
     wins: ["Real-time bidirectional sync eliminated UI/WDL drift permanently", "Inline test and debug removed the need to context-switch to external tools", "Both PM and engineer served within one unified surface", "Trust restored through full execution visibility"],
-    gaps: [],
+    gaps: [
+      "Steps still had no defined structure, so the same workflow built by two different engineers looked completely different",
+      "There was no way to reuse work across customers, every new client required starting from scratch",
+      "Without a shared vocabulary for step types, PMs and engineers described the same thing differently"
+    ],
   },
   {
     version: "05",
@@ -252,6 +256,7 @@ export default function AdoptAICaseStudy({ onClose }) {
           font-family:'DM Sans',ui-sans-serif,system-ui,sans-serif;
           -webkit-font-smoothing:antialiased;
           scroll-behavior:smooth;
+          overflow-x:hidden;
         }
         .cs-root *, .cs-root *::before, .cs-root *::after { box-sizing:border-box; margin:0; padding:0; }
 
@@ -286,21 +291,22 @@ export default function AdoptAICaseStudy({ onClose }) {
         .cs-hero {
           padding:80px 0 64px;
           position:relative; border-bottom:1px solid #e7e5e4;
-          overflow:hidden;
         }
         .cs-hero-tex {
-          position:absolute; inset:0; z-index:0; opacity:.35;
+          position:absolute; top:0; bottom:0; left:50%; transform:translateX(-50%);
+          width:100vw; z-index:0; opacity:.35;
           background-image: radial-gradient(circle, #c4b5a5 1px, transparent 1px);
           background-size: 22px 22px;
         }
         .cs-hero-wash {
-          position:absolute; inset:0; z-index:1; pointer-events:none;
+          position:absolute; top:0; bottom:0; left:50%; transform:translateX(-50%);
+          width:100vw; z-index:1; pointer-events:none;
           background:
             radial-gradient(ellipse 65% 50% at 70% 0%, rgba(219,234,254,.82) 0%, transparent 60%),
             radial-gradient(ellipse 40% 35% at 0% 85%, rgba(220,252,231,.65) 0%, transparent 55%),
             linear-gradient(to bottom, rgba(252,251,250,0) 0%, rgba(252,251,250,.9) 100%);
         }
-        .cs-hero-inner { position:relative; z-index:2; }
+        .cs-hero-inner { position:relative; z-index:2; max-width:880px; margin:0 auto; padding:0 48px; }
 
         .cs-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:28px; }
         .cs-pill {
@@ -334,7 +340,7 @@ export default function AdoptAICaseStudy({ onClose }) {
           opacity:0; animation:wordUp .55s .5s ease forwards;
         }
         .cs-hero-gif {
-          width:640px; max-width:100%; border-radius:12px;
+          width:100%; max-width:100%; border-radius:12px;
           margin-bottom:32px; display:block;
           box-shadow:0 2px 12px rgba(0,0,0,.06);
           opacity:0; animation:wordUp .55s .6s ease forwards;
@@ -443,17 +449,19 @@ export default function AdoptAICaseStudy({ onClose }) {
         /* ── PERSONA ── */
         .cs-persona-wrap { margin-top:28px; }
         .cs-persona {
-          border-radius:14px; padding:28px; overflow:hidden;
+          border-radius:14px; padding:16px 20px;
           transition:transform .2s, box-shadow .2s;
           border:1px solid #e7e5e4;
+          display:flex; gap:12px; align-items:flex-start;
         }
         .cs-persona:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(0,0,0,.08); }
         .cs-persona-pm  { background:#fafaf9; }
         .cs-persona-avatar {
           width:44px; height:44px; border-radius:12px;
           display:flex; align-items:center; justify-content:center;
-          font-size:20px; margin-bottom:16px; background:#f5f5f4;
+          font-size:20px; flex-shrink:0; background:#f5f5f4;
         }
+        .cs-persona-body { flex:1; min-width:0; }
         .cs-persona-role { font-size:9.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#a8a29e; margin-bottom:6px; }
         .cs-persona-name { font-family:'Lora',serif; font-size:18px; font-weight:600; color:#0c0a09; margin-bottom:10px; line-height:1.3; }
         .cs-persona-desc { font-size:13px; line-height:1.75; color:#78716c; margin-bottom:16px; }
@@ -477,74 +485,138 @@ export default function AdoptAICaseStudy({ onClose }) {
         .cs-fde-reveal {
           margin-top:20px;
           padding:16px 20px;
-          background:#fffbeb; border:1px solid #fde68a; border-radius:12px;
+          background:#fffbeb; border:1px solid #fde68a; border-radius:14px;
           display:flex; gap:12px; align-items:flex-start;
         }
         .cs-fde-reveal-icon {
-          width:28px; height:28px; flex-shrink:0; border-radius:7px;
-          background:#fef3c7; display:flex; align-items:center; justify-content:center; font-size:13px;
+          width:44px; height:44px; flex-shrink:0; border-radius:12px;
+          background:#fef3c7; display:flex; align-items:center; justify-content:center; font-size:20px;
         }
         .cs-fde-reveal-body { font-size:13px; line-height:1.7; color:#78716c; }
         .cs-fde-reveal-body strong { color:#92400e; font-weight:600; }
 
         /* ── ITERATIONS ── */
         .cs-iters { margin-top:48px; }
+
+        /* ITERATION CARD — new stacked layout */
         .cs-iter {
-          display:grid; grid-template-columns:200px 1fr;
-          gap:48px; padding:48px 0;
-          border-top:1px solid #e7e5e4;
+          padding: 48px 0 40px;
+          border-bottom: 1px solid #e7e5e4;
         }
-        .cs-iter:last-child { padding-bottom:0; }
+        .cs-iter:last-of-type { border-bottom: none; padding-bottom: 0; }
 
-        .cs-iter-version {
-          display:inline-block;
-          font-family:'DM Sans',sans-serif;
-          font-size:13px; font-weight:700; letter-spacing:.04em;
-          color:#fff; padding:5px 14px; border-radius:8px;
-          margin-bottom:8px;
-          transform:scale(0.7); opacity:0;
-          transition:transform .4s cubic-bezier(.34,1.56,.64,1), opacity .3s ease;
+        .cs-iter-header {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 16px;
         }
-        .cs-iter-version.badge-popped { transform:scale(1); opacity:1; }
-        .cs-iter-name { font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#a8a29e; margin-bottom:12px; }
-        .cs-iter-status {
-          display:inline-flex; align-items:center; gap:6px;
-          font-size:11px; font-weight:600; padding:5px 11px;
-          border-radius:100px; margin-bottom:24px;
+        .cs-iter-badge {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 5px 14px;
+          border-radius: 6px;
+          font-size: 12px;
+          font-weight: 700;
+          letter-spacing: .04em;
+          color: #fff;
+          white-space: nowrap;
+          flex-shrink: 0;
         }
-        .cs-iter-status-dot { width:5px; height:5px; border-radius:50%; }
+        .cs-iter-name {
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: .12em;
+          text-transform: uppercase;
+          color: #a8a29e;
+        }
 
-        /* ── HELD UP / BROKE DOWN ── */
-        .cs-iter-groups { display:flex; flex-direction:column; gap:14px; }
-        .cs-iter-group-label {
-          display:flex; align-items:center; gap:7px;
-          font-size:9.5px; font-weight:700; letter-spacing:.12em;
-          text-transform:uppercase; color:#a8a29e; margin-bottom:7px;
+        .cs-iter-headline {
+          font-family: 'Lora', Georgia, serif;
+          font-size: clamp(20px, 2.8vw, 28px);
+          font-weight: 700;
+          line-height: 1.15;
+          letter-spacing: -.018em;
+          color: #0c0a09;
+          margin-bottom: 24px;
+          max-width: 720px;
         }
-        .cs-iter-group-label svg { width:13px; height:13px; flex-shrink:0; }
-        .cs-iter-group-wins .cs-iter-group-label { color:#16a34a; }
-        .cs-iter-group-wins .cs-iter-group-label svg { stroke:#16a34a; }
-        .cs-iter-group-wins .dot-held { background:#16a34a; }
-        .cs-iter-group-gaps .cs-iter-group-label { color:#fb923c; }
-        .cs-iter-group-gaps .cs-iter-group-label svg { stroke:#fb923c; }
-        .cs-iter-group-gaps .dot-broke { background:#fb923c; }
-        .cs-iter-group-items { display:flex; flex-direction:column; gap:5px; }
-        .cs-iter-group-item {
-          font-size:12px; font-weight:500; line-height:1.5;
-          color:#57534e; padding:5px 0;
-          border-bottom:1px solid #f5f5f4;
-          display:flex; gap:8px; align-items:flex-start;
-        }
-        .cs-iter-group-item:last-child { border-bottom:none; }
-        .cs-iter-group-item-dot { width:4px; height:4px; border-radius:50%; flex-shrink:0; margin-top:5px; }
-        .dot-held { background:#78716c; }
-        .dot-broke { background:#a8a29e; }
 
-        .cs-iter-h {
-          font-family:'Lora',serif; font-size:20px; font-weight:600;
-          line-height:1.35; color:#0c0a09; letter-spacing:-.015em; margin-bottom:14px;
+        .cs-iter-media {
+          width: 100%;
+          border-radius: 12px;
+          overflow: hidden;
+          border: 1px solid #e7e5e4;
+          background: #f5f5f4;
+          margin-bottom: 28px;
         }
-        .cs-iter-p { font-size:14px; line-height:1.85; color:#57534e; }
+        .cs-iter-media img {
+          width: 100%;
+          height: auto;
+          display: block;
+        }
+
+        .cs-iter-analysis {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+        }
+        .cs-iter-analysis.single-col {
+          grid-template-columns: 1fr;
+        }
+
+        .cs-iter-col {
+          background: #fff;
+          border: 1px solid #e7e5e4;
+          border-radius: 10px;
+          padding: 20px 22px;
+        }
+
+        .cs-iter-col-head {
+          display: flex;
+          align-items: center;
+          gap: 7px;
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: .12em;
+          text-transform: uppercase;
+          margin-bottom: 14px;
+          padding-bottom: 12px;
+          border-bottom: 1px solid #f5f5f4;
+        }
+        .cs-iter-col-head.worked { color: #16a34a; }
+        .cs-iter-col-head.learned { color: #ea580c; }
+
+        .cs-iter-col-head-icon {
+          width: 14px;
+          height: 14px;
+          flex-shrink: 0;
+        }
+
+        .cs-iter-bullets {
+          list-style: none;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+        .cs-iter-bullet {
+          display: flex;
+          align-items: flex-start;
+          gap: 9px;
+          font-size: 13px;
+          line-height: 1.6;
+          color: #57534e;
+        }
+        .cs-iter-bullet-dot {
+          width: 5px;
+          height: 5px;
+          border-radius: 50%;
+          margin-top: 7px;
+          flex-shrink: 0;
+        }
+        .cs-iter-bullet-dot.worked  { background: #16a34a; }
+        .cs-iter-bullet-dot.learned { background: #ea580c; }
 
         /* ── PRINCIPLES ── */
         .cs-prin-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:36px; }
@@ -749,7 +821,7 @@ export default function AdoptAICaseStudy({ onClose }) {
           .cs-metrics { grid-template-columns:1fr; }
           .cs-metric { border-right:none; border-bottom:1px solid #e7e5e4; }
           .cs-metric:last-child { border-bottom:none; }
-          .cs-iter { grid-template-columns:1fr; gap:16px; }
+          .cs-iter-analysis { grid-template-columns: 1fr; }
           .cs-foot { flex-direction:column; gap:14px; align-items:flex-start; padding:32px 20px 56px; }
         }
       `}</style>
@@ -780,8 +852,7 @@ export default function AdoptAICaseStudy({ onClose }) {
         </nav>
 
         {/* HERO */}
-        <div className="cs-wrap">
-          <header className="cs-hero" id="top">
+        <header className="cs-hero" id="top">
             <div className="cs-hero-tex"/>
             <div className="cs-hero-wash"/>
             <div className="cs-hero-inner">
@@ -815,8 +886,7 @@ export default function AdoptAICaseStudy({ onClose }) {
                 ))}
               </div>
             </div>
-          </header>
-        </div>
+        </header>
 
         <div className="cs-wrap">
 
@@ -839,11 +909,11 @@ export default function AdoptAICaseStudy({ onClose }) {
               <div className="cs-diff-head">What changes when AI acts instead of advises</div>
               <div className="cs-diff-row">
                 <span className="cs-diff-badge before">Before Adopt</span>
-                <span className="cs-diff-body">"How do I add a customer?" returns a walkthrough. The user clicks every step. Every manual action is a chance for error.</span>
+                <span className="cs-diff-body">"How do I add a customer?" returns a walkthrough or link to a knowledge base. The user has to follow the guide and clicks through every step. Every manual action is a chance for error.</span>
               </div>
               <div className="cs-diff-row">
                 <span className="cs-diff-badge after">With Adopt</span>
-                <span className="cs-diff-body">"Add John Doe, john@acme.com as a customer" and <strong>Adopt executes the full workflow end-to-end</strong>. Every action is logged, transparent, and reversible.</span>
+                <span className="cs-diff-body">"Add John Doe, john@acme.com as a customer" and <strong>Adopt executes the full workflow end-to-end</strong>. Every action is logged, transparent, and reversible while keeping human in the loop.</span>
               </div>
             </div>
           </section>
@@ -861,10 +931,12 @@ export default function AdoptAICaseStudy({ onClose }) {
             <div className="cs-persona-wrap reveal">
               <div className="cs-persona cs-persona-pm">
                 <div className="cs-persona-avatar">🧭</div>
-                <div className="cs-persona-role">Original Target User · Customer's Team</div>
-                <div className="cs-persona-name">SaaS Product Manager</div>
-                <p className="cs-persona-desc">Configures and publishes AI-powered workflows for their end users. Needs to understand what a workflow will do without reading code. Must feel confident before pressing publish.</p>
-                <span className="cs-persona-need">Needs: clarity, structure, confidence</span>
+                <div className="cs-persona-body">
+                  <div className="cs-persona-role">Original Target User · Customer's Team</div>
+                  <div className="cs-persona-name">SaaS Product Manager</div>
+                  <p className="cs-persona-desc">Configures and publishes AI-powered workflows for their end users. Needs to understand what a workflow will do without reading code. Must feel confident before pressing publish.</p>
+                  <span className="cs-persona-need">Needs: clarity, structure, confidence</span>
+                </div>
               </div>
             </div>
             <div className="cs-fde-reveal reveal" style={{ marginTop:20 }}>
@@ -901,90 +973,82 @@ export default function AdoptAICaseStudy({ onClose }) {
               The path to v2 was not planned in advance. Each version made sense given what we knew at the time. The learning from each iteration is what decided the next move.
             </p>
             <div className="cs-iters">
-              {ITERATIONS.map((it, i) => (
-                <React.Fragment key={it.version}>
+              {ITERATIONS.map((iter, i) => (
+                <React.Fragment key={iter.version}>
                   <div className="cs-iter reveal">
-                    {/* left spine */}
-                    <div>
-                      <div
-                        className="cs-iter-version iter-badge-anim"
-                        style={{ background: it.vBg, color: it.vColor }}
-                      >
-                        {it.iterLabel}
+                    {/* Header: badge + label */}
+                    <div className="cs-iter-header">
+                      <div className="cs-iter-badge" style={{ background: iter.vBg }}>
+                        {iter.iterLabel}
                       </div>
-                      <div className="cs-iter-name">{it.label}</div>
-                      {it.statusLabel && (
-                        <div
-                          className="cs-iter-status"
-                          style={{ background: it.statusBg, color: it.statusColor }}
-                        >
-                          <span className="cs-iter-status-dot" style={{ background: it.statusColor }}/>
-                          {it.statusLabel}
-                        </div>
-                      )}
-
-                      <div className="cs-iter-groups">
-                      {it.wins.length > 0 && (
-                        <div className="cs-iter-group-wins">
-                          <div className="cs-iter-group-label">
-                              <svg viewBox="0 0 13 13" fill="none" stroke="#78716c" strokeWidth="1.6">
-                                <path d="M2 7l3.5 3.5L11 3.5" strokeLinecap="round" strokeLinejoin="round"/>
-                              </svg>
-                              What worked
-                            </div>
-                            <div className="cs-iter-group-items">
-                              {it.wins.map((w) => (
-                                <div key={w} className="cs-iter-group-item">
-                                  <span className="cs-iter-group-item-dot dot-held"/>
-                                  {w}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      {it.gaps.length > 0 && (
-                        <div className="cs-iter-group-gaps" style={{ marginTop: it.wins.length > 0 ? 12 : 0 }}>
-                          <div className="cs-iter-group-label">
-                              <svg viewBox="0 0 13 13" fill="none" stroke="#a8a29e" strokeWidth="1.6">
-                                <circle cx="6.5" cy="6.5" r="4.5"/>
-                              </svg>
-                              What we learned
-                            </div>
-                            <div className="cs-iter-group-items">
-                              {it.gaps.map((g) => (
-                                <div key={g} className="cs-iter-group-item">
-                                  <span className="cs-iter-group-item-dot dot-broke"/>
-                                  {g}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
+                      <div className="cs-iter-name">{iter.label}</div>
                     </div>
 
-                    {/* right content */}
-                    <div>
-                      <h3 className="cs-iter-h">{it.headline}</h3>
-                      <p className="cs-iter-p">{it.body}</p>
-                      {it.fdeCallout && (
-                        <div className="cs-fde-reveal" style={{ marginTop:20 }}>
-                          <div className="cs-fde-reveal-icon">⚙️</div>
-                          <p className="cs-fde-reveal-body">
-                            <strong>This is where the Forward Deploy Engineer entered the picture.</strong> When the studio agent was removed from the plan, Adopt hired FDEs to handle workflow editing manually. A second user now lived inside the same interface, with completely different needs. Designing for one while not breaking the other became the central challenge of every iteration that followed.
-                          </p>
+                    {/* Headline */}
+                    <div className="cs-iter-headline">{iter.headline}</div>
+
+                    {/* Media */}
+                    <div className="cs-iter-media">
+                      <img
+                        src={iter.mediaSrc}
+                        alt={iter.mediaLabel}
+                        loading="lazy"
+                      />
+                    </div>
+
+                    {/* Analysis columns */}
+                    <div className={`cs-iter-analysis${!iter.gaps || iter.gaps.length === 0 ? ' single-col' : ''}`}>
+                      {/* What worked */}
+                      <div className="cs-iter-col">
+                        <div className="cs-iter-col-head worked">
+                          <svg className="cs-iter-col-head-icon" viewBox="0 0 14 14" fill="none">
+                            <path d="M2.5 7.5l3 3 6-6" stroke="#16a34a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                          What worked
+                        </div>
+                        <ul className="cs-iter-bullets">
+                          {iter.wins.map((w) => (
+                            <li key={w} className="cs-iter-bullet">
+                              <span className="cs-iter-bullet-dot worked" />
+                              {w}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {/* What we learned — only render if gaps exist */}
+                      {iter.gaps && iter.gaps.length > 0 && (
+                        <div className="cs-iter-col">
+                          <div className="cs-iter-col-head learned">
+                            <svg className="cs-iter-col-head-icon" viewBox="0 0 14 14" fill="none">
+                              <circle cx="7" cy="7" r="5" stroke="#ea580c" strokeWidth="1.6"/>
+                              <path d="M7 4.5v3M7 9.5v.5" stroke="#ea580c" strokeWidth="1.6" strokeLinecap="round"/>
+                            </svg>
+                            What we learned
+                          </div>
+                          <ul className="cs-iter-bullets">
+                            {iter.gaps.map((g) => (
+                              <li key={g} className="cs-iter-bullet">
+                                <span className="cs-iter-bullet-dot learned" />
+                                {g}
+                              </li>
+                            ))}
+                          </ul>
                         </div>
                       )}
-                      <MediaBox label={it.mediaLabel} sub={it.mediaSub} height={190} src={it.mediaSrc}/>
                     </div>
                   </div>
                   {i < ITERATIONS.length - 1 && (
                     <div style={{ borderTop: "1px solid #e7e5e4", padding: "20px 0", textAlign: "center", fontSize: 13, fontStyle: "italic", color: "#a8a29e" }}>
                       <p style={{ margin: 0 }}>{ITERATION_BRIDGES[i]}</p>
                       {i === 1 && (
-                        <div style={{ marginTop: 16, marginLeft: "auto", marginRight: "auto", maxWidth: 560, padding: 16, borderRadius: 8, borderLeft: "3px solid #bfdbfe", background: "#f0f9ff", textAlign: "left" }}>
-                          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.05em", color: "#3b82f6", textTransform: "uppercase", marginBottom: 8 }}>A second user enters the picture</div>
-                          <div style={{ fontSize: 13, lineHeight: 1.7, color: "#57534e" }}>Forward Deploy Engineers (the team responsible for debugging and maintaining actions in production) were using the builder far more intensively than we had anticipated. They needed surgical code-level access, not just a visual interface. Designing for one user had left the other without the tools they needed. Both had to be served from the same surface.</div>
+                        <div className="cs-fde-reveal" style={{ marginTop: 16, textAlign: "left" }}>
+                          <div className="cs-fde-reveal-icon">⚡</div>
+                          <p className="cs-fde-reveal-body" style={{ fontStyle: "normal" }}>
+                            <strong>A second user enters the picture.</strong>
+                            <br/>
+                            Forward Deploy Engineers (FDEs - the team responsible for debugging and maintaining actions in production) were using the builder far more intensively than we had anticipated. They needed surgical code-level access, not just a visual interface. Designing for one user had left the other without the tools they needed. Both had to be served from the same surface.
+                          </p>
                         </div>
                       )}
                     </div>
@@ -1019,7 +1083,7 @@ export default function AdoptAICaseStudy({ onClose }) {
             <p className="cs-p">
               The v2 Action Builder is a layered system. Starting with what users can read, connecting through to what actually executes, and built to scale toward full agent orchestration.
             </p>
-            <MediaBox label="Action Builder · Final Design" sub="Production UI or walkthrough GIF · add here" height={320} src="/Projects/Adopt/Adopt_builder_prod.gif" maxWidth={640}/>
+            <MediaBox label="Action Builder · Final Design" sub="Production UI or walkthrough GIF · add here" height={320} src="/Projects/Adopt/Adopt_builder_prod.gif"/>
 
             <div className="cs-arch reveal">
               <div className="cs-arch-head">
