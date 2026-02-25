@@ -5,55 +5,93 @@ import React, { useEffect, useRef, useState } from "react";
 const ITERATIONS = [
   {
     version: "v1",
-    vBg: "#44403c", vColor: "#fff",
     label: "Node Canvas",
-    statusLabel: "Pivoted",
-    statusColor: "#78716c", statusBg: "#f5f5f4",
-    headline: "We started with a canvas because that is what every agent builder uses.",
-    body: "Node-based canvases are the dominant paradigm in this category. Competitors use them. Engineering also believed our AI studio agent could handle workflow editing through natural language, which made a high-level canvas feel sufficient. Both assumptions broke under real production conditions. The studio agent did not perform reliably enough to ship. And actions were far more granular than a canvas could express: each API call required defined inputs, outputs, and contracts that a simple node box could not carry.",
-    fdeCallout: false,
-    wins: ["Established shared mental model early", "Confirmed need for step-level hierarchy"],
-    gaps: ["Studio agent NL editing not production-ready", "No type contracts or input / output model", "Canvas became unreadable beyond 6 nodes", "Fully disconnected from WDL execution layer"],
-    mediaSrc: "/Projects/Adopt/output_visual_640_24.gif",
+    statusLabel: "Abandoned",
+    statusColor: "#c2410c",
+    statusBg: "#fff7ed",
+    vColor: "#fff",
+    vBg: "#ea580c",
+    headline: "A spatial canvas made sense given what we knew about our users.",
+    paragraphs: [
+      "Our initial target persona was product managers — non-technical users who needed to understand workflows at a glance. A node-based canvas borrowed from tools they already knew. The hypothesis was that if you could see the relationships between steps spatially, the whole workflow would become legible without needing to read code.",
+      "As we tested with real workflows, the abstraction broke down. PMs got disoriented beyond five or six nodes. Engineers found the canvas too disconnected from actual execution. And the fundamental gap: every step was just a labelled box. There was no type system, no way to declare what a step expected or produced, and no path to reuse or validate anything.",
+    ],
+    mediaSrc: "/Projects/Adopt/Adopt_builder1.gif",
+    mediaLabel: "v1 · Node Canvas",
+    wins: ["Established the conceptual baseline", "Surfaced the need for step hierarchy and ordering"],
+    gaps: ["No type system or input / output model", "Steps impossible to debug at scale", "PMs disoriented beyond a handful of nodes", "Zero connection to execution logic"],
   },
   {
     version: "v1.5",
-    vBg: "#92400e", vColor: "#fff",
     label: "Structured Blocks",
-    statusLabel: "Pivoted",
-    statusColor: "#78716c", statusBg: "#f5f5f4",
-    headline: "Sequential blocks fixed legibility. They exposed a deeper architectural gap.",
-    body: "Ordered step blocks gave the workflow a clear top-to-bottom structure. PMs could follow the logic. Engineers found it more readable than the canvas. But when the studio agent was removed from the plan, a new reality emerged: someone had to edit the WDL code directly, and that person needed to live in this interface too. The visual editor and the WDL execution code were two entirely separate systems with no live sync. Every code edit silently diverged from what the UI showed. That drift was a trust failure built into the foundation.",
-    fdeCallout: true,
-    wins: ["Sequential structure readable for PMs", "Workflow logic scannable end to end"],
-    gaps: ["UI and WDL out of sync on every edit", "No test mode or debug output", "FDE had no dedicated code editing surface", "Two separate truths for two user types"],
-    mediaSrc: "/Projects/Adopt/output_blocks_640_24.gif",
+    statusLabel: "Partial",
+    statusColor: "#ea580c",
+    statusBg: "#ffedd5",
+    vColor: "#fff",
+    vBg: "#f97316",
+    headline: "Ordering steps gave us legibility. Testing showed us what we still hadn't solved.",
+    paragraphs: [
+      "Moving from canvas to ordered blocks felt like a real step forward. Sequential top-to-bottom flow was immediately more readable. PMs could follow the logic without getting spatially lost. Early grouping into Input, Building Blocks, and Output gave the whole thing a recipe-like structure that felt trustworthy to non-engineers.",
+      "Then the critical failure surfaced in usability testing. The UI and the underlying WDL execution code were two completely separate systems. Engineers still edited raw WDL directly. A change in the visual editor would not update the code. A code change would not update the UI. Every single edit was creating drift. This was not a minor inconsistency — it was a trust failure baked into the architecture itself.",
+    ],
+    mediaSrc: "/Projects/Adopt/Adopt_builder1b.gif",
+    mediaLabel: "v1.5 · Structured Blocks",
+    wins: ["Sequential order felt natural and readable", "PMs could follow logic end to end without code knowledge"],
+    gaps: ["UI and WDL diverged on every edit", "No debugging or test capability in the interface", "Engineers and PMs working from different representations of truth", "No reusable step components"],
   },
   {
     version: "v2",
-    vBg: "#15803d", vColor: "#fff",
-    label: "IA Reform + WDL Sync",
+    label: "IA Reform",
     statusLabel: "Shipped",
-    statusColor: "#15803d", statusBg: "#f0fdf4",
-    headline: "One interface. One source of truth. Both users served.",
-    body: "Version 2 rebuilt two things at once. The information architecture was restructured with expandable panels and a contextual right-side drawer, so the layout scaled with complexity without overwhelming first-time users. The more consequential change was bidirectional UI and WDL sync: any visual edit instantly updated the code, any code change instantly reflected in the UI. This eliminated the root cause of drift. Engineers could edit code without leaving the surface. PMs could inspect the execution layer without writing it. Inline test mode, step-level debug output, and validation all shipped here.",
-    fdeCallout: false,
-    wins: ["Bidirectional sync eliminated UI and WDL drift", "Inline test and debug in one surface", "Both PMs and FDEs served from one model", "Trust restored through visible execution state"],
-    gaps: [],
-    mediaSrc: "/Projects/Adopt/output_techdetail_640_24.gif",
+    statusColor: "#15803d",
+    statusBg: "#f0fdf4",
+    vColor: "#fff",
+    vBg: "#16a34a",
+    headline: "Rebuilding the information architecture gave both users a surface they could trust.",
+    paragraphs: [
+      "Before solving the sync problem, we needed to fix the structural scaffolding. The information architecture was rebuilt with expandable section panels, a contextual right-side configuration drawer, and updated navigation that let users move between viewing and editing without losing context. The layout could now scale with workflow complexity without overwhelming users on first load.",
+      "This iteration also introduced clearer grouping between action metadata, the step list, and the technical details panel — a left-right split that mapped naturally to the PM versus engineer mental models. Getting this structure right was the prerequisite for everything that came next.",
+    ],
+    mediaSrc: "/Projects/Adopt/Adopt_builder2.gif",
+    mediaLabel: "v2 · Information Architecture",
+    wins: ["Clearer grouping reduced cognitive load for both user types", "Expand/collapse patterns let complexity stay hidden until needed", "Right-side panel gave engineers contextual detail without cluttering the PM view"],
+    gaps: ["UI/WDL sync still unsolved", "Engineers still context-switching to raw code for edits", "Debugging remained fragmented across tools"],
   },
   {
     version: "v2+",
-    vBg: "#1d4ed8", vColor: "#fff",
+    label: "WDL Editor + Test",
+    statusLabel: "Shipped",
+    statusColor: "#15803d",
+    statusBg: "#f0fdf4",
+    vColor: "#fff",
+    vBg: "#0f766e",
+    headline: "Putting code and UI side by side, in real-time sync, eliminated the root cause of every trust failure.",
+    paragraphs: [
+      "This was the decisive change. The side-by-side WDL editor was introduced alongside the visual UI, kept in bidirectional real-time sync. Any edit in the visual interface instantly updated the underlying code. Any code change instantly reflected in the UI. For the first time, both representations were the same thing.",
+      "Inline test mode, step-level debug output, and run-and-inspect capability were all shipped together. Engineers could now edit, test, and debug without leaving the builder. PMs could inspect the code representation even if they couldn't write it. The builder stopped being a configuration tool and became a live development environment that both users could operate in.",
+    ],
+    mediaSrc: "/Projects/Adopt/Adopt_builder2b.gif",
+    mediaLabel: "v2+ · WDL Editor & Test Integration",
+    wins: ["Real-time bidirectional sync eliminated UI/WDL drift permanently", "Inline test and debug removed the need to context-switch to external tools", "Both PM and engineer served within one unified surface", "Trust restored through full execution visibility"],
+    gaps: [],
+  },
+  {
+    version: "v3",
     label: "Typed Step Primitives",
     statusLabel: "Foundation",
-    statusColor: "#1d4ed8", statusBg: "#eff6ff",
-    headline: "Typed steps turned the builder into a reusable system.",
-    body: "The final layer introduced a formal step type system: Input, API Call, Data Processing, and Output. Each type carries its own schema, validation rules, and WDL snippet. Steps became composable components with defined contracts rather than one-off configurations. PMs could read the step list and understand what would execute. Engineers could rely on each step having a predictable input and output. Across customers, the same typed steps appeared repeatedly, growing into a shared library that cut onboarding time measurably.",
-    fdeCallout: false,
-    wins: ["Reusable typed steps with validated contracts", "Shared vocabulary for both PMs and engineers", "Schema validation at the step level", "Architecture extensible to agent orchestration"],
+    statusColor: "#1d4ed8",
+    statusBg: "#eff6ff",
+    vColor: "#fff",
+    vBg: "#2563eb",
+    headline: "A formal type system turned individual steps into a reusable, scalable architecture.",
+    paragraphs: [
+      "The final layer introduced a formal type system across four categories: User Input, API Call, Data Processing, and Output. Each step type carries its own form schema, its own validation rules, and its own WDL code snippet. Steps stopped being one-off configurations and became reusable components with defined contracts.",
+      "This created a shared vocabulary that both PMs and engineers could reason about independently. A PM could read the step list and understand what the workflow actually does at each stage. An engineer could trust that each step had a declared input/output contract. Across customers, the same typed steps recurred — so the library grew with every new implementation. This is the structural layer the system had been missing since v1.",
+    ],
+    mediaSrc: "/Projects/Adopt/Adopt_builder3.gif",
+    mediaLabel: "v3 · Typed Step Primitives",
+    wins: ["Typed primitives are reusable, validatable, and composable across workflows", "Shared vocabulary bridged the PM/engineer communication gap", "Schema validation built in at the step level reduced execution errors by 90%", "Architecture became the direct foundation for Studio Agent orchestration"],
     gaps: [],
-    mediaSrc: "/Projects/Adopt/output_wdledit_640_24.gif",
   },
 ];
 
@@ -758,7 +796,7 @@ export default function AdoptAICaseStudy({ onClose }) {
               </h1>
               <p className="cs-h1-sub">Adopt AI</p>
               <img
-                src="/Projects/Adopt/output_adopt_640_24.gif"
+                src="/Projects/Adopt/Adopt_main.gif"
                 alt="Adopt AI dashboard in action"
                 className="cs-hero-gif"
               />
@@ -855,7 +893,7 @@ export default function AdoptAICaseStudy({ onClose }) {
           {/* 04 PROCESS */}
           <section className="cs-sec reveal" id="process">
             <div className="cs-kicker"><span className="cs-kicker-dot"/>04 · Design Process</div>
-            <h2 className="cs-sh">Four iterations.<br/><em>Each one earned.</em></h2>
+            <h2 className="cs-sh">Five iterations.<br/><em>Each one earned.</em></h2>
             <p className="cs-p">
               The path to v2 was not planned in advance. Each version made sense given what we knew at the time. The learning from each iteration is what decided the next move.
             </p>
@@ -963,7 +1001,7 @@ export default function AdoptAICaseStudy({ onClose }) {
             <p className="cs-p">
               The v2 Action Builder is a layered system. Starting with what users can read, connecting through to what actually executes, and built to scale toward full agent orchestration.
             </p>
-            <MediaBox label="Action Builder · Final Design" sub="Production UI or walkthrough GIF · add here" height={320} src="/Projects/Adopt/output_production_640_24.gif" maxWidth={640}/>
+            <MediaBox label="Action Builder · Final Design" sub="Production UI or walkthrough GIF · add here" height={320} src="/Projects/Adopt/Adopt_builder_prod.gif" maxWidth={640}/>
 
             <div className="cs-arch reveal">
               <div className="cs-arch-head">
