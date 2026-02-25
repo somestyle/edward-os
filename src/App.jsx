@@ -12,6 +12,7 @@ import { SYSTEM_PROMPT } from './ai-config';
 import WidgetLauncher from './components/widgets/WidgetLauncher';
 
 const AdoptAICaseStudy = lazy(() => import('./components/AdoptAICaseStudy'));
+const AdoptAIPlatform = lazy(() => import('./components/AdoptAIPlatform'));
 
 // --- Typewriter streaming hook ---
 function useTypewriter(fullText, { speedMs = 15, enabled = true } = {}) {
@@ -767,17 +768,25 @@ const ProjectsView = ({ scrollState }) => {
           </p>
        </div>
 
+       {(() => {
+          const projects = [
+            { title: 'Adopt AI · Action Builder', description: 'End-to-end workflow design for an AI action builder: 0-to-1 through five iterations, from node canvas to structured step templates.', caseStudyKey: 'adopt-action-builder' },
+            { title: 'Adopt AI · Platform Vision', description: 'Founding designer shaping an AI copilot platform from whiteboard to dozens of signed enterprise customers in 6 months.', caseStudyKey: 'adopt-platform' },
+            { title: 'SamaCare', description: cvData.experience[1].summary, caseStudyKey: null },
+            { title: 'Blunt App', description: 'A savage AI life coach that roasts your bad habits with data, sarcasm, and zero sympathy.', caseStudyKey: null },
+            { title: 'Kea AI', description: '0–1 design for flagship AI product serving B2B2C users focusing on conversational UX.', caseStudyKey: null },
+          ];
+          return (
        <div className="grid gap-6 md:grid-cols-2 relative z-10">
-          {cvData.experience.slice(0, 2).map((job, i) => {
-            const isAdoptAI = job.company === 'Adopt AI';
-            const showCaseStudyLink = isUnlocked && isAdoptAI;
+          {projects.map((proj, i) => {
+            const showCaseStudyLink = isUnlocked && proj.caseStudyKey;
             return (
              <div
                key={i}
                role={showCaseStudyLink ? 'button' : undefined}
                tabIndex={showCaseStudyLink ? 0 : undefined}
-               onClick={showCaseStudyLink ? () => setCaseStudyOpen('adopt-ai') : undefined}
-               onKeyDown={showCaseStudyLink ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setCaseStudyOpen('adopt-ai'); } } : undefined}
+               onClick={showCaseStudyLink ? () => setCaseStudyOpen(proj.caseStudyKey) : undefined}
+               onKeyDown={showCaseStudyLink ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setCaseStudyOpen(proj.caseStudyKey); } } : undefined}
                className={`group relative bg-white dark:bg-stone-900 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 hover:border-blue-200 dark:hover:border-blue-900 transition-all text-left ${!isUnlocked ? 'opacity-75' : ''} ${showCaseStudyLink ? 'cursor-pointer' : ''}`}
              >
                 <div className="flex justify-between items-start mb-6">
@@ -788,9 +797,9 @@ const ProjectsView = ({ scrollState }) => {
                      {isUnlocked ? <LockOpen size={18} /> : <Lock size={18} />}
                    </div>
                 </div>
-                <h3 className={`font-bold text-xl mb-3 transition-colors ${isUnlocked ? 'text-stone-900 dark:text-white' : 'text-stone-600 dark:text-stone-400'}`}>{job.company}</h3>
+                <h3 className={`font-bold text-xl mb-3 transition-colors ${isUnlocked ? 'text-stone-900 dark:text-white' : 'text-stone-600 dark:text-stone-400'}`}>{proj.title}</h3>
                 <p className="text-stone-500 dark:text-stone-400 text-sm leading-relaxed mb-6">
-                  {job.summary}
+                  {proj.description}
                 </p>
                 {isUnlocked && (
                   showCaseStudyLink ? (
@@ -808,48 +817,11 @@ const ProjectsView = ({ scrollState }) => {
              </div>
             );
           })}
-          {/* Blunt App */}
-          <div className={`group relative bg-white dark:bg-stone-900 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 hover:border-blue-200 dark:hover:border-blue-900 transition-all text-left ${!isUnlocked ? 'opacity-75' : ''}`}>
-            <div className="flex justify-between items-start mb-6">
-              <div className="p-3 bg-stone-100 dark:bg-stone-800 rounded-2xl group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors">
-                <Folder size={24} className="text-stone-400 group-hover:text-blue-500 transition-colors" />
-              </div>
-              <div className="flex items-center justify-center w-8 h-8 text-stone-400 dark:text-stone-500 transition-all duration-200">
-                {isUnlocked ? <LockOpen size={18} /> : <Lock size={18} />}
-              </div>
-            </div>
-            <h3 className={`font-bold text-xl mb-3 transition-colors ${isUnlocked ? 'text-stone-900 dark:text-white' : 'text-stone-600 dark:text-stone-400'}`}>Blunt App</h3>
-            <p className="text-stone-500 dark:text-stone-400 text-sm leading-relaxed mb-6">
-              A savage AI life coach that roasts your bad habits with data, sarcasm, and zero sympathy.
-            </p>
-            {isUnlocked && (
-              <p className="text-sm font-medium text-stone-300 dark:text-stone-600 cursor-not-allowed">Coming Soon</p>
-            )}
-          </div>
-          {/* Kea AI */}
-          <div className={`group relative bg-white dark:bg-stone-900 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 hover:border-blue-200 dark:hover:border-blue-900 transition-all text-left ${!isUnlocked ? 'opacity-75' : ''}`}>
-            <div className="flex justify-between items-start mb-6">
-              <div className="p-3 bg-stone-100 dark:bg-stone-800 rounded-2xl group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors">
-                <Folder size={24} className="text-stone-400 group-hover:text-blue-500 transition-colors" />
-              </div>
-              <div className="flex items-center justify-center w-8 h-8 text-stone-400 dark:text-stone-500 transition-all duration-200">
-                {isUnlocked ? <LockOpen size={18} /> : <Lock size={18} />}
-              </div>
-            </div>
-            <h3 className={`font-bold text-xl mb-3 transition-colors ${isUnlocked ? 'text-stone-900 dark:text-white' : 'text-stone-600 dark:text-stone-400'}`}>Kea AI</h3>
-            <p className="text-stone-500 dark:text-stone-400 text-sm leading-relaxed mb-6">
-              0–1 design for flagship AI product serving B2B2C users focusing on conversational UX.
-            </p>
-            {isUnlocked && (
-              <div className="flex items-center gap-2 text-sm font-medium text-stone-300 dark:text-stone-600 cursor-not-allowed">
-                <span>Coming Soon</span>
-                <ChevronRight size={16} />
-              </div>
-            )}
-          </div>
        </div>
+          );
+       })()}
 
-       {caseStudyOpen === 'adopt-ai' && typeof document !== 'undefined' && createPortal(
+       {caseStudyOpen === 'adopt-action-builder' && typeof document !== 'undefined' && createPortal(
          <div style={{ position: 'relative', zIndex: 60 }}>
            <Suspense fallback={
              <div className="fixed inset-0 z-[60] flex items-center justify-center bg-stone-50 dark:bg-stone-950">
@@ -857,6 +829,19 @@ const ProjectsView = ({ scrollState }) => {
              </div>
            }>
              <AdoptAICaseStudy onClose={() => setCaseStudyOpen(null)} />
+           </Suspense>
+         </div>,
+         document.body
+       )}
+
+       {caseStudyOpen === 'adopt-platform' && typeof document !== 'undefined' && createPortal(
+         <div style={{ position: 'relative', zIndex: 60 }}>
+           <Suspense fallback={
+             <div className="fixed inset-0 z-[60] flex items-center justify-center bg-stone-50 dark:bg-stone-950">
+               <span className="text-stone-400 dark:text-stone-500 text-sm">Loading case study…</span>
+             </div>
+           }>
+             <AdoptAIPlatform onClose={() => setCaseStudyOpen(null)} onOpenActionBuilder={() => setCaseStudyOpen('adopt-action-builder')} />
            </Suspense>
          </div>,
          document.body
