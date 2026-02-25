@@ -841,7 +841,7 @@ const ProjectsView = ({ scrollState }) => {
                <span className="text-stone-400 dark:text-stone-500 text-sm">Loading case study…</span>
              </div>
            }>
-             <AdoptAIPlatform onClose={() => setCaseStudyOpen(null)} onOpenActionBuilder={() => setCaseStudyOpen('adopt-action-builder')} />
+             <AdoptAIPlatform onClose={() => setCaseStudyOpen(null)} />
            </Suspense>
          </div>,
          document.body
