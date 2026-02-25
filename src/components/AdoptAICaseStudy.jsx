@@ -4,16 +4,14 @@ import React, { useEffect, useRef, useState } from "react";
 
 const ITERATIONS = [
   {
-    version: "v1",
+    version: "01",
+    iterLabel: "Iteration 1",
     label: "Node Canvas",
-    statusLabel: "Abandoned",
-    statusColor: "#c2410c",
-    statusBg: "#fff7ed",
     vColor: "#fff",
-    vBg: "#ea580c",
+    vBg: "#2563eb",
     headline: "A spatial canvas made sense given what we knew about our users.",
     paragraphs: [
-      "Our initial target persona was product managers — non-technical users who needed to understand workflows at a glance. A node-based canvas borrowed from tools they already knew. The hypothesis was that if you could see the relationships between steps spatially, the whole workflow would become legible without needing to read code.",
+      "Our initial target persona was product managers: non-technical users who needed to understand workflows at a glance. A node-based canvas borrowed from tools they already knew. The hypothesis was that if you could see the relationships between steps spatially, the whole workflow would become legible without needing to read code.",
       "As we tested with real workflows, the abstraction broke down. PMs got disoriented beyond five or six nodes. Engineers found the canvas too disconnected from actual execution. And the fundamental gap: every step was just a labelled box. There was no type system, no way to declare what a step expected or produced, and no path to reuse or validate anything.",
     ],
     mediaSrc: "/Projects/Adopt/Adopt_builder1.gif",
@@ -22,17 +20,15 @@ const ITERATIONS = [
     gaps: ["No type system or input / output model", "Steps impossible to debug at scale", "PMs disoriented beyond a handful of nodes", "Zero connection to execution logic"],
   },
   {
-    version: "v1.5",
+    version: "02",
+    iterLabel: "Iteration 2",
     label: "Structured Blocks",
-    statusLabel: "Partial",
-    statusColor: "#ea580c",
-    statusBg: "#ffedd5",
     vColor: "#fff",
-    vBg: "#f97316",
+    vBg: "#2563eb",
     headline: "Ordering steps gave us legibility. Testing showed us what we still hadn't solved.",
     paragraphs: [
       "Moving from canvas to ordered blocks felt like a real step forward. Sequential top-to-bottom flow was immediately more readable. PMs could follow the logic without getting spatially lost. Early grouping into Input, Building Blocks, and Output gave the whole thing a recipe-like structure that felt trustworthy to non-engineers.",
-      "Then the critical failure surfaced in usability testing. The UI and the underlying WDL execution code were two completely separate systems. Engineers still edited raw WDL directly. A change in the visual editor would not update the code. A code change would not update the UI. Every single edit was creating drift. This was not a minor inconsistency — it was a trust failure baked into the architecture itself.",
+      "Then the critical failure surfaced in usability testing. The UI and the underlying WDL execution code were two completely separate systems. Engineers still edited raw WDL directly. A change in the visual editor would not update the code. A code change would not update the UI. Every single edit was creating drift. This was not a minor inconsistency. It was a trust failure baked into the architecture itself.",
     ],
     mediaSrc: "/Projects/Adopt/Adopt_builder1b.gif",
     mediaLabel: "v1.5 · Structured Blocks",
@@ -40,17 +36,15 @@ const ITERATIONS = [
     gaps: ["UI and WDL diverged on every edit", "No debugging or test capability in the interface", "Engineers and PMs working from different representations of truth", "No reusable step components"],
   },
   {
-    version: "v2",
+    version: "03",
+    iterLabel: "Iteration 3",
     label: "IA Reform",
-    statusLabel: "Shipped",
-    statusColor: "#15803d",
-    statusBg: "#f0fdf4",
     vColor: "#fff",
-    vBg: "#16a34a",
+    vBg: "#2563eb",
     headline: "Rebuilding the information architecture gave both users a surface they could trust.",
     paragraphs: [
       "Before solving the sync problem, we needed to fix the structural scaffolding. The information architecture was rebuilt with expandable section panels, a contextual right-side configuration drawer, and updated navigation that let users move between viewing and editing without losing context. The layout could now scale with workflow complexity without overwhelming users on first load.",
-      "This iteration also introduced clearer grouping between action metadata, the step list, and the technical details panel — a left-right split that mapped naturally to the PM versus engineer mental models. Getting this structure right was the prerequisite for everything that came next.",
+      "This iteration also introduced clearer grouping between action metadata, the step list, and the technical details panel. The left-right split mapped naturally to the PM versus engineer mental models. Getting this structure right was the prerequisite for everything that came next.",
     ],
     mediaSrc: "/Projects/Adopt/Adopt_builder2.gif",
     mediaLabel: "v2 · Information Architecture",
@@ -58,13 +52,11 @@ const ITERATIONS = [
     gaps: ["UI/WDL sync still unsolved", "Engineers still context-switching to raw code for edits", "Debugging remained fragmented across tools"],
   },
   {
-    version: "v2+",
+    version: "04",
+    iterLabel: "Iteration 4",
     label: "WDL Editor + Test",
-    statusLabel: "Shipped",
-    statusColor: "#15803d",
-    statusBg: "#f0fdf4",
     vColor: "#fff",
-    vBg: "#0f766e",
+    vBg: "#2563eb",
     headline: "Putting code and UI side by side, in real-time sync, eliminated the root cause of every trust failure.",
     paragraphs: [
       "This was the decisive change. The side-by-side WDL editor was introduced alongside the visual UI, kept in bidirectional real-time sync. Any edit in the visual interface instantly updated the underlying code. Any code change instantly reflected in the UI. For the first time, both representations were the same thing.",
@@ -76,23 +68,28 @@ const ITERATIONS = [
     gaps: [],
   },
   {
-    version: "v3",
+    version: "05",
+    iterLabel: "Iteration 5",
     label: "Typed Step Primitives",
-    statusLabel: "Foundation",
-    statusColor: "#1d4ed8",
-    statusBg: "#eff6ff",
     vColor: "#fff",
     vBg: "#2563eb",
     headline: "A formal type system turned individual steps into a reusable, scalable architecture.",
     paragraphs: [
       "The final layer introduced a formal type system across four categories: User Input, API Call, Data Processing, and Output. Each step type carries its own form schema, its own validation rules, and its own WDL code snippet. Steps stopped being one-off configurations and became reusable components with defined contracts.",
-      "This created a shared vocabulary that both PMs and engineers could reason about independently. A PM could read the step list and understand what the workflow actually does at each stage. An engineer could trust that each step had a declared input/output contract. Across customers, the same typed steps recurred — so the library grew with every new implementation. This is the structural layer the system had been missing since v1.",
+      "This created a shared vocabulary that both PMs and engineers could reason about independently. A PM could read the step list and understand what the workflow actually does at each stage. An engineer could trust that each step had a declared input/output contract. Across customers, the same typed steps recurred, and the library grew with every new implementation. This is the structural layer the system had been missing since v1.",
     ],
     mediaSrc: "/Projects/Adopt/Adopt_builder3.gif",
     mediaLabel: "v3 · Typed Step Primitives",
     wins: ["Typed primitives are reusable, validatable, and composable across workflows", "Shared vocabulary bridged the PM/engineer communication gap", "Schema validation built in at the step level reduced execution errors by 90%", "Architecture became the direct foundation for Studio Agent orchestration"],
     gaps: [],
   },
+];
+
+const ITERATION_BRIDGES = [
+  "The canvas gave us the right question. But it surfaced a user we hadn't fully designed for.",
+  "Ordering steps solved the PM's problem. Testing revealed the engineer's problem that we hadn't seen prior.",
+  "The IA gave both users a clearer surface. But every edit was still producing two conflicting versions of the same workflow.",
+  "Sync solved the trust problem. The next question was whether the steps themselves could become a reusable system.",
 ];
 
 const PRINCIPLES = [
@@ -525,6 +522,12 @@ export default function AdoptAICaseStudy({ onClose }) {
           text-transform:uppercase; color:#a8a29e; margin-bottom:7px;
         }
         .cs-iter-group-label svg { width:13px; height:13px; flex-shrink:0; }
+        .cs-iter-group-wins .cs-iter-group-label { color:#16a34a; }
+        .cs-iter-group-wins .cs-iter-group-label svg { stroke:#16a34a; }
+        .cs-iter-group-wins .dot-held { background:#16a34a; }
+        .cs-iter-group-gaps .cs-iter-group-label { color:#fb923c; }
+        .cs-iter-group-gaps .cs-iter-group-label svg { stroke:#fb923c; }
+        .cs-iter-group-gaps .dot-broke { background:#fb923c; }
         .cs-iter-group-items { display:flex; flex-direction:column; gap:5px; }
         .cs-iter-group-item {
           font-size:12px; font-weight:500; line-height:1.5;
@@ -580,9 +583,9 @@ export default function AdoptAICaseStudy({ onClose }) {
         .cs-arch-head-hint  { font-size:11px; font-weight:500; color:#c4b5a5; font-style:italic; }
         .cs-arch-body { padding:28px 24px 24px; }
         .cs-arch-root-wrap { display:flex; justify-content:center; }
-        .cs-arch-root { background:#0c0a09; border-radius:10px; padding:14px 32px; text-align:center; min-width:180px; }
-        .cs-arch-root-k { font-size:9px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#78716c; margin-bottom:4px; }
-        .cs-arch-root-v { font-size:16px; font-weight:700; color:#fff; }
+        .cs-arch-root { background:#ffedd5; border-radius:10px; padding:14px 32px; text-align:center; min-width:180px; }
+        .cs-arch-root-k { font-size:9px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#9a3412; margin-bottom:4px; }
+        .cs-arch-root-v { font-size:16px; font-weight:700; color:#1c1917; }
         .cs-arch-vline-wrap { display:flex; justify-content:center; padding:6px 0; }
         .cs-arch-vline { width:2px; height:20px; background:#d6d3d1; }
         .cs-arch-hrow { position:relative; display:grid; gap:10px; }
@@ -898,80 +901,95 @@ export default function AdoptAICaseStudy({ onClose }) {
               The path to v2 was not planned in advance. Each version made sense given what we knew at the time. The learning from each iteration is what decided the next move.
             </p>
             <div className="cs-iters">
-              {ITERATIONS.map((it) => (
-                <div className="cs-iter reveal" key={it.version}>
-                  {/* left spine */}
-                  <div>
-                    <div
-                      className="cs-iter-version iter-badge-anim"
-                      style={{ background: it.vBg, color: it.vColor }}
-                    >
-                      {it.version}
-                    </div>
-                    <div className="cs-iter-name">{it.label}</div>
-                    <div
-                      className="cs-iter-status"
-                      style={{ background: it.statusBg, color: it.statusColor }}
-                    >
-                      <span className="cs-iter-status-dot" style={{ background: it.statusColor }}/>
-                      {it.statusLabel}
-                    </div>
-
-                    <div className="cs-iter-groups">
-                      {it.wins.length > 0 && (
-                        <div>
-                          <div className="cs-iter-group-label">
-                            <svg viewBox="0 0 13 13" fill="none" stroke="#78716c" strokeWidth="1.6">
-                              <path d="M2 7l3.5 3.5L11 3.5" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                            Held up
-                          </div>
-                          <div className="cs-iter-group-items">
-                            {it.wins.map((w) => (
-                              <div key={w} className="cs-iter-group-item">
-                                <span className="cs-iter-group-item-dot dot-held"/>
-                                {w}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      {it.gaps.length > 0 && (
-                        <div style={{ marginTop: it.wins.length > 0 ? 12 : 0 }}>
-                          <div className="cs-iter-group-label">
-                            <svg viewBox="0 0 13 13" fill="none" stroke="#a8a29e" strokeWidth="1.6">
-                              <circle cx="6.5" cy="6.5" r="4.5"/>
-                            </svg>
-                            Broke down
-                          </div>
-                          <div className="cs-iter-group-items">
-                            {it.gaps.map((g) => (
-                              <div key={g} className="cs-iter-group-item">
-                                <span className="cs-iter-group-item-dot dot-broke"/>
-                                {g}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* right content */}
-                  <div>
-                    <h3 className="cs-iter-h">{it.headline}</h3>
-                    <p className="cs-iter-p">{it.body}</p>
-                    {it.fdeCallout && (
-                      <div className="cs-fde-reveal" style={{ marginTop:20 }}>
-                        <div className="cs-fde-reveal-icon">⚙️</div>
-                        <p className="cs-fde-reveal-body">
-                          <strong>This is where the Forward Deploy Engineer entered the picture.</strong> When the studio agent was removed from the plan, Adopt hired FDEs to handle workflow editing manually. A second user now lived inside the same interface, with completely different needs. Designing for one while not breaking the other became the central challenge of every iteration that followed.
-                        </p>
+              {ITERATIONS.map((it, i) => (
+                <React.Fragment key={it.version}>
+                  <div className="cs-iter reveal">
+                    {/* left spine */}
+                    <div>
+                      <div
+                        className="cs-iter-version iter-badge-anim"
+                        style={{ background: it.vBg, color: it.vColor }}
+                      >
+                        {it.iterLabel}
                       </div>
-                    )}
-                    <MediaBox label={it.mediaLabel} sub={it.mediaSub} height={190} src={it.mediaSrc}/>
+                      <div className="cs-iter-name">{it.label}</div>
+                      {it.statusLabel && (
+                        <div
+                          className="cs-iter-status"
+                          style={{ background: it.statusBg, color: it.statusColor }}
+                        >
+                          <span className="cs-iter-status-dot" style={{ background: it.statusColor }}/>
+                          {it.statusLabel}
+                        </div>
+                      )}
+
+                      <div className="cs-iter-groups">
+                      {it.wins.length > 0 && (
+                        <div className="cs-iter-group-wins">
+                          <div className="cs-iter-group-label">
+                              <svg viewBox="0 0 13 13" fill="none" stroke="#78716c" strokeWidth="1.6">
+                                <path d="M2 7l3.5 3.5L11 3.5" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                              What worked
+                            </div>
+                            <div className="cs-iter-group-items">
+                              {it.wins.map((w) => (
+                                <div key={w} className="cs-iter-group-item">
+                                  <span className="cs-iter-group-item-dot dot-held"/>
+                                  {w}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      {it.gaps.length > 0 && (
+                        <div className="cs-iter-group-gaps" style={{ marginTop: it.wins.length > 0 ? 12 : 0 }}>
+                          <div className="cs-iter-group-label">
+                              <svg viewBox="0 0 13 13" fill="none" stroke="#a8a29e" strokeWidth="1.6">
+                                <circle cx="6.5" cy="6.5" r="4.5"/>
+                              </svg>
+                              What we learned
+                            </div>
+                            <div className="cs-iter-group-items">
+                              {it.gaps.map((g) => (
+                                <div key={g} className="cs-iter-group-item">
+                                  <span className="cs-iter-group-item-dot dot-broke"/>
+                                  {g}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* right content */}
+                    <div>
+                      <h3 className="cs-iter-h">{it.headline}</h3>
+                      <p className="cs-iter-p">{it.body}</p>
+                      {it.fdeCallout && (
+                        <div className="cs-fde-reveal" style={{ marginTop:20 }}>
+                          <div className="cs-fde-reveal-icon">⚙️</div>
+                          <p className="cs-fde-reveal-body">
+                            <strong>This is where the Forward Deploy Engineer entered the picture.</strong> When the studio agent was removed from the plan, Adopt hired FDEs to handle workflow editing manually. A second user now lived inside the same interface, with completely different needs. Designing for one while not breaking the other became the central challenge of every iteration that followed.
+                          </p>
+                        </div>
+                      )}
+                      <MediaBox label={it.mediaLabel} sub={it.mediaSub} height={190} src={it.mediaSrc}/>
+                    </div>
                   </div>
-                </div>
+                  {i < ITERATIONS.length - 1 && (
+                    <div style={{ borderTop: "1px solid #e7e5e4", padding: "20px 0", textAlign: "center", fontSize: 13, fontStyle: "italic", color: "#a8a29e" }}>
+                      <p style={{ margin: 0 }}>{ITERATION_BRIDGES[i]}</p>
+                      {i === 1 && (
+                        <div style={{ marginTop: 16, marginLeft: "auto", marginRight: "auto", maxWidth: 560, padding: 16, borderRadius: 8, borderLeft: "3px solid #bfdbfe", background: "#f0f9ff", textAlign: "left" }}>
+                          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.05em", color: "#3b82f6", textTransform: "uppercase", marginBottom: 8 }}>A second user enters the picture</div>
+                          <div style={{ fontSize: 13, lineHeight: 1.7, color: "#57534e" }}>Forward Deploy Engineers (the team responsible for debugging and maintaining actions in production) were using the builder far more intensively than we had anticipated. They needed surgical code-level access, not just a visual interface. Designing for one user had left the other without the tools they needed. Both had to be served from the same surface.</div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </React.Fragment>
               ))}
             </div>
           </section>
