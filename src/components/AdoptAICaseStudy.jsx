@@ -64,7 +64,7 @@ const ITERATIONS = [
     ],
     mediaSrc: "/Projects/Adopt/Adopt_builder2b.gif",
     mediaLabel: "v2+ · WDL Editor & Test Integration",
-    wins: ["Real-time bidirectional sync eliminated UI/WDL drift permanently", "Inline test and debug removed the need to context-switch to external tools", "Both PM and engineer served within one unified surface", "Trust restored through full execution visibility"],
+    wins: ["Changes in either the visual editor or the underlying code instantly update the other, permanently ending the drift", "Inline test and debug removed the need to context-switch to external tools", "Both PM and engineer served within one unified surface", "Trust restored through full execution visibility"],
     gaps: [
       "Steps still had no defined structure, so the same workflow built by two different engineers looked completely different",
       "There was no way to reuse work across customers, every new client required starting from scratch",
@@ -77,7 +77,7 @@ const ITERATIONS = [
     label: "Structured Step Templates",
     vColor: "#fff",
     vBg: "#2563eb",
-    headline: "A formal type system turned individual steps into a reusable, scalable architecture.",
+    headline: "Giving each step a defined category turned the builder into something every customer could reuse.",
     paragraphs: [
       "The final layer introduced a formal type system across four categories: User Input, API Call, Data Processing, and Output. Each step type carries its own form schema, its own validation rules, and its own WDL code snippet. Steps stopped being one-off configurations and became reusable components with defined contracts.",
       "This created a shared vocabulary that both PMs and engineers could reason about independently. A PM could read the step list and understand what the workflow actually does at each stage. An engineer could trust that each step had a declared input/output contract. Across customers, the same structured steps recurred, and the library grew with every new implementation. This is the structural layer the system had been missing since v1.",
@@ -98,14 +98,14 @@ const ITERATION_BRIDGES = [
 
 const PRINCIPLES = [
   { n: "01", title: "AI output is probabilistic. Operations must be deterministic.", body: "Every AI-generated plan must be inspectable and editable before it executes. Confidence comes from visibility, not from trusting the model implicitly." },
-  { n: "02", title: "Structure must be templated, not freeform.", body: "Freeform steps cannot be validated, safely reused, or reliably modified. Structured step templates create a stable shared vocabulary that scales with the platform." },
+  { n: "02", title: "Structure must be templated, not freeform.", body: "When every step has a defined category and purpose, the whole team uses the same language to describe what a workflow does. That shared understanding is what lets the system grow without breaking down." },
   { n: "03", title: "Trust is earned through visibility at every layer.", body: "Users cannot trust what they cannot inspect. When something fails, the system must say exactly where and why. Generic error states destroy trust immediately." },
   { n: "04", title: "One shared model beats two separate surfaces.", body: "Separate interfaces for PMs and engineers create two versions of truth. One underlying model with progressive disclosure is more honest and more maintainable." },
 ];
 
 const RESEARCH_METHODS = [
   { icon: "👥", label: "Usability testing", note: "PM and FDE sessions across all major iterations" },
-  { icon: "🔍", label: "FDE shadowing", note: "Observed live debugging sessions and how engineers edited WDL (Workflow Description Language, the code that defines how each workflow step runs and connects)" },
+  { icon: "🔍", label: "FDE shadowing", note: "Observed live debugging sessions with Forward Deploy Engineers (FDEs) and watched how they edited WDL to fix broken workflows in customer environments" },
   { icon: "🧠", label: "AI officer workshops", note: "Broke down technical requirements with ML lead and Chief AI Officer" },
   { icon: "📊", label: "Time-on-task benchmarking", note: "Measured FDE time to create and test top actions per iteration" },
   { icon: "🏁", label: "Competitor benchmarking", note: "Mapped against Zapier, Salesforce Agentforce, and similar builders" },
@@ -498,7 +498,7 @@ export default function AdoptAICaseStudy({ onClose }) {
         /* ── ITERATIONS ── */
         .cs-iters { margin-top:48px; }
 
-        /* ITERATION CARD — new stacked layout */
+        /* ITERATION CARD - new stacked layout */
         .cs-iter {
           padding: 48px 0 40px;
           border-bottom: 1px solid #e7e5e4;
@@ -1016,7 +1016,7 @@ export default function AdoptAICaseStudy({ onClose }) {
                         </ul>
                       </div>
 
-                      {/* What we learned — only render if gaps exist */}
+                      {/* What we learned - only render if gaps exist */}
                       {iter.gaps && iter.gaps.length > 0 && (
                         <div className="cs-iter-col">
                           <div className="cs-iter-col-head learned">
@@ -1158,7 +1158,7 @@ export default function AdoptAICaseStudy({ onClose }) {
               {[
                 { init:"0%",  cls:"blue",   l:"Faster to debug",           s:"After UI to WDL sync shipped",      idx:0 },
                 { init:"0%",  cls:"green",  l:"Higher publish success",    s:"Deployment rate post-v2",           idx:1 },
-                { init:"0%",  cls:"orange", l:"Reduction in drift errors", s:"UI and WDL near-perfectly aligned", idx:2 },
+                { init:"0%",  cls:"orange", l:"Reduction in drift errors", s:"Code and interface near-perfectly aligned", idx:2 },
               ].map((m)=>(
                 <div key={m.l} className="cs-metric">
                   <div className={`cs-metric-num ${m.cls}`} ref={(el) => { metricRefs.current[m.idx] = el; }}>
@@ -1190,7 +1190,7 @@ export default function AdoptAICaseStudy({ onClose }) {
               <div className="cs-stat-col">
                 <div className="cs-stat-hero">
                   <div className="cs-stat-hero-n">7×</div>
-                  <div className="cs-stat-hero-l">Step-type reuse across customers</div>
+                  <div className="cs-stat-hero-l">Workflow step reuse across customers</div>
                   <p className="cs-stat-hero-s">Structured step templates grew into a shared library. Each new customer came pre-loaded with reusable building blocks, cutting onboarding measurably.</p>
                 </div>
                 <div className="cs-stat-next">
@@ -1211,7 +1211,7 @@ export default function AdoptAICaseStudy({ onClose }) {
             <ul className="cs-learnings">
               {[
                 {
-                  h: "Start with the type system, not the interface",
+                  h: "Define what each step is before designing how it looks",
                   b: "Structured steps were not a late refinement. Defining them in v1 would have prevented drift, unlocked debugging, and made even the canvas viable. The templates you define early set the ceiling for everything built on top.",
                 },
                 {
