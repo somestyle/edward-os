@@ -17,6 +17,12 @@ const APPROACH_CARDS = [
   { n: "03", title: "Trust as the primary design constraint", body: "For enterprise users delegating real actions to AI, trust is not a feature. It is the product. Every interface decision was evaluated against one question: does this make the AI's behaviour more legible, reviewable, and correctable?" },
 ];
 
+const COMPETITIVE_ITEMS = [
+  { src: "/Projects/Adopt/Platform/research_microsoft_copilot.png", label: "Microsoft Copilot", alt: "Microsoft Copilot research" },
+  { src: "/Projects/Adopt/Platform/research_salesforce_agentforce.png", label: "Salesforce Agentforce", alt: "Salesforce Agentforce research" },
+  { src: "/Projects/Adopt/Platform/research_google_gemini.png", label: "Google Gemini", alt: "Google Gemini research" },
+];
+
 const LEARNINGS = [
   { h: "Customer contact is a design method, not a research phase", b: "Joining demo calls and weekly syncs from month one meant feedback arrived in real time, not in batched research rounds. The cadence of iteration matched the cadence of customer contact. That alignment is hard to replicate later." },
   { h: "Build the design system before you need it", b: "Starting the design system in parallel with the first prototype, not after the product had already diverged, meant consistency was never a catch-up exercise. Every component was born into a system, not retrofitted." },
@@ -40,9 +46,42 @@ const NAV_LABELS = {
 export default function AdoptAIPlatform({ onClose }) {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("context");
+  const [lightbox, setLightbox] = useState({ open: false, src: null, alt: "" });
+  const [zoom, setZoom] = useState(1);
+  const [compSlide, setCompSlide] = useState(0);
   const rootRef = useRef(null);
   const timelineRef = useRef(null);
   const lineRef = useRef(null);
+
+  const openLightbox = (src, alt = "") => {
+    setLightbox({ open: true, src, alt });
+    setZoom(1);
+  };
+
+  const closeLightbox = () => {
+    setLightbox((prev) => ({ ...prev, open: false }));
+    setZoom(1);
+  };
+
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) closeLightbox();
+  };
+
+  useEffect(() => {
+    if (!lightbox.open) return;
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") closeLightbox();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [lightbox.open]);
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setCompSlide((s) => (s + 1) % COMPETITIVE_ITEMS.length);
+    }, 4000);
+    return () => clearInterval(t);
+  }, []);
 
   useEffect(() => {
     const updateLine = () => {
@@ -104,6 +143,17 @@ export default function AdoptAIPlatform({ onClose }) {
     return () => obs.disconnect();
   }, []);
 
+  const LightboxImg = ({ src, alt, className = "" }) => (
+    <button
+      type="button"
+      className="cs-img-clickable"
+      onClick={() => openLightbox(src, alt)}
+      aria-label={`View full size: ${alt}`}
+    >
+      <img src={src} alt={alt} className={className} />
+    </button>
+  );
+
   const MediaBox = ({ label = "Placeholder", sub = "Add media", height = 200, src, maxWidth }) => (
     src ? (
       <div style={{ marginTop: 20, maxWidth: maxWidth || "100%", marginLeft: "auto", marginRight: "auto" }}>
@@ -122,6 +172,49 @@ export default function AdoptAIPlatform({ onClose }) {
 
   return (
     <>
+      {lightbox.open && lightbox.src && (
+        <div className="cs-lightbox" role="dialog" aria-modal="true" aria-label="Image preview">
+          <div className="cs-lightbox-backdrop" onClick={handleBackdropClick} aria-hidden />
+          <button
+            type="button"
+            className="cs-lightbox-close"
+            onClick={closeLightbox}
+            aria-label="Close preview"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          </button>
+          <div className="cs-lightbox-inner" onClick={(e) => e.stopPropagation()}>
+            <img
+              src={lightbox.src}
+              alt={lightbox.alt}
+              style={{ transform: `scale(${zoom})` }}
+              draggable={false}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+          <div className="cs-lightbox-zoom" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              className="cs-lightbox-zoom-btn"
+              onClick={() => setZoom((z) => Math.max(0.5, z - 0.25))}
+              aria-label="Zoom out"
+            >
+              −
+            </button>
+            <span className="cs-lightbox-zoom-val">{Math.round(zoom * 100)}%</span>
+            <button
+              type="button"
+              className="cs-lightbox-zoom-btn"
+              onClick={() => setZoom((z) => Math.min(3, z + 0.25))}
+              aria-label="Zoom in"
+            >
+              +
+            </button>
+          </div>
+        </div>
+      )}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,400;1,500;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap');
 
@@ -200,7 +293,7 @@ export default function AdoptAIPlatform({ onClose }) {
           font-size:clamp(42px,6vw,72px);
           font-weight:700; line-height:1.03;
           letter-spacing:-.025em; color:#0c0a09;
-          margin-bottom:8px;
+          margin-bottom:28px;
         }
         .cs-h1 em { font-style:italic; color:#2563eb; }
         .cs-h1-word {
@@ -217,9 +310,13 @@ export default function AdoptAIPlatform({ onClose }) {
         }
         .cs-hero-gif {
           width:100%; max-width:100%; border-radius:12px;
-          margin-bottom:32px; display:block;
+          margin-bottom:10px; display:block;
           box-shadow:0 2px 12px rgba(0,0,0,.06);
           opacity:0; animation:wordUp .55s .6s ease forwards;
+        }
+        .cs-hero-caption {
+          font-size:11px; font-weight:500; color:#a8a29e;
+          letter-spacing:.02em; margin-bottom:28px;
         }
         .cs-hero-lead {
           font-size:16px; line-height:1.8; color:#57534e;
@@ -264,6 +361,181 @@ export default function AdoptAIPlatform({ onClose }) {
         .cs-p { font-size:15px; line-height:1.85; color:#57534e; max-width:800px; }
         .cs-p + .cs-p { margin-top:16px; }
         .cs-p strong { color:#1c1917; font-weight:600; }
+
+        /* ── MEDIA & IMAGES ── */
+        .cs-media-group { margin-top:32px; }
+        .cs-media-caption {
+          font-size:10px; font-weight:700; letter-spacing:.14em;
+          text-transform:uppercase; color:#a8a29e; margin-bottom:12px;
+        }
+        .cs-media-figure {
+          border-radius:12px; overflow:hidden; border:1px solid #e7e5e4;
+          background:#f5f5f4; box-shadow:0 1px 6px rgba(0,0,0,.04);
+        }
+        .cs-media-figure img {
+          width:100%; height:auto; display:block; vertical-align:top;
+        }
+        /* ── COMPETITIVE LANDSCAPE ── */
+        .cs-comp-layout {
+          display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);
+          gap:28px; align-items:start;
+        }
+        .cs-comp-carousel {
+          position:relative;
+          background:#fff; border:1px solid #e7e5e4;
+          border-radius:14px; overflow:hidden;
+          box-shadow:0 2px 12px rgba(0,0,0,.05);
+        }
+        .cs-comp-track {
+          position:relative; aspect-ratio:4/3;
+          min-height:200px;
+        }
+        .cs-comp-slide {
+          position:absolute; inset:0;
+          opacity:0; pointer-events:none;
+          transition:opacity .5s ease;
+        }
+        .cs-comp-slide.active {
+          opacity:1; pointer-events:auto;
+        }
+        .cs-comp-slide .cs-img-clickable {
+          display:block; width:100%; height:100%;
+        }
+        .cs-comp-slide .cs-img-clickable img {
+          width:100%; height:100%;
+          object-fit:cover; object-position:center top;
+        }
+        .cs-comp-slide-label {
+          position:absolute; bottom:0; left:0; right:0;
+          padding:12px 16px; background:linear-gradient(to top,rgba(12,10,9,.7),transparent);
+          font-size:12px; font-weight:600; color:#fff;
+          letter-spacing:.03em;
+        }
+        .cs-comp-dots {
+          display:flex; justify-content:center; gap:8px;
+          padding:14px; border-top:1px solid #f5f5f4;
+        }
+        .cs-comp-dot {
+          width:8px; height:8px; border-radius:50%;
+          background:#d6d3d1; border:none; cursor:pointer;
+          transition:background .25s, transform .25s;
+        }
+        .cs-comp-dot:hover { background:#a8a29e; }
+        .cs-comp-dot.active {
+          background:#2563eb; transform:scale(1.2);
+        }
+        .cs-comp-desc {
+          padding-top:4px;
+        }
+        .cs-comp-desc-p {
+          font-size:15px; line-height:1.8; color:#57534e;
+        }
+        .cs-comp-desc-p strong { color:#1c1917; font-weight:600; }
+
+        .cs-research-row {
+          display:grid; grid-template-columns:repeat(3,1fr); gap:12px;
+        }
+        .cs-research-item {
+          border-radius:10px; overflow:hidden; border:1px solid #e7e5e4;
+          background:#fff; transition:border-color .2s, box-shadow .2s;
+        }
+        .cs-research-item:hover { border-color:#93c5fd; box-shadow:0 4px 16px rgba(59,130,246,.08); }
+        .cs-research-item img { width:100%; height:auto; display:block; }
+        .cs-research-label {
+          display:block; padding:10px 14px; font-size:11px; font-weight:600;
+          color:#57534e; text-align:center;
+        }
+        .cs-work-sublabel {
+          font-size:10px; font-weight:700; letter-spacing:.14em;
+          text-transform:uppercase; color:#a8a29e; margin-top:32px; margin-bottom:12px;
+        }
+        .cs-work-grid {
+          display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:12px;
+        }
+        .cs-work-card {
+          border-radius:12px; overflow:hidden; border:1px solid #e7e5e4;
+          background:#fff; transition:border-color .2s, box-shadow .2s;
+        }
+        .cs-work-card:hover { border-color:#93c5fd; box-shadow:0 4px 20px rgba(59,130,246,.06); }
+        .cs-work-card img { width:100%; height:auto; display:block; }
+        .cs-work-card-label {
+          padding:14px 18px 6px; font-size:12px; font-weight:700; color:#1c1917;
+        }
+        .cs-work-card-sub {
+          padding:0 18px 14px; font-size:11.5px; line-height:1.55; color:#78716c;
+        }
+        .cs-work-extra { margin-top:28px; }
+        .cs-work-extra img {
+          width:100%; border-radius:12px; border:1px solid #e7e5e4;
+          display:block; box-shadow:0 1px 6px rgba(0,0,0,.04);
+        }
+
+        .cs-img-clickable {
+          display:block; width:100%; padding:0; border:none;
+          background:transparent; cursor:zoom-in;
+          font:inherit; text-align:left;
+          transition:opacity .2s;
+        }
+        .cs-img-clickable:hover { opacity:.92; }
+        .cs-img-clickable img { display:block; width:100%; height:auto; }
+
+        /* ── LIGHTBOX ── */
+        .cs-lightbox {
+          position:fixed; inset:0; z-index:100;
+          display:flex; align-items:center; justify-content:center;
+          background:rgba(12,10,9,.88);
+          backdrop-filter:blur(8px);
+        }
+        .cs-lightbox-backdrop {
+          position:absolute; inset:0;
+          cursor:pointer;
+        }
+        .cs-lightbox-inner {
+          position:relative; z-index:1;
+          max-width:95vw; max-height:95vh;
+          display:flex; align-items:center; justify-content:center;
+          padding:48px;
+        }
+        .cs-lightbox-inner img {
+          max-width:100%; max-height:85vh;
+          width:auto; height:auto;
+          object-fit:contain;
+          border-radius:8px;
+          box-shadow:0 24px 80px rgba(0,0,0,.4);
+          transition:transform .2s ease;
+        }
+        .cs-lightbox-close {
+          position:absolute; top:16px; right:16px; z-index:2;
+          width:44px; height:44px;
+          display:flex; align-items:center; justify-content:center;
+          background:rgba(255,255,255,.12);
+          border:1px solid rgba(255,255,255,.2);
+          border-radius:10px;
+          color:#fff; cursor:pointer;
+          transition:background .2s, border-color .2s;
+        }
+        .cs-lightbox-close:hover {
+          background:rgba(255,255,255,.2);
+          border-color:rgba(255,255,255,.35);
+        }
+        .cs-lightbox-zoom {
+          position:absolute; bottom:16px; right:16px; z-index:2;
+          display:flex; gap:8px; align-items:center;
+          background:rgba(255,255,255,.12);
+          border:1px solid rgba(255,255,255,.2);
+          border-radius:10px;
+          padding:6px 10px;
+        }
+        .cs-lightbox-zoom-btn {
+          width:36px; height:36px;
+          display:flex; align-items:center; justify-content:center;
+          background:rgba(255,255,255,.15);
+          border:none; border-radius:8px;
+          color:#fff; font-size:18px; font-weight:600;
+          cursor:pointer; transition:background .2s;
+        }
+        .cs-lightbox-zoom-btn:hover { background:rgba(255,255,255,.25); }
+        .cs-lightbox-zoom-val { font-size:12px; font-weight:600; color:rgba(255,255,255,.9); min-width:36px; text-align:center; }
 
         /* ── CALLOUT ── */
         .cs-callout {
@@ -486,6 +758,9 @@ export default function AdoptAIPlatform({ onClose }) {
           .cs-metric { border-right:none; border-bottom:1px solid #e7e5e4; }
           .cs-metric:last-child { border-bottom:none; }
           .cs-two-col, .cs-work-grid { grid-template-columns:1fr !important; }
+          .cs-research-row { grid-template-columns:1fr; }
+          .cs-comp-layout { grid-template-columns:1fr; }
+          .cs-comp-track { min-height:180px; }
           .cs-timeline-row { grid-template-columns:80px 20px 1fr; }
           .cs-timeline-line { left:80px; }
           .cs-timeline-end { margin-left:0; }
@@ -535,12 +810,12 @@ export default function AdoptAIPlatform({ onClose }) {
               <br/>
               <em className="cs-h1-word" style={{ animationDelay:"0.2s" }}>Designed to scale.</em>
             </h1>
-            <MediaBox
-              label="Platform Overview"
-              sub="Best full-platform screenshot: copilot embedded in customer app"
-              height={380}
-              src="/Projects/Adopt/adopt_client.png"
+            <LightboxImg
+              src="/Projects/Adopt/Platform/adopt_client.png"
+              alt="Adopt AI platform — copilot embedded in customer app"
+              className="cs-hero-gif"
             />
+            <p className="cs-hero-caption">Adopt Copilot running on a partner's platform</p>
             <p className="cs-hero-lead">
               Adopt AI needed a design language, an interaction model, and a UX definition for agentic software before any of those things existed. This is the story of how I built them in parallel with the product, and what that process looks like when it works.
             </p>
@@ -572,17 +847,45 @@ export default function AdoptAIPlatform({ onClose }) {
               <p className="cs-callout-text">The design problem wasn't how should this look. It was what should this be. Those are very different starting points.</p>
               <span className="cs-callout-label">The scope of the problem</span>
             </div>
-            <div className="cs-two-col reveal" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16, marginTop:32 }}>
-              <MediaBox
-                label="Competitive Landscape"
-                sub="Microsoft Copilot, Salesforce Agentforce, Google Gemini: the reference set at kickoff"
-                height={240}
-              />
-              <MediaBox
-                label="Early Interaction Model Sketches"
-                sub="First wireframes defining how users initiate, guide, and review AI-executed actions"
-                height={240}
-              />
+            <div className="cs-media-group reveal">
+              <div className="cs-comp-landscape">
+                <div className="cs-media-caption">Competitive landscape</div>
+                <div className="cs-comp-layout">
+                  <div className="cs-comp-carousel">
+                    <div className="cs-comp-track">
+                      {COMPETITIVE_ITEMS.map((item, i) => (
+                        <div
+                          key={item.label}
+                          className={`cs-comp-slide ${i === compSlide ? "active" : ""}`}
+                        >
+                          <LightboxImg src={item.src} alt={item.alt} />
+                          <span className="cs-comp-slide-label">{item.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="cs-comp-dots">
+                      {COMPETITIVE_ITEMS.map((_, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          className={`cs-comp-dot ${i === compSlide ? "active" : ""}`}
+                          onClick={() => setCompSlide(i)}
+                          aria-label={`View ${COMPETITIVE_ITEMS[i].label}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <div className="cs-comp-desc">
+                    <p className="cs-comp-desc-p">
+                      Large enterprises have launched AI copilots for their users—Microsoft, Salesforce, and Google among them. We noticed a gap: only the largest companies could afford to build and maintain these experiences. Our goal is to <strong>democratize AI copilots</strong> so that every company, regardless of size, can offer their own embedded assistant.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="cs-media-caption" style={{ marginTop:28 }}>Early interaction model · First wireframes</div>
+              <div className="cs-media-figure">
+                <LightboxImg src="/Projects/Adopt/Platform/adopt_designs.png" alt="Early wireframes defining how users initiate, guide, and review AI-executed actions" />
+              </div>
             </div>
           </section>
 
@@ -620,6 +923,10 @@ export default function AdoptAIPlatform({ onClose }) {
             <p className="cs-p">
               With no prior design infrastructure and a fast-moving product, the approach had to be both strategic and highly practical. These were the decisions that shaped how I worked.
             </p>
+            <div className="cs-media-figure reveal" style={{ marginBottom:36 }}>
+              <LightboxImg src="/Projects/Adopt/Platform/adopt_brain_infogrpahic.png" alt="Platform vision — agentic AI architecture and trust model" />
+              <div className="cs-media-caption" style={{ marginTop:14 }}>Platform vision · Trust model and agentic architecture</div>
+            </div>
             <div className="cs-prin-grid reveal">
               {APPROACH_CARDS.map((p, i) => (
                 <div key={p.n} className={`cs-prin reveal s${i + 1}`}>
@@ -638,17 +945,41 @@ export default function AdoptAIPlatform({ onClose }) {
             <p className="cs-p">
               The copilot deploys as an embedded panel inside a customer's own product, as internal enterprise tooling, or as a fully white-labelled solution under the customer's brand. The design system had to support all three without fragmenting: consistent interaction patterns, flexible theming, shared component architecture.
             </p>
-            <MediaBox
-              label="Copilot: Embedded in Customer Platform"
-              sub="Best screenshot: full sidebar panel with Welcome message, Recommended Actions, Top Actions, and chat input visible"
-              height={400}
-            />
-            <div className="cs-work-sublabel" style={{ fontSize:10, fontWeight:700, letterSpacing:".14em", textTransform:"uppercase", color:"#a8a29e", marginTop:32, marginBottom:12 }}>Platform in action</div>
-            <div className="cs-work-grid reveal" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
-              <MediaBox label="Conversational Action Execution" sub="Ziuri Copilot chat interface: AI conversation with Deactivate/Reassign action buttons visible" height={220} />
-              <MediaBox label="No-Code Configuration: Design Studio" sub="Design Studio panel: sidebar customization with Header, Welcome Text, Colour Palette controls visible" height={220} />
-              <MediaBox label="Action Configuration" sub="Action components / flow builder: action config panel with routing logic visible" height={220} />
-              <MediaBox label="Platform Analytics" sub="Adopt AI dashboard: Action Performance charts, Customer time spend metrics, Actions by topic donut chart" height={220} />
+            <div className="cs-media-figure reveal">
+              <LightboxImg src="/Projects/Adopt/Platform/adopt_copilot_client1.png" alt="Copilot embedded in customer platform — full sidebar panel with chat and actions" />
+              <div className="cs-media-caption" style={{ marginTop:14 }}>Copilot embedded in customer platform · Full sidebar with actions and chat</div>
+            </div>
+            <div className="cs-work-sublabel">Copilot interface variations</div>
+            <div className="cs-research-row reveal">
+              <div className="cs-research-item">
+                <LightboxImg src="/Projects/Adopt/Platform/adopt_copilot1.png" alt="Copilot view — conversation and actions" />
+                <span className="cs-research-label">Conversation & Actions</span>
+              </div>
+              <div className="cs-research-item">
+                <LightboxImg src="/Projects/Adopt/Platform/adopt_copilot2.png" alt="Copilot view — configuration" />
+                <span className="cs-research-label">Configuration</span>
+              </div>
+              <div className="cs-research-item">
+                <LightboxImg src="/Projects/Adopt/Platform/adopt_copilot3.png" alt="Copilot view — execution flow" />
+                <span className="cs-research-label">Execution Flow</span>
+              </div>
+            </div>
+            <div className="cs-work-sublabel" style={{ marginTop:28 }}>Platform capabilities</div>
+            <div className="cs-work-grid reveal">
+              <div className="cs-work-card">
+                <LightboxImg src="/Projects/Adopt/Platform/adtop_workflow_infographic.png" alt="Action configuration — workflow builder" />
+                <div className="cs-work-card-label">Action Configuration</div>
+                <div className="cs-work-card-sub">Workflow builder with routing logic and step configuration</div>
+              </div>
+              <div className="cs-work-card">
+                <LightboxImg src="/Projects/Adopt/Platform/adopt_dashboard.png" alt="Platform analytics — action performance and metrics" />
+                <div className="cs-work-card-label">Platform Analytics</div>
+                <div className="cs-work-card-sub">Action performance, customer engagement, usage metrics</div>
+              </div>
+            </div>
+            <div className="cs-work-extra reveal">
+              <LightboxImg src="/Projects/Adopt/Platform/adopt_copilot_client2.png" alt="Copilot in client context — alternative deployment view" />
+              <div className="cs-media-caption" style={{ marginTop:14 }}>Alternative client deployment · White-label copilot in production</div>
             </div>
             <p style={{ fontSize:13, fontStyle:"italic", color:"#a8a29e", textAlign:"center", marginTop:16 }}>
               Same interaction model. Different brand. Consistent trust signals throughout.
