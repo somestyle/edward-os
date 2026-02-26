@@ -539,6 +539,7 @@ export default function AdoptAIPlatform({ onClose }) {
               label="Platform Overview"
               sub="Best full-platform screenshot: copilot embedded in customer app"
               height={380}
+              src="/Projects/Adopt/adopt_client.png"
             />
             <p className="cs-hero-lead">
               Adopt AI needed a design language, an interaction model, and a UX definition for agentic software before any of those things existed. This is the story of how I built them in parallel with the product, and what that process looks like when it works.

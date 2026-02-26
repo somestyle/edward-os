@@ -450,7 +450,7 @@ const HomeView = ({ onNavigate }) => {
         <div className="space-y-5">
           <div>
             <p className="font-semibold text-stone-500 dark:text-stone-400 mb-1.5">☕ Practicing</p>
-            <p>Latte art, vibe coding, walking my dogs</p>
+            <p>Latte art, vibe coding, OpenClaw 🦞</p>
           </div>
           <div>
             <p className="font-semibold text-stone-500 dark:text-stone-400 mb-2">🐵 Following</p>
