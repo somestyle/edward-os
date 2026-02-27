@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { ChevronLeft, ChevronRight, Shuffle } from 'lucide-react';
 
 type Category = 'all' | 'design' | 'engineering' | 'invention';
 
@@ -86,17 +87,17 @@ export default function QuotesWidget() {
     <div className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm p-6 md:p-8 max-w-lg mx-auto">
       <h3 className="text-lg font-bold text-stone-900 dark:text-white mb-4 text-center">Inspiration</h3>
 
-      {/* Category chips */}
-      <div className="flex flex-wrap gap-2 justify-center mb-6">
+      {/* Category filter */}
+      <div className="flex p-1.5 bg-stone-100 dark:bg-stone-800 rounded-xl mb-6">
         {(['all', 'design', 'engineering', 'invention'] as const).map((c) => (
           <button
             key={c}
             type="button"
             onClick={() => setCat(c)}
-            className={`px-3 py-1.5 text-xs font-bold rounded-full capitalize ${
+            className={`flex-1 py-2 text-xs font-bold rounded-lg capitalize transition-all active:scale-[0.98] ${
               category === c
-                ? 'bg-stone-900 dark:bg-white text-white dark:text-stone-900'
-                : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700'
+                ? 'bg-white dark:bg-stone-700 text-stone-900 dark:text-white shadow-sm'
+                : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 active:bg-stone-200 dark:active:bg-stone-600'
             }`}
           >
             {c === 'all' ? 'All' : c}
@@ -121,27 +122,30 @@ export default function QuotesWidget() {
         </p>
       </div>
 
-      <div className="flex items-center justify-between mt-8">
+      <div className="flex items-center justify-between gap-4 mt-8">
         <button
           type="button"
           onClick={goPrev}
-          className="px-4 py-2 bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-200 rounded-xl text-sm font-bold hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
+          aria-label="Previous quote"
+          className="p-2.5 rounded-xl bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-700 active:scale-[0.98] active:bg-stone-300 dark:active:bg-stone-600 transition-all"
         >
-          Previous
+          <ChevronLeft size={20} strokeWidth={2.5} />
         </button>
         <button
           type="button"
           onClick={shuffle}
-          className="px-4 py-2 bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-200 rounded-xl text-sm font-bold hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-stone-700 dark:bg-stone-200 text-white dark:text-stone-900 rounded-xl text-sm font-bold hover:bg-stone-900 dark:hover:bg-white active:scale-[0.98] active:opacity-90 transition-all"
         >
+          <Shuffle size={18} strokeWidth={2.5} />
           Shuffle
         </button>
         <button
           type="button"
           onClick={goNext}
-          className="px-4 py-2 bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-200 rounded-xl text-sm font-bold hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
+          aria-label="Next quote"
+          className="p-2.5 rounded-xl bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-700 active:scale-[0.98] active:bg-stone-300 dark:active:bg-stone-600 transition-all"
         >
-          Next
+          <ChevronRight size={20} strokeWidth={2.5} />
         </button>
       </div>
       <p className="text-center text-xs text-stone-400 dark:text-stone-500 mt-3">

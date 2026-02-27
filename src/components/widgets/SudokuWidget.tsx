@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
+import { RotateCcw, Check, Eye } from 'lucide-react';
 
 type Difficulty = 'easy' | 'medium' | 'hard';
 
@@ -196,26 +197,38 @@ export default function SudokuWidget() {
 
   return (
     <div className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm p-4 md:p-6 max-w-sm mx-auto overflow-x-auto">
-      <h3 className="text-lg font-bold text-stone-900 dark:text-white mb-3 text-center">Sudoku</h3>
+      <h3 className="text-lg font-bold text-stone-900 dark:text-white mb-4 text-center">Sudoku</h3>
 
-      <div className="flex gap-2 mb-3">
-        {(['easy', 'medium', 'hard'] as const).map((d) => (
-          <button
-            key={d}
-            type="button"
-            onClick={() => newGame(d)}
-            className={`flex-1 py-1.5 text-xs font-bold rounded-lg capitalize ${
-              difficulty === d
-                ? 'bg-stone-900 dark:bg-white text-white dark:text-stone-900'
-                : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300'
-            }`}
-          >
-            {d}
-          </button>
-        ))}
+      {/* Top level: New Game | Difficulty | Timer */}
+      <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
+        <button
+          type="button"
+          onClick={() => newGame(difficulty)}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-stone-700 dark:bg-stone-200 text-white dark:text-stone-900 rounded-lg text-xs font-bold hover:bg-stone-900 dark:hover:bg-white active:scale-[0.98] active:opacity-90 transition-all shrink-0"
+        >
+          <RotateCcw size={14} strokeWidth={2.5} />
+          New Game
+        </button>
+        <div className="flex p-1 bg-stone-100 dark:bg-stone-800 rounded-lg flex-1 min-w-0 justify-center">
+          {(['easy', 'medium', 'hard'] as const).map((d) => (
+            <button
+              key={d}
+              type="button"
+              onClick={() => newGame(d)}
+              className={`flex-1 min-w-0 px-2 py-1.5 text-xs font-bold rounded-md capitalize transition-all active:scale-[0.98] ${
+                difficulty === d
+                  ? 'bg-white dark:bg-stone-700 text-stone-900 dark:text-white shadow-sm'
+                  : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 active:bg-stone-200 dark:active:bg-stone-600'
+              }`}
+            >
+              {d}
+            </button>
+          ))}
+        </div>
+        <span className="text-xs font-medium text-stone-500 dark:text-stone-400 tabular-nums shrink-0">
+          {formatTime(elapsed)}
+        </span>
       </div>
-
-      <p className="text-xs text-stone-500 dark:text-stone-400 text-center mb-2">Time: {formatTime(elapsed)}</p>
 
       {/* Board wrapper: clear outer border, padded background */}
       <div className="w-full max-w-[288px] md:max-w-[324px] mx-auto p-px bg-stone-300 dark:bg-stone-600 rounded-sm">
@@ -276,26 +289,22 @@ export default function SudokuWidget() {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2 justify-center mt-4">
-        <button
-          type="button"
-          onClick={() => newGame(difficulty)}
-          className="px-3 py-2 bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-200 rounded-xl text-xs font-bold"
-        >
-          New Game
-        </button>
+      {/* Action buttons: Check, Reveal */}
+      <div className="flex gap-2 mt-4">
         <button
           type="button"
           onClick={checkSolution}
-          className="px-3 py-2 bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-200 rounded-xl text-xs font-bold"
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-200 rounded-xl text-sm font-bold hover:bg-stone-200 dark:hover:bg-stone-700 active:scale-[0.98] active:bg-stone-300 dark:active:bg-stone-600 transition-all border border-stone-200 dark:border-stone-700"
         >
-          Check Solution
+          <Check size={16} strokeWidth={2.5} />
+          Check
         </button>
         <button
           type="button"
           onClick={revealSolution}
-          className="px-3 py-2 bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-200 rounded-xl text-xs font-bold"
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-stone-500 dark:text-stone-400 rounded-xl text-sm font-medium hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-800/50 active:scale-[0.98] active:bg-stone-100 dark:active:bg-stone-800 transition-all"
         >
+          <Eye size={16} strokeWidth={2} />
           Reveal
         </button>
       </div>

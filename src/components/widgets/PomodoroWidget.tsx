@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Play, Pause, RotateCcw } from 'lucide-react';
 
 const WORK_SEC = 25 * 60;
 const SHORT_BREAK_SEC = 5 * 60;
@@ -107,16 +108,16 @@ export default function PomodoroWidget() {
       <h3 className="text-lg font-bold text-stone-900 dark:text-white mb-4 text-center">Pomodoro</h3>
 
       {/* Mode tabs */}
-      <div className="flex p-1 bg-stone-100 dark:bg-stone-800 rounded-xl mb-6">
+      <div className="flex p-1.5 bg-stone-100 dark:bg-stone-800 rounded-xl mb-6">
         {(['work', 'shortBreak', 'longBreak'] as const).map((m) => (
           <button
             key={m}
             type="button"
             onClick={() => handleModeChange(m)}
-            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
+            className={`flex-1 py-2.5 text-xs font-bold rounded-lg transition-all active:scale-[0.98] ${
               mode === m
                 ? 'bg-white dark:bg-stone-700 text-stone-900 dark:text-white shadow-sm'
-                : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200'
+                : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 active:bg-stone-200 dark:active:bg-stone-600'
             }`}
           >
             {m === 'work' ? 'Work' : m === 'shortBreak' ? 'Short' : 'Long'}
@@ -159,29 +160,34 @@ export default function PomodoroWidget() {
         Session {Math.min(session, 4)} of 4
       </p>
 
-      {/* Controls */}
-      <div className="flex justify-center gap-2">
-        <button
-          type="button"
-          onClick={() => setIsRunning(true)}
-          disabled={isRunning}
-          className="px-4 py-2 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-xl text-sm font-bold disabled:opacity-50 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors"
-        >
-          Start
-        </button>
-        <button
-          type="button"
-          onClick={() => setIsRunning(false)}
-          disabled={!isRunning}
-          className="px-4 py-2 bg-stone-200 dark:bg-stone-700 text-stone-900 dark:text-white rounded-xl text-sm font-bold disabled:opacity-50 hover:bg-stone-300 dark:hover:bg-stone-600 transition-colors"
-        >
-          Pause
-        </button>
+      {/* Controls: primary Start/Pause, secondary Reset */}
+      <div className="flex flex-col sm:flex-row gap-2">
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => setIsRunning(true)}
+            disabled={isRunning}
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-stone-700 dark:bg-stone-200 text-white dark:text-stone-900 rounded-xl text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:enabled:bg-stone-900 dark:hover:enabled:bg-white active:enabled:scale-[0.98] active:enabled:opacity-90 transition-all"
+          >
+            <Play size={18} strokeWidth={2.5} fill="currentColor" />
+            Start
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsRunning(false)}
+            disabled={!isRunning}
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-stone-200 dark:bg-stone-700 text-stone-900 dark:text-white rounded-xl text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:enabled:bg-stone-300 dark:hover:enabled:bg-stone-600 active:enabled:scale-[0.98] active:enabled:brightness-95 transition-all"
+          >
+            <Pause size={18} strokeWidth={2.5} fill="currentColor" />
+            Pause
+          </button>
+        </div>
         <button
           type="button"
           onClick={reset}
-          className="px-4 py-2 bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-200 rounded-xl text-sm font-bold hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
+          className="flex items-center justify-center gap-2 px-4 py-2.5 bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-200 rounded-xl text-sm font-bold hover:bg-stone-200 dark:hover:bg-stone-700 active:scale-[0.98] active:bg-stone-300 dark:active:bg-stone-600 transition-all border border-stone-200 dark:border-stone-700"
         >
+          <RotateCcw size={16} strokeWidth={2.5} />
           Reset
         </button>
       </div>
