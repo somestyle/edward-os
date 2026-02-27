@@ -217,40 +217,63 @@ export default function SudokuWidget() {
 
       <p className="text-xs text-stone-500 dark:text-stone-400 text-center mb-2">Time: {formatTime(elapsed)}</p>
 
-      <div className="inline-grid grid-cols-9 gap-0 border-2 border-stone-800 dark:border-stone-200 w-full max-w-[280px] mx-auto">
-        {grid.map((row, r) =>
-          row.map((val, c) => {
-            const key = `${r}-${c}`;
-            const isSelected = selectedRow === r && selectedCol === c;
-            const isRelated = sameRowColBox.has(key) && !isSelected;
-            const isConflict = allConflicts.has(key);
-            const isFixed = fixed[r][c];
-            const isSameNumber = selectedVal !== null && val === selectedVal;
-            return (
-              <button
-                key={key}
-                type="button"
-                onClick={() => {
-                  if (isFixed) return;
-                  setSelected([r, c]);
-                }}
-                className={`
-                  w-8 h-8 md:w-9 md:h-9 flex items-center justify-center text-sm font-bold border
-                  border-stone-300 dark:border-stone-600
-                  ${(r + 1) % 3 === 0 && r < 8 ? 'border-b-2 border-b-stone-800 dark:border-b-stone-200' : ''}
-                  ${(c + 1) % 3 === 0 && c < 8 ? 'border-r-2 border-r-stone-800 dark:border-r-stone-200' : ''}
-                  ${isSelected ? 'ring-2 ring-[var(--accent,#3b82f6)] ring-inset bg-blue-50 dark:bg-blue-900/20' : ''}
-                  ${isRelated && !isSelected ? 'bg-stone-100 dark:bg-stone-800' : ''}
-                  ${isSameNumber && !isSelected ? 'text-[var(--accent,#3b82f6)]' : 'text-stone-900 dark:text-white'}
-                  ${isConflict ? '!text-red-600 dark:!text-red-400 bg-red-50 dark:bg-red-900/20' : ''}
-                  ${isFixed ? 'bg-stone-50 dark:bg-stone-800/50' : ''}
-                `}
-              >
-                {val ?? ''}
-              </button>
-            );
-          })
-        )}
+      {/* Board wrapper: clear outer border, padded background */}
+      <div className="w-full max-w-[288px] md:max-w-[324px] mx-auto p-px bg-stone-300 dark:bg-stone-600 rounded-sm">
+        <div className="grid grid-cols-9 gap-0 bg-white dark:bg-stone-900 rounded-sm overflow-hidden">
+          {grid.map((row, r) =>
+            row.map((val, c) => {
+              const key = `${r}-${c}`;
+              const isSelected = selectedRow === r && selectedCol === c;
+              const isRelated = sameRowColBox.has(key) && !isSelected;
+              const isConflict = allConflicts.has(key);
+              const isFixed = fixed[r][c];
+              const isSameNumber = selectedVal !== null && val === selectedVal;
+              const isEmpty = val === null;
+              const isBlockRight = c === 2 || c === 5;
+              const isBlockBottom = r === 2 || r === 5;
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => {
+                    if (isFixed) return;
+                    setSelected([r, c]);
+                  }}
+                  onFocus={() => {
+                    if (!isFixed) setSelected([r, c]);
+                  }}
+                  tabIndex={isFixed ? -1 : 0}
+                  aria-pressed={isSelected}
+                  aria-readonly={isFixed}
+                  className={`
+                    w-8 h-8 md:w-9 md:h-9 min-w-[2rem] min-h-[2rem] md:min-w-[2.25rem] md:min-h-[2.25rem]
+                    flex items-center justify-center text-sm font-bold
+                    border-stone-200 dark:border-stone-600
+                    border-r border-b
+                    ${isBlockRight ? 'border-r-2 border-r-stone-400 dark:border-r-stone-500' : ''}
+                    ${isBlockBottom ? 'border-b-2 border-b-stone-400 dark:border-b-stone-500' : ''}
+                    ${c === 8 ? 'border-r-0' : ''}
+                    ${r === 8 ? 'border-b-0' : ''}
+                    ${isFixed 
+                      ? 'cursor-default bg-stone-100 dark:bg-stone-800/80' 
+                      : 'cursor-pointer hover:bg-stone-50 dark:hover:bg-stone-800/50'
+                    }
+                    ${isEmpty && !isFixed ? 'border-dashed border-stone-300 dark:border-stone-500' : ''}
+                    ${isSelected 
+                      ? '!ring-2 !ring-blue-500 !ring-offset-1 !ring-offset-white dark:!ring-offset-stone-900 bg-blue-100 dark:bg-blue-900/40 shadow-[inset_0_0_0_2px_rgba(59,130,246,0.4)] focus-visible:outline-none' 
+                      : 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500 focus-visible:outline-offset-1'
+                    }
+                    ${isRelated && !isSelected ? 'bg-stone-50 dark:bg-stone-800/60' : ''}
+                    ${isSameNumber && !isSelected ? 'text-blue-600 dark:text-blue-400 font-extrabold' : 'text-stone-900 dark:text-white'}
+                    ${isConflict ? '!text-red-600 dark:!text-red-400 !bg-red-100 dark:!bg-red-900/30' : ''}
+                  `}
+                >
+                  {val ?? ''}
+                </button>
+              );
+            })
+          )}
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-2 justify-center mt-4">
