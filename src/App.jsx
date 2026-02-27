@@ -4,7 +4,8 @@ import {
   Send, Sparkles, ChevronRight, ChevronDown, User, 
   Home, Briefcase, Award, Zap,
   Layout, GraduationCap, Layers,
-  BookOpen, Mail, Linkedin, ExternalLink, Folder, Lock, LockOpen
+  BookOpen, Mail, Linkedin, ExternalLink, Folder, Lock, LockOpen,
+  FileText, Mic2, Newspaper
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 // Import the separated system prompt
@@ -758,6 +759,78 @@ const CareerView = ({ scrollState }) => {
         </div>
 
       </div>
+
+      {/* Publications & Media */}
+      <div className="mt-12 relative z-10">
+        <div className="bg-white dark:bg-stone-900 p-6 rounded-2xl border border-stone-100 dark:border-stone-800 shadow-sm">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-lg">
+              <BookOpen size={18} />
+            </div>
+            <h3 className="font-bold text-stone-900 dark:text-white">Publications & Media</h3>
+          </div>
+          <div className="space-y-8">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <FileText size={16} className="text-amber-600 dark:text-amber-400 shrink-0" />
+                <span className="text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">Patents</span>
+              </div>
+              <a href="https://patents.google.com/patent/US12430227B1" target="_blank" rel="noreferrer" className="group block w-full text-sm text-stone-700 dark:text-stone-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                AI-based system and method for automated API discovery and action workflow generation <ExternalLink size={12} className="inline-block ml-0.5 align-baseline opacity-60 group-hover:opacity-100" />
+              </a>
+            </div>
+
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <BookOpen size={16} className="text-blue-600 dark:text-blue-400 shrink-0" />
+                <span className="text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">Writing</span>
+              </div>
+              <ul className="space-y-2">
+                <li>
+                  <a href="https://www.linkedin.com/pulse/building-collaborative-design-culture-todays-world-edward-chu/" target="_blank" rel="noreferrer" className="group block w-full text-sm text-stone-700 dark:text-stone-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                    Building a collaborative design culture for today's world <ExternalLink size={12} className="inline-block ml-0.5 align-baseline opacity-60 group-hover:opacity-100" />
+                  </a>
+                </li>
+                <li>
+                  <a href="https://www.linkedin.com/pulse/storytelling-data-making-analytics-work-your-user-edward-chu%3FtrackingId=VE%252BSYf93TJmyileXyo1E6g%253D%253D/?trackingId=VE%2BSYf93TJmyileXyo1E6g%3D%3D" target="_blank" rel="noreferrer" className="group block w-full text-sm text-stone-700 dark:text-stone-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                    Storytelling with data: Making data analytics work for your user <ExternalLink size={12} className="inline-block ml-0.5 align-baseline opacity-60 group-hover:opacity-100" />
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <Mic2 size={16} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <span className="text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">Webinars & Talks</span>
+              </div>
+              <ul className="space-y-2">
+                <li>
+                  <a href="https://www.adopt.ai/webinar/uncovering-blind-spots-agentic-ai-ux" target="_blank" rel="noreferrer" className="group block w-full text-sm text-stone-700 dark:text-stone-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                    Designing Agentic AI Experiences Beyond the GUI <ExternalLink size={12} className="inline-block ml-0.5 align-baseline opacity-60 group-hover:opacity-100" />
+                  </a>
+                </li>
+                <li>
+                  <a href="https://www.youtube.com/watch?v=VzQ5U_inmGM" target="_blank" rel="noreferrer" className="group block w-full text-sm text-stone-700 dark:text-stone-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                    The Journey into Product Design – ADPList x Sketch x Springboard <ExternalLink size={12} className="inline-block ml-0.5 align-baseline opacity-60 group-hover:opacity-100" />
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <Newspaper size={16} className="text-violet-600 dark:text-violet-400 shrink-0" />
+                <span className="text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">Interviews & Press</span>
+              </div>
+              <a href="https://www.builtinsf.com/2022/03/24/how-designers-simplify-user-journey" target="_blank" rel="noreferrer" className="group block w-full text-sm text-stone-700 dark:text-stone-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                Seeking a Simplified User Journey? Stop Adding Solutions - BuiltinSF <ExternalLink size={12} className="inline-block ml-0.5 align-baseline opacity-60 group-hover:opacity-100" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 };
