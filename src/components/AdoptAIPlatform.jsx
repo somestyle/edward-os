@@ -328,7 +328,8 @@ export default function AdoptAIPlatform({ onClose }) {
           width:100%; max-width:100%; border-radius:12px;
           margin-bottom:10px; display:block;
           box-shadow:0 2px 12px rgba(0,0,0,.06);
-          opacity:0; animation:wordUp .55s .6s ease forwards;
+          opacity:1;
+          animation:wordUp .55s .6s ease forwards;
           transform:translateZ(0);
           backface-visibility:hidden;
           -webkit-backface-visibility:hidden;
