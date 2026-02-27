@@ -32,13 +32,13 @@ const LEARNINGS = [
 
 /* ─── component ──────────────────────────────────────────── */
 
-const NAV_SECTION_IDS = ["context", "timeline", "approach", "work", "impact", "reflection"];
+const NAV_SECTION_IDS = ["context", "approach", "work", "timeline", "impact", "reflection"];
 
 const NAV_LABELS = {
   context: "Context",
-  timeline: "Timeline",
   approach: "Approach",
   work: "Work",
+  timeline: "How It Shipped",
   impact: "Impact",
   reflection: "Reflection",
 };
@@ -49,6 +49,8 @@ export default function AdoptAIPlatform({ onClose }) {
   const [lightbox, setLightbox] = useState({ open: false, src: null, alt: "" });
   const [zoom, setZoom] = useState(1);
   const [compSlide, setCompSlide] = useState(0);
+  const [copilotSlide, setCopilotSlide] = useState(0);
+  const [copilotDir, setCopilotDir] = useState(1);
   const rootRef = useRef(null);
   const timelineRef = useRef(null);
   const lineRef = useRef(null);
@@ -80,6 +82,20 @@ export default function AdoptAIPlatform({ onClose }) {
     const t = setInterval(() => {
       setCompSlide((s) => (s + 1) % COMPETITIVE_ITEMS.length);
     }, 4000);
+    return () => clearInterval(t);
+  }, []);
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setCopilotSlide((s) => {
+        if (s === 1) {
+          setCopilotDir(-1);
+          return 0;
+        }
+        setCopilotDir(1);
+        return 1;
+      });
+    }, 4500);
     return () => clearInterval(t);
   }, []);
 
@@ -301,7 +317,7 @@ export default function AdoptAIPlatform({ onClose }) {
           opacity:0; transform:translateY(18px);
           animation:wordUp .55s ease forwards;
         }
-        @keyframes wordUp { to { opacity:1; transform:translateY(0); } }
+        @keyframes wordUp { to { opacity:1; transform:translateY(0) translateZ(0); } }
 
         .cs-h1-sub {
           font-size:clamp(15px,2vw,18px); font-weight:300;
@@ -313,6 +329,9 @@ export default function AdoptAIPlatform({ onClose }) {
           margin-bottom:10px; display:block;
           box-shadow:0 2px 12px rgba(0,0,0,.06);
           opacity:0; animation:wordUp .55s .6s ease forwards;
+          transform:translateZ(0);
+          backface-visibility:hidden;
+          -webkit-backface-visibility:hidden;
         }
         .cs-hero-caption {
           font-size:11px; font-weight:500; color:#a8a29e;
@@ -372,6 +391,73 @@ export default function AdoptAIPlatform({ onClose }) {
           border-radius:12px; overflow:hidden; border:1px solid #e7e5e4;
           background:#f5f5f4; box-shadow:0 1px 6px rgba(0,0,0,.04);
         }
+        /* ── COPILOT GALLERY (Zluri sliding) ── */
+        .cs-copilot-gallery {
+          max-width:50%;
+          margin-top:20px;
+        }
+        .cs-copilot-gallery-track {
+          overflow:hidden;
+          border-radius:10px;
+        }
+        .cs-copilot-gallery-strip {
+          display:flex;
+          transition:transform .6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .cs-copilot-gallery-slide {
+          flex:0 0 100%;
+          min-width:0;
+        }
+        .cs-copilot-gallery-slide .cs-img-clickable {
+          display:block;
+          width:100%;
+        }
+        .cs-copilot-gallery-slide .cs-img-clickable img {
+          width:100%;
+          height:auto;
+          display:block;
+          vertical-align:top;
+          border-radius:10px;
+        }
+        .cs-copilot-gallery-dots {
+          display:flex;
+          justify-content:flex-start;
+          gap:10px;
+          margin-top:12px;
+        }
+        .cs-copilot-dot {
+          width:8px;
+          height:8px;
+          border-radius:50%;
+          background:#d6d3d1;
+          border:none;
+          cursor:pointer;
+          transition:background .25s, transform .25s;
+        }
+        .cs-copilot-dot:hover { background:#a8a29e; }
+        .cs-copilot-dot.active {
+          background:#2563eb;
+          transform:scale(1.2);
+        }
+        /* ── COPILOT VARIATIONS ROW ── */
+        .cs-copilot-row {
+          display:flex;
+          gap:12px;
+          align-items:stretch;
+          margin-top:20px;
+        }
+        .cs-copilot-row .cs-img-clickable {
+          flex:1;
+          min-width:0;
+        }
+        .cs-copilot-row .cs-img-clickable img {
+          width:100%;
+          height:200px;
+          object-fit:cover;
+          object-position:center top;
+          border-radius:10px;
+          display:block;
+        }
         .cs-media-figure img {
           width:100%; height:auto; display:block; vertical-align:top;
         }
@@ -401,9 +487,14 @@ export default function AdoptAIPlatform({ onClose }) {
         .cs-comp-slide .cs-img-clickable {
           display:block; width:100%; height:100%;
         }
-        .cs-comp-slide .cs-img-clickable img {
+        .cs-comp-slide .cs-img-clickable {
+          display:flex; align-items:center; justify-content:center;
           width:100%; height:100%;
-          object-fit:cover; object-position:center top;
+        }
+        .cs-comp-slide .cs-img-clickable img {
+          max-width:100%; max-height:100%;
+          width:auto; height:auto;
+          object-fit:contain; object-position:center center;
         }
         .cs-comp-slide-label {
           position:absolute; bottom:0; left:0; right:0;
@@ -430,6 +521,7 @@ export default function AdoptAIPlatform({ onClose }) {
         .cs-comp-desc-p {
           font-size:15px; line-height:1.8; color:#57534e;
         }
+        .cs-comp-desc-p + .cs-comp-desc-p { margin-top:14px; }
         .cs-comp-desc-p strong { color:#1c1917; font-weight:600; }
 
         .cs-research-row {
@@ -761,6 +853,9 @@ export default function AdoptAIPlatform({ onClose }) {
           .cs-research-row { grid-template-columns:1fr; }
           .cs-comp-layout { grid-template-columns:1fr; }
           .cs-comp-track { min-height:180px; }
+          .cs-copilot-gallery { max-width:100%; }
+          .cs-copilot-row { flex-direction:column; }
+          .cs-copilot-row .cs-img-clickable img { height:180px; }
           .cs-timeline-row { grid-template-columns:80px 20px 1fr; }
           .cs-timeline-line { left:80px; }
           .cs-timeline-end { margin-left:0; }
@@ -877,7 +972,10 @@ export default function AdoptAIPlatform({ onClose }) {
                   </div>
                   <div className="cs-comp-desc">
                     <p className="cs-comp-desc-p">
-                      Large enterprises have launched AI copilots for their users—Microsoft, Salesforce, and Google among them. We noticed a gap: only the largest companies could afford to build and maintain these experiences. Our goal is to <strong>democratize AI copilots</strong> so that every company, regardless of size, can offer their own embedded assistant.
+                      Large enterprises have launched AI copilots for their users—Microsoft, Salesforce, and Google among them. We noticed a gap: only the largest companies could afford to build and maintain these experiences.
+                    </p>
+                    <p className="cs-comp-desc-p">
+                      Our goal is to <strong>democratize AI copilots</strong> so that every company, regardless of size, can offer their own embedded assistant.
                     </p>
                   </div>
                 </div>
@@ -889,9 +987,97 @@ export default function AdoptAIPlatform({ onClose }) {
             </div>
           </section>
 
-          {/* TIMELINE */}
+          {/* APPROACH */}
+          <section className="cs-sec reveal" id="approach">
+            <div className="cs-kicker"><span className="cs-kicker-dot"/>02 · Design Approach</div>
+            <h2 className="cs-sh">Three things that made the difference.<br/><em>Staying close to customers. Building the system. Designing for trust.</em></h2>
+            <p className="cs-p">
+              With no prior design infrastructure and a fast-moving product, the approach had to be both strategic and highly practical. These were the decisions that shaped how I worked.
+            </p>
+            <div className="cs-media-figure reveal" style={{ marginBottom:36 }}>
+              <LightboxImg src="/Projects/Adopt/Platform/adopt_brain_infogrpahic.png" alt="Platform vision — agentic AI architecture and trust model" />
+              <div className="cs-media-caption" style={{ marginTop:14 }}>Platform vision · Trust model and agentic architecture</div>
+            </div>
+            <div className="cs-prin-grid reveal">
+              {APPROACH_CARDS.map((p, i) => (
+                <div key={p.n} className={`cs-prin reveal s${i + 1}`}>
+                  <div className="cs-prin-num">{p.n}</div>
+                  <h4 className="cs-prin-h">{p.title}</h4>
+                  <p className="cs-prin-p">{p.body}</p>
+                </div>
+              ))}
+            </div>
+            <div className="cs-media-figure reveal" style={{ marginTop:36 }}>
+              <LightboxImg src="/Projects/Adopt/Platform/adtop_workflow_infographic.png" alt="Action configuration — workflow builder" />
+              <div className="cs-media-caption" style={{ marginTop:14 }}>Action configuration · Workflow builder with routing logic</div>
+            </div>
+          </section>
+
+          {/* WORK */}
+          <section className="cs-sec reveal" id="work">
+            <div className="cs-kicker"><span className="cs-kicker-dot"/>03 · The Work</div>
+            <h2 className="cs-sh">The platform across three contexts.<br/><em>One design system. Three deployment modes.</em></h2>
+            <p className="cs-p">
+              The copilot deploys as an embedded panel inside a customer's own product, as internal enterprise tooling, or as a fully white-labelled solution under the customer's brand. The design system had to support all three without fragmenting: consistent interaction patterns, flexible theming, shared component architecture.
+            </p>
+            <div className="cs-copilot-gallery reveal">
+              <div className="cs-copilot-gallery-track">
+                <div
+                  className="cs-copilot-gallery-strip"
+                  style={{ transform: `translateX(${copilotSlide * -100}%)` }}
+                >
+                  <div className="cs-copilot-gallery-slide">
+                    <LightboxImg
+                      src="/Projects/Adopt/Platform/adopt_copilot_client1.png"
+                      alt="Zluri Copilot — welcome screen"
+                    />
+                  </div>
+                  <div className="cs-copilot-gallery-slide">
+                    <LightboxImg
+                      src="/Projects/Adopt/Platform/adopt_copilot_client2.png"
+                      alt="Zluri Copilot — conversation in action"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="cs-copilot-gallery-dots">
+                <button
+                  type="button"
+                  className={`cs-copilot-dot ${copilotSlide === 0 ? "active" : ""}`}
+                  onClick={() => { setCopilotSlide(0); setCopilotDir(1); }}
+                  aria-label="Welcome screen"
+                />
+                <button
+                  type="button"
+                  className={`cs-copilot-dot ${copilotSlide === 1 ? "active" : ""}`}
+                  onClick={() => { setCopilotSlide(1); setCopilotDir(-1); }}
+                  aria-label="Conversation view"
+                />
+              </div>
+              <div className="cs-media-caption" style={{ marginTop:14 }}>Zluri Copilot · Adopt embedded on a partner's platform</div>
+            </div>
+            <div className="cs-work-sublabel">Copilot interface variations</div>
+            <div className="cs-copilot-row reveal">
+              <LightboxImg src="/Projects/Adopt/Platform/adopt_copilot1.png" alt="Copilot view — conversation and actions" />
+              <LightboxImg src="/Projects/Adopt/Platform/adopt_copilot2.png" alt="Copilot view — configuration" />
+              <LightboxImg src="/Projects/Adopt/Platform/adopt_copilot3.png" alt="Copilot view — execution flow" />
+            </div>
+            <div className="cs-work-sublabel" style={{ marginTop:28 }}>Platform capabilities</div>
+            <div className="cs-work-grid reveal">
+              <div className="cs-work-card">
+                <LightboxImg src="/Projects/Adopt/Platform/adopt_dashboard.png" alt="Platform analytics — action performance and metrics" />
+                <div className="cs-work-card-label">Platform Analytics</div>
+                <div className="cs-work-card-sub">Action performance, customer engagement, usage metrics</div>
+              </div>
+            </div>
+            <p style={{ fontSize:13, fontStyle:"italic", color:"#a8a29e", textAlign:"center", marginTop:16 }}>
+              Same interaction model. Different brand. Consistent trust signals throughout.
+            </p>
+          </section>
+
+          {/* TIMELINE — How It Shipped */}
           <section className="cs-sec reveal" id="timeline">
-            <div className="cs-kicker"><span className="cs-kicker-dot"/>02 · How It Shipped</div>
+            <div className="cs-kicker"><span className="cs-kicker-dot"/>04 · How It Shipped</div>
             <h2 className="cs-sh">9 months.<br/><em>From first wireframe to GA.</em></h2>
             <p className="cs-p">
               The product moved fast. I stayed embedded in customer calls throughout: joining demos, running bi-weekly prototype sessions, and shipping design updates weekly. Not just at research phases. The full 9 months.
@@ -914,76 +1100,6 @@ export default function AdoptAIPlatform({ onClose }) {
                 10+ enterprise contracts signed within 12 months. Growing month over month.
               </div>
             </div>
-          </section>
-
-          {/* APPROACH */}
-          <section className="cs-sec reveal" id="approach">
-            <div className="cs-kicker"><span className="cs-kicker-dot"/>03 · Design Approach</div>
-            <h2 className="cs-sh">Three things that made the difference.<br/><em>Staying close to customers. Building the system. Designing for trust.</em></h2>
-            <p className="cs-p">
-              With no prior design infrastructure and a fast-moving product, the approach had to be both strategic and highly practical. These were the decisions that shaped how I worked.
-            </p>
-            <div className="cs-media-figure reveal" style={{ marginBottom:36 }}>
-              <LightboxImg src="/Projects/Adopt/Platform/adopt_brain_infogrpahic.png" alt="Platform vision — agentic AI architecture and trust model" />
-              <div className="cs-media-caption" style={{ marginTop:14 }}>Platform vision · Trust model and agentic architecture</div>
-            </div>
-            <div className="cs-prin-grid reveal">
-              {APPROACH_CARDS.map((p, i) => (
-                <div key={p.n} className={`cs-prin reveal s${i + 1}`}>
-                  <div className="cs-prin-num">{p.n}</div>
-                  <h4 className="cs-prin-h">{p.title}</h4>
-                  <p className="cs-prin-p">{p.body}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* WORK */}
-          <section className="cs-sec reveal" id="work">
-            <div className="cs-kicker"><span className="cs-kicker-dot"/>04 · The Work</div>
-            <h2 className="cs-sh">The platform across three contexts.<br/><em>One design system. Three deployment modes.</em></h2>
-            <p className="cs-p">
-              The copilot deploys as an embedded panel inside a customer's own product, as internal enterprise tooling, or as a fully white-labelled solution under the customer's brand. The design system had to support all three without fragmenting: consistent interaction patterns, flexible theming, shared component architecture.
-            </p>
-            <div className="cs-media-figure reveal">
-              <LightboxImg src="/Projects/Adopt/Platform/adopt_copilot_client1.png" alt="Copilot embedded in customer platform — full sidebar panel with chat and actions" />
-              <div className="cs-media-caption" style={{ marginTop:14 }}>Copilot embedded in customer platform · Full sidebar with actions and chat</div>
-            </div>
-            <div className="cs-work-sublabel">Copilot interface variations</div>
-            <div className="cs-research-row reveal">
-              <div className="cs-research-item">
-                <LightboxImg src="/Projects/Adopt/Platform/adopt_copilot1.png" alt="Copilot view — conversation and actions" />
-                <span className="cs-research-label">Conversation & Actions</span>
-              </div>
-              <div className="cs-research-item">
-                <LightboxImg src="/Projects/Adopt/Platform/adopt_copilot2.png" alt="Copilot view — configuration" />
-                <span className="cs-research-label">Configuration</span>
-              </div>
-              <div className="cs-research-item">
-                <LightboxImg src="/Projects/Adopt/Platform/adopt_copilot3.png" alt="Copilot view — execution flow" />
-                <span className="cs-research-label">Execution Flow</span>
-              </div>
-            </div>
-            <div className="cs-work-sublabel" style={{ marginTop:28 }}>Platform capabilities</div>
-            <div className="cs-work-grid reveal">
-              <div className="cs-work-card">
-                <LightboxImg src="/Projects/Adopt/Platform/adtop_workflow_infographic.png" alt="Action configuration — workflow builder" />
-                <div className="cs-work-card-label">Action Configuration</div>
-                <div className="cs-work-card-sub">Workflow builder with routing logic and step configuration</div>
-              </div>
-              <div className="cs-work-card">
-                <LightboxImg src="/Projects/Adopt/Platform/adopt_dashboard.png" alt="Platform analytics — action performance and metrics" />
-                <div className="cs-work-card-label">Platform Analytics</div>
-                <div className="cs-work-card-sub">Action performance, customer engagement, usage metrics</div>
-              </div>
-            </div>
-            <div className="cs-work-extra reveal">
-              <LightboxImg src="/Projects/Adopt/Platform/adopt_copilot_client2.png" alt="Copilot in client context — alternative deployment view" />
-              <div className="cs-media-caption" style={{ marginTop:14 }}>Alternative client deployment · White-label copilot in production</div>
-            </div>
-            <p style={{ fontSize:13, fontStyle:"italic", color:"#a8a29e", textAlign:"center", marginTop:16 }}>
-              Same interaction model. Different brand. Consistent trust signals throughout.
-            </p>
           </section>
 
           {/* IMPACT */}

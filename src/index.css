@@ -190,6 +190,17 @@ html, body {
   animation: lightbox-fade-out 0.15s ease-in forwards;
 }
 
+/* Email copied toast — 60px from top, fast fade in, same fade out */
+@keyframes email-copied-toast {
+  0% { opacity: 0; transform: translate(-50%, -8px); }
+  5% { opacity: 1; transform: translate(-50%, 0); }
+  87.5% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -4px); }
+}
+.email-copied-toast {
+  animation: email-copied-toast 4s ease-in-out forwards;
+}
+
 /* ---------------------------------------------------------------------------
    Dock bar — uses theme variables; one rule for all themes
    --------------------------------------------------------------------------- */

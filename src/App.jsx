@@ -1167,10 +1167,38 @@ const ChatView = () => {
   );
 };
 
+const EMAIL_ADDRESS = 'ed' + '@' + 'edwardchu.xyz';
+
 const ContactView = ({ scrollState }) => {
-  // Use scrollState for consistent sticky header logic
   const isAtTop = scrollState.y < 50; 
   const showBackground = !isAtTop;
+  const [showCopied, setShowCopied] = useState(false);
+  const fadeRef = useRef(null);
+
+  const copyEmail = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(EMAIL_ADDRESS);
+      setShowCopied(true);
+      if (fadeRef.current) clearTimeout(fadeRef.current);
+      fadeRef.current = setTimeout(() => setShowCopied(false), 4000);
+    } catch (_) {}
+  }, []);
+
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key !== 'c' && e.key !== 'C') return;
+      const active = document.activeElement;
+      const isInput = active?.tagName === 'INPUT' || active?.tagName === 'TEXTAREA' || active?.isContentEditable;
+      if (isInput) return;
+      e.preventDefault();
+      copyEmail();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      if (fadeRef.current) clearTimeout(fadeRef.current);
+    };
+  }, [copyEmail]);
 
   return (
     <div className="animate-in fade-in duration-500 pb-32 relative">
@@ -1221,7 +1249,7 @@ const ContactView = ({ scrollState }) => {
       {/* New Lighter Email Me Section */}
       <button
         type="button"
-        onClick={() => { window.location.href = 'mailto:' + 'ed' + '@' + 'edwardchu.xyz'; }}
+        onClick={() => { window.location.href = 'mailto:' + EMAIL_ADDRESS; }}
         className="w-full text-left bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 p-6 rounded-3xl shadow-sm mt-4 hover:border-blue-200 dark:hover:border-blue-900 transition-colors relative z-10 cursor-pointer group"
       >
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -1231,16 +1259,27 @@ const ContactView = ({ scrollState }) => {
              </div>
              <div>
                <span className="font-bold text-lg text-stone-900 dark:text-white">Email Me</span>
-               <p className="text-stone-500 dark:text-stone-400 text-sm max-w-sm mt-1">
-                 Interested in discussing a role, a project, or a potential collaboration?
+               <p className="text-stone-400 dark:text-stone-500 text-xs mt-2">
+                 Press <kbd className="px-1.5 py-0.5 rounded bg-stone-200 dark:bg-stone-700 font-mono text-[10px]">C</kbd> to copy my email
                </p>
              </div>
           </div>
-          <span className="whitespace-nowrap px-6 py-3 bg-gradient-to-tr from-blue-500 to-sky-500 text-white rounded-xl font-bold shadow-lg shadow-blue-500/20 group-hover:from-blue-600 group-hover:to-sky-600 transition-all">
+          <span className="whitespace-nowrap px-4 py-2 text-sm font-medium bg-gradient-to-tr from-blue-500 to-sky-500 text-white rounded-lg shadow-md shadow-blue-500/15 group-hover:from-blue-600 group-hover:to-sky-600 transition-all">
             Send Message
           </span>
         </div>
       </button>
+
+      {/* Email copied notification */}
+      {showCopied && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed top-[60px] left-1/2 z-50 px-4 py-2 text-[13px] text-stone-600 dark:text-white bg-white/90 dark:bg-stone-900/90 backdrop-blur-sm rounded-lg shadow-sm border border-stone-200/80 dark:border-stone-700/80 font-normal email-copied-toast"
+        >
+          Email copied!
+        </div>
+      )}
     </div>
   );
 };
