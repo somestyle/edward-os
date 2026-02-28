@@ -404,7 +404,7 @@ const HomeView = ({ onNavigate }) => {
         
         <div className="mb-6">
           <p className="text-lg md:text-xl text-stone-800 dark:text-stone-200 leading-relaxed font-medium">
-            I’m a <span className="font-semibold text-stone-900 dark:text-white">Staff Product Designer and design leader</span> working on agentic systems and workflow-driven products across both business and end-user experiences.
+            I’m a <span className="font-semibold text-stone-900 dark:text-white">Staff Product Designer and design leader</span> working on agentic workflows and automation systems.
           </p>
         </div>
         
@@ -1289,9 +1289,14 @@ const ContactView = ({ scrollState }) => {
         </h2>
       </div>
 
-      <div className="relative z-10 mb-8">
-        <p className="text-stone-500 dark:text-stone-400 max-w-full text-base leading-relaxed">
-          I’m currently open to new opportunities and collaborations. Whether you have a complex problem to solve or just want to chat about the future of design, I’d love to hear from you.
+      <div className="relative z-10 mb-8 flex items-start gap-4 md:gap-6">
+        <img
+          src="/edward_avartar.png"
+          alt="Edward Chu"
+          className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover shrink-0 border-2 border-stone-200 dark:border-stone-700"
+        />
+        <p className="text-stone-500 dark:text-stone-400 max-w-full text-base leading-relaxed pt-1">
+          Building a complex product or designing an agentic experience? I partner with early-stage startups and founders to navigate 0-to-1 design challenges. My inbox is open for new connections and advisory roles.
         </p>
       </div>
       
