@@ -1242,11 +1242,60 @@ const ChatView = () => {
 
 const EMAIL_ADDRESS = 'ed' + '@' + 'edwardchu.xyz';
 
+const AVATAR_SOURCES = {
+  default: '/avartar/edward_avatar.png',
+  left: '/avartar/edward_avatar_left.png',
+  right: '/avartar/edward_avatar_right.png',
+  click: '/avartar/edward_avatar_click.png',
+};
+
+const VERTICAL_THRESHOLD = 20;
+
 const ContactView = ({ scrollState }) => {
   const isAtTop = scrollState.y < 50; 
   const showBackground = !isAtTop;
   const [showCopied, setShowCopied] = useState(false);
   const fadeRef = useRef(null);
+
+  const [avatarState, setAvatarState] = useState('default');
+  const avatarRef = useRef(null);
+  const containerRef = useRef(null);
+  const clickTimeoutRef = useRef(null);
+
+  const handleAvatarMouseMove = useCallback((e) => {
+    if (avatarState === 'click') return;
+    const img = avatarRef.current;
+    if (!img) return;
+    const rect = img.getBoundingClientRect();
+    const { clientX: x, clientY: y } = e;
+    const top = rect.top - VERTICAL_THRESHOLD;
+    const bottom = rect.bottom + VERTICAL_THRESHOLD;
+    const inVerticalZone = y >= top && y <= bottom;
+    if (!inVerticalZone) {
+      setAvatarState('default');
+      return;
+    }
+    if (x > rect.right + VERTICAL_THRESHOLD) setAvatarState('right');
+    else if (x < rect.left - VERTICAL_THRESHOLD) setAvatarState('left');
+    else setAvatarState('default');
+  }, [avatarState]);
+
+  const handleAvatarMouseLeave = useCallback(() => {
+    if (avatarState !== 'click') setAvatarState('default');
+  }, [avatarState]);
+
+  const handleAvatarClick = useCallback(() => {
+    setAvatarState('click');
+    if (clickTimeoutRef.current) clearTimeout(clickTimeoutRef.current);
+    clickTimeoutRef.current = setTimeout(() => {
+      setAvatarState('default');
+      clickTimeoutRef.current = null;
+    }, 1000);
+  }, []);
+
+  useEffect(() => () => {
+    if (clickTimeoutRef.current) clearTimeout(clickTimeoutRef.current);
+  }, []);
 
   const copyEmail = useCallback(async () => {
     try {
@@ -1289,12 +1338,26 @@ const ContactView = ({ scrollState }) => {
         </h2>
       </div>
 
-      <div className="relative z-10 mb-8 flex items-start gap-4 md:gap-6">
-        <img
-          src="/edward_avartar.png"
-          alt="Edward Chu"
-          className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover shrink-0 border-2 border-stone-200 dark:border-stone-700"
-        />
+      <div
+        ref={containerRef}
+        onMouseMove={handleAvatarMouseMove}
+        onMouseLeave={handleAvatarMouseLeave}
+        className="relative z-10 mb-8 flex items-start gap-4 md:gap-6 -mx-6 px-6 md:-mx-12 md:px-12"
+      >
+        <button
+          type="button"
+          onClick={handleAvatarClick}
+          className="shrink-0 rounded-full cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+          aria-label="Edward Chu"
+        >
+          <img
+            ref={avatarRef}
+            src={AVATAR_SOURCES[avatarState]}
+            alt="Edward Chu"
+            className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover border-2 border-stone-200 dark:border-stone-700"
+            draggable={false}
+          />
+        </button>
         <p className="text-stone-500 dark:text-stone-400 max-w-full text-base leading-relaxed pt-1">
           Building a complex product or designing an agentic experience? I partner with early-stage startups and founders to navigate 0-to-1 design challenges. My inbox is open for new connections and advisory roles.
         </p>
