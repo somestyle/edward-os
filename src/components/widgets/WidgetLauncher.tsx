@@ -79,18 +79,18 @@ export default function WidgetLauncher({
             "
             style={{ zIndex: 60 }}
           >
-            <div className="flex flex-wrap justify-center gap-2">
+            <div className="grid grid-cols-2 gap-2">
               {APPS.map(({ id, label, icon: Icon }) => (
                 <button
                   key={id}
                   type="button"
                   onClick={() => openApp(id)}
-                  className="flex flex-col items-center gap-1.5 p-2 sm:p-3 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors min-w-[64px] sm:min-w-[72px]"
+                  className="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors min-h-[72px] w-full"
                 >
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-stone-100 dark:bg-stone-800 flex items-center justify-center text-stone-600 dark:text-stone-300 shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-stone-100 dark:bg-stone-800 flex items-center justify-center text-stone-600 dark:text-stone-300 shrink-0">
                     <Icon size={20} />
                   </div>
-                  <span className="text-[10px] sm:text-xs font-bold text-stone-700 dark:text-stone-200 leading-tight">{label}</span>
+                  <span className="text-[10px] sm:text-xs font-bold text-stone-700 dark:text-stone-200 leading-tight text-center">{label}</span>
                 </button>
               ))}
             </div>
