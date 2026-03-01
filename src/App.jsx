@@ -428,6 +428,15 @@ const HomeView = ({ onNavigate }) => {
           <p className="font-semibold text-stone-500 dark:text-stone-400 mb-3">🎧 Listening</p>
           <ul className="space-y-5">
             <li>
+              <a href="https://youtu.be/eh8bcBIAAFo?si=19N7eiMtHa0JDP-t" target="_blank" rel="noopener noreferrer" className="block group/link hover:text-stone-900 dark:hover:text-white transition-colors underline underline-offset-2 decoration-stone-200 dark:decoration-stone-700 hover:decoration-stone-400">
+                <span className="block font-medium">Design process is dead & what's replacing it</span>
+                <span className="text-stone-400 dark:text-stone-500 group-hover/link:text-stone-500 dark:group-hover/link:text-stone-400 text-xs inline-flex items-center gap-1 mt-0.5">
+                  Jenny Wen, Claude · Lenny's Podcast
+                  <ExternalLink size={10} className="shrink-0 opacity-70" />
+                </span>
+              </a>
+            </li>
+            <li>
               <a href="https://open.spotify.com/episode/6LeYeJbwutFrQBNLJwcE6n?si=7e252f426c544cfd" target="_blank" rel="noopener noreferrer" className="block group/link hover:text-stone-900 dark:hover:text-white transition-colors underline underline-offset-2 decoration-stone-200 dark:decoration-stone-700 hover:decoration-stone-400">
                 <span className="block font-medium">Elon Musk on AGI Timeline</span>
                 <span className="text-stone-400 dark:text-stone-500 group-hover/link:text-stone-500 dark:group-hover/link:text-stone-400 text-xs inline-flex items-center gap-1 mt-0.5">
