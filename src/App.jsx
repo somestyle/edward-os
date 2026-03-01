@@ -1250,6 +1250,8 @@ const AVATAR_SOURCES = {
 };
 
 const VERTICAL_THRESHOLD = 20;
+const HORIZONTAL_TRIGGER_MIN = 5;   // min 5px from image edge to trigger left/right
+const HORIZONTAL_TRIGGER_MAX = 250; // max 250px from image edge
 
 const ContactView = ({ scrollState }) => {
   const isAtTop = scrollState.y < 50; 
@@ -1275,8 +1277,10 @@ const ContactView = ({ scrollState }) => {
       setAvatarState('default');
       return;
     }
-    if (x > rect.right + VERTICAL_THRESHOLD) setAvatarState('right');
-    else if (x < rect.left - VERTICAL_THRESHOLD) setAvatarState('left');
+    const distRight = x - rect.right;
+    const distLeft = rect.left - x;
+    if (distRight >= HORIZONTAL_TRIGGER_MIN && distRight <= HORIZONTAL_TRIGGER_MAX) setAvatarState('right');
+    else if (distLeft >= HORIZONTAL_TRIGGER_MIN && distLeft <= HORIZONTAL_TRIGGER_MAX) setAvatarState('left');
     else setAvatarState('default');
   }, [avatarState]);
 
