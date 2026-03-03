@@ -158,9 +158,9 @@ html, body {
   --shimmer-highlight: var(--accent);
 }
 @keyframes shimmer-text {
-  0% { background-position: 200% center; }
-  78.95% { background-position: -200% center; }
-  100% { background-position: -200% center; }
+  0% { background-position: 380% center; }
+  85.71% { background-position: -180% center; }
+  100% { background-position: -180% center; }
 }
 .shimmer-text {
   background: linear-gradient(
@@ -175,7 +175,8 @@ html, body {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: shimmer-text 19s ease-in-out infinite;
+  animation: shimmer-text 14s ease-in-out infinite;
+  animation-delay: 2s;
 }
 
 /* Waving hand emoji - light shake/wiggle */
