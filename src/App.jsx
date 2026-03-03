@@ -404,7 +404,7 @@ const HomeView = ({ onNavigate }) => {
         
         <div className="mb-6">
           <p className="text-lg md:text-xl text-stone-800 dark:text-stone-200 leading-relaxed font-medium">
-            I’m a <span className="font-semibold text-stone-900 dark:text-white">Staff Product Designer and design leader</span> working on agentic workflows and automation systems.
+            I’m a <span className="font-semibold shimmer-text">Staff Product Designer and Design Leader</span> working on agentic workflows and automation systems.
           </p>
         </div>
         
