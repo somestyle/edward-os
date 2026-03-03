@@ -1447,13 +1447,24 @@ const ContactView = ({ scrollState }) => {
 // --- RELEASE NOTES / CHANGELOG (hidden view, no dock icon) ---
 const CHANGELOG_ENTRIES = [
   {
+    version: '1.3',
+    date: 'Early March 2026',
+    title: 'Projects & Stacked Cards',
+    items: [
+      'Homepage: Added shimmer text effect on the intro headline.',
+      'Projects: Added a sliding card stack with placeholder cards and rotating animation.',
+      'Content: Updated projects intro and other copy.',
+      'Widgets: Updated design and cleaned up styling.',
+    ],
+  },
+  {
     version: '1.2',
     date: 'Late Feb 2026',
     title: 'Widgets & Dock',
     items: [
       'Widgets: Added a widget launcher with Pomodoro clock, Sudoku, and Inspiration Quotes mini-apps.',
       'Themes: Moved Theme (Style + Dark mode) into the Widgets folder; opens in the same centered modal as other widgets.',
-      'Dock: Reorganized the dock bar — Ask AI is now second (between Home and Career); Widgets folder is on the right.',
+      'Dock: Reorganized the dock bar. Ask AI is now second (between Home and Career); Widgets folder is on the right.',
       'Modals: Widget modals are now portaled to the viewport so they center on the full screen instead of anchoring to the dock.',
     ],
   },
