@@ -457,10 +457,10 @@ const HomeView = ({ onNavigate }) => {
             </li>
           </ul>
         </div>
-        {/* Right: Practicing + Following */}
+        {/* Right: Learning + Following */}
         <div className="space-y-5">
           <div>
-            <p className="font-semibold text-stone-500 dark:text-stone-400 mb-1.5">☕ Practicing</p>
+            <p className="font-semibold text-stone-500 dark:text-stone-400 mb-1.5">☕ Learning</p>
             <p>Latte art, vibe coding, OpenClaw 🦞</p>
           </div>
           <div>
