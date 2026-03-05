@@ -269,6 +269,13 @@ export default function AdoptAIPlatform({ onClose }) {
         .cs-nav-links a:hover { color:#1c1917; }
         .cs-nav-links a.cs-nav-active { color:#1c1917; font-weight:600; }
 
+        .cs-wip-banner {
+          background:#fef3c7; color:#92400e;
+          text-align:center; padding:8px 16px;
+          font-size:12px; font-weight:500;
+          border-bottom:1px solid #fde68a;
+        }
+
         /* ── LAYOUT ── */
         .cs-wrap { max-width:880px; margin:0 auto; padding:0 48px; }
 
@@ -890,6 +897,8 @@ export default function AdoptAIPlatform({ onClose }) {
             ))}
           </ul>
         </nav>
+
+        <div className="cs-wip-banner" role="status">Work in progress, not finalized</div>
 
         {/* HERO */}
         <header className="cs-hero" id="top">
