@@ -1,16 +1,39 @@
-# React + Vite
+# Edward OS
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is an interactive portfolio and experimental personal site where I explore combining product design, storytelling, and AI interaction.
 
-Currently, two official plugins are available:
+**Live site:** https://edward2.com
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## What this project is
 
-## React Compiler
+Instead of a static design portfolio, the site is built as a product experience. Visitors can explore work, ideas, and experiments. The project also serves as a sandbox for exploring AI-native interfaces and coded product design.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Why I built this
 
-## Expanding the ESLint configuration
+The goal is to reflect how design is evolving in the AI era: designers increasingly prototype in code and shape product behavior rather than only delivering static screens.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## What the site currently includes
+
+- Interactive portfolio experience
+- Case studies and project summaries
+- AI-powered exploration interface
+- Motion and personality in the interface
+- Ongoing design and interaction experiments
+
+## Tech stack
+
+- React
+- Vite
+- TypeScript
+- Tailwind CSS
+- Vercel
+- Gemini API
+- GitHub
+
+## Development notes
+
+This repository is actively iterated on. Commits represent ongoing improvements to the site, new case study updates, and interface experiments.
+
+## Philosophy
+
+This project represents a shift toward designers building and shipping real product experiences rather than only producing mockups.
