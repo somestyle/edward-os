@@ -1026,7 +1026,10 @@ const ProjectsView = ({ scrollState }) => {
 };
 
 const CHAT_STORAGE_KEY = 'edward_chat_history';
-const DEFAULT_INTRO = { role: 'system', text: "Ask me about my recent work, design approach, and how I take products from 0 to 1 through scale." };
+const DEFAULT_INTRO = {
+  role: 'system',
+  text: "I'm grounded in Edward's real work including talks, presentations, portfolio case studies, and product artifacts.\n\n\nAsk about projects like Adopt AI, SamaCare, and Kea, or how he designs AI agents, complex SaaS systems, and 0→1 products across healthcare, fintech, and AI platforms.",
+};
 
 function loadChatFromSession() {
   try {
