@@ -20,13 +20,13 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Server configuration error' });
     }
 
-    // Gemini 2.5 Flash requires the first message in 'contents' to be from the 'user'
+    // Gemini 3.1 Flash requires the first message in 'contents' to be from the 'user'
     const validatedContents = contents[0]?.role === 'model'
       ? contents.slice(1)
       : contents;
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -41,7 +41,7 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error('Gemini 2.5 API Error:', JSON.stringify(data, null, 2));
+      console.error('Gemini 3.1 API Error:', JSON.stringify(data, null, 2));
       return res.status(response.status).json(data);
     }
 

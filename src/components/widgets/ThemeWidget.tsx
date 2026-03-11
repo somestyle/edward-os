@@ -94,7 +94,7 @@ export default function ThemeWidget({
               onClick={onChangelogClick}
               className="text-xs text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300 transition-colors"
             >
-              v1.2 (Changelog)
+              v1.3 (Changelog)
             </button>
           </div>
         )}
