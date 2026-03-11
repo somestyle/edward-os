@@ -325,26 +325,26 @@ const FlickeringGrid = ({
 // Mac-Style Dock Button
 const DockIcon = ({ active, onClick, icon: Icon, label }) => (
   <div className="relative group flex flex-col items-center">
-    <div className="hidden md:block absolute -top-14 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-50 scale-95 group-hover:scale-100">
-      <div className="bg-stone-900 dark:bg-white text-white dark:text-stone-900 text-xs font-bold py-1.5 px-3 rounded-lg shadow-xl whitespace-nowrap">
+    <div className="hidden md:block absolute -top-11 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-50 scale-95 group-hover:scale-100">
+      <div className="bg-stone-900 dark:bg-white text-white dark:text-stone-900 text-[11px] font-bold py-1 px-2.5 rounded-md shadow-xl whitespace-nowrap">
         {label}
-        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-stone-900 dark:bg-white rotate-45"></div>
+        <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-stone-900 dark:bg-white rotate-45"></div>
       </div>
     </div>
 
     <button 
       onClick={onClick}
       className={`
-        relative w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-all duration-300 ease-out
-        md:hover:scale-125 md:hover:mx-2 md:hover:-translate-y-2
+        relative w-9 h-9 md:w-11 md:h-11 rounded-full flex items-center justify-center transition-all duration-300 ease-out
+        md:hover:scale-125 md:hover:mx-1.5 md:hover:-translate-y-1.5
         ${active 
           ? 'bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-white shadow-inner ring-1 ring-black/5 dark:ring-white/10' 
           : 'text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-200 hover:bg-stone-50 dark:hover:bg-white/5'}
       `}
     >
-      <Icon size={24} strokeWidth={active ? 2.5 : 2} />
+      <Icon size={20} strokeWidth={active ? 2.5 : 2} />
       {active && (
-        <span className="md:hidden absolute -bottom-1 w-1 h-1 bg-stone-900 dark:bg-white rounded-full"></span>
+        <span className="md:hidden absolute -bottom-0.5 w-0.5 h-0.5 bg-stone-900 dark:bg-white rounded-full"></span>
       )}
     </button>
   </div>
@@ -457,11 +457,11 @@ const HomeView = ({ onNavigate }) => {
             </li>
           </ul>
         </div>
-        {/* Right: Learning + Following */}
+        {/* Right: Practicing + Following */}
         <div className="space-y-5">
           <div>
-            <p className="font-semibold text-stone-500 dark:text-stone-400 mb-1.5">☕ Learning</p>
-            <p>Latte art, vibe coding, OpenClaw 🦞</p>
+            <p className="font-semibold text-stone-500 dark:text-stone-400 mb-1.5">☕ Practicing</p>
+            <p>Latte art, Cursor, Claude Code, 🦞</p>
           </div>
           <div>
             <p className="font-semibold text-stone-500 dark:text-stone-400 mb-2">🐵 Following</p>
@@ -1631,8 +1631,8 @@ export default function App() {
       </main>
 
       {/* --- UNIFIED FLOATING DOCK (Mobile & Desktop) --- */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-auto">
-        <div className="app-dock flex items-center gap-1 p-2 pr-6 pl-6">
+      <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 w-auto">
+        <div className="app-dock flex items-center gap-0.5 p-1.5 pr-4 pl-4">
           
           <DockIcon 
             active={activeTab === 'home'} 
@@ -1666,7 +1666,7 @@ export default function App() {
           />
 
           {/* Divider */}
-          <div className="w-px h-8 bg-stone-200 dark:bg-stone-700 mx-2"></div>
+          <div className="w-px h-6 bg-stone-200 dark:bg-stone-700 mx-1.5"></div>
 
           <WidgetLauncher
             themeStyle={themeStyle}
