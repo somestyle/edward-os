@@ -847,7 +847,7 @@ const CareerView = ({ scrollState }) => {
 };
 
 const PROJECTS_UNLOCK_KEY = 'projects_unlocked';
-const PROJECTS_PASSWORD = 'action builder';
+const PROJECTS_PASSWORDS = ['action builder', 'somedesign'];
 
 const ProjectsView = ({ scrollState }) => {
   const isAtTop = scrollState.y < 50;
@@ -870,7 +870,8 @@ const ProjectsView = ({ scrollState }) => {
 
   const handleUnlock = () => {
     const trimmed = passwordInput.trim();
-    if (trimmed.toLowerCase() === PROJECTS_PASSWORD.toLowerCase()) {
+    const match = PROJECTS_PASSWORDS.some((p) => trimmed.toLowerCase() === p.toLowerCase());
+    if (match) {
       setIsUnlocked(true);
       if (typeof sessionStorage !== 'undefined') sessionStorage.setItem(PROJECTS_UNLOCK_KEY, 'true');
       setPasswordInput('');
