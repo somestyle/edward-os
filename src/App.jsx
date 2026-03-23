@@ -423,7 +423,19 @@ const HomeView = ({ onNavigate }) => {
     {/* What I'm up to recently */}
     <div className="relative z-10">
       <h2 className="text-sm font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider mb-4">What I'm up to recently</h2>
-      <p className="text-stone-500 dark:text-stone-400 text-sm mb-6">👨🏻‍💻 Designing with AI, Designing for AI and Designing the AI</p>
+      <p className="text-stone-500 dark:text-stone-400 text-sm mb-2">👨🏻‍💻 Designing with AI, Designing for AI and Designing the AI</p>
+      <p className="text-stone-500 dark:text-stone-400 text-sm mb-6">
+        Participated in the Multimodal Gemini Live Agent hackathon, take a look at my Recykle app{' '}
+        <a
+          href="https://devpost.com/software/recykle-ai-recycling-assistant"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline underline-offset-2 decoration-stone-300 dark:decoration-stone-600 hover:decoration-stone-500 dark:hover:decoration-stone-400"
+        >
+          here
+        </a>
+        .
+      </p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 text-sm text-stone-600 dark:text-stone-300">
         {/* Left: Listening */}
         <div>
