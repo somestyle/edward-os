@@ -4,7 +4,7 @@ import {
   Send, Sparkles, ChevronRight, ChevronDown, User, 
   Home, Briefcase, Award, Zap,
   Layout, GraduationCap, Layers,
-  BookOpen, Mail, Linkedin, ExternalLink, Folder, Lock, LockOpen,
+  BookOpen, Mail, Linkedin, ExternalLink, Lock, LockOpen,
   FileText, Mic2, Newspaper
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -15,6 +15,7 @@ import StackedCards from './components/StackedCards';
 
 const AdoptAICaseStudy = lazy(() => import('./components/AdoptAICaseStudy'));
 const AdoptAIPlatform = lazy(() => import('./components/AdoptAIPlatform'));
+const SamaCareCopilotCaseStudy = lazy(() => import('./components/SamaCareCopilotCaseStudy'));
 
 // --- Typewriter streaming hook ---
 function useTypewriter(fullText, { speedMs = 15, enabled = true } = {}) {
@@ -961,14 +962,39 @@ const ProjectsView = ({ scrollState }) => {
           const projects = [
             { title: 'Adopt AI · Action Builder', description: 'End-to-end workflow design for an AI action builder: 0-to-1 through five iterations, from node canvas to structured step templates.', caseStudyKey: 'adopt-action-builder' },
             { title: 'Adopt AI · Platform Vision', description: 'Founding designer shaping an AI copilot platform from whiteboard to dozens of signed enterprise customers in 6 months.', caseStudyKey: 'adopt-platform' },
-            { title: 'SamaCare', description: cvData.experience[1].summary, caseStudyKey: null },
+            { title: 'SamaCare · CoPilot', description: 'Chrome extension and onboarding for capturing payer portal prior authorization work into SamaCare: six months of discovery, design, and rollout in regulated healthcare SaaS.', caseStudyKey: 'samacare-copilot' },
+            {
+              title: 'Recykle',
+              description: 'Multimodal Gemini Live agent with real-time vision and voice—cross-reference waste with local rules so you know which bin to use.',
+              projectUrl: 'https://github.com/somestyle/recykle-app',
+            },
             { title: 'Blunt App', description: 'A savage AI life coach that roasts your bad habits with data, sarcasm, and zero sympathy.', caseStudyKey: null },
             { title: 'Kea AI', description: '0–1 design for flagship AI product serving B2B2C users focusing on conversational UX.', caseStudyKey: null },
           ];
           return (
-       <div className="grid gap-6 md:grid-cols-2 relative z-10">
+       <div className="grid gap-4 md:grid-cols-2 relative z-10">
           {projects.map((proj, i) => {
             const showCaseStudyLink = isUnlocked && proj.caseStudyKey;
+            if (proj.projectUrl) {
+              return (
+                <a
+                  key={i}
+                  href={proj.projectUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative bg-white dark:bg-stone-900 p-5 rounded-2xl border border-stone-200 dark:border-stone-800 hover:border-blue-200 dark:hover:border-blue-900 transition-all text-left flex flex-col cursor-pointer no-underline"
+                >
+                  <h3 className="font-bold text-lg mb-2 leading-snug text-stone-900 dark:text-white">{proj.title}</h3>
+                  <p className="text-stone-500 dark:text-stone-400 text-sm leading-relaxed mb-4 flex-1">
+                    {proj.description}
+                  </p>
+                  <div className="flex items-center gap-2 text-sm font-medium mt-auto pt-1 text-stone-700 dark:text-stone-200 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                    <span>View Project</span>
+                    <ExternalLink size={16} className="shrink-0 opacity-70 group-hover:opacity-100" aria-hidden />
+                  </div>
+                </a>
+              );
+            }
             return (
              <div
                key={i}
@@ -976,33 +1002,33 @@ const ProjectsView = ({ scrollState }) => {
                tabIndex={showCaseStudyLink ? 0 : undefined}
                onClick={showCaseStudyLink ? () => setCaseStudyOpen(proj.caseStudyKey) : undefined}
                onKeyDown={showCaseStudyLink ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setCaseStudyOpen(proj.caseStudyKey); } } : undefined}
-               className={`group relative bg-white dark:bg-stone-900 p-8 rounded-3xl border border-stone-200 dark:border-stone-800 hover:border-blue-200 dark:hover:border-blue-900 transition-all text-left ${!isUnlocked ? 'opacity-75' : ''} ${showCaseStudyLink ? 'cursor-pointer' : ''}`}
+               className={`group relative bg-white dark:bg-stone-900 p-5 rounded-2xl border border-stone-200 dark:border-stone-800 hover:border-blue-200 dark:hover:border-blue-900 transition-all text-left flex flex-col ${showCaseStudyLink ? 'cursor-pointer' : ''}`}
              >
-                <div className="flex justify-between items-start mb-6">
-                   <div className="p-3 bg-stone-100 dark:bg-stone-800 rounded-2xl group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors">
-                      <Folder size={24} className="text-stone-400 group-hover:text-blue-500 transition-colors" />
-                   </div>
-                   <div className="flex items-center justify-center w-8 h-8 text-stone-400 dark:text-stone-500 transition-all duration-200">
-                     {isUnlocked ? <LockOpen size={18} /> : <Lock size={18} />}
-                   </div>
-                </div>
-                <h3 className={`font-bold text-xl mb-3 transition-colors ${isUnlocked ? 'text-stone-900 dark:text-white' : 'text-stone-600 dark:text-stone-400'}`}>{proj.title}</h3>
-                <p className="text-stone-500 dark:text-stone-400 text-sm leading-relaxed mb-6">
+                <h3 className={`font-bold text-lg mb-2 leading-snug transition-colors ${isUnlocked ? 'text-stone-900 dark:text-white' : 'text-stone-700 dark:text-stone-300'}`}>{proj.title}</h3>
+                <p className={`text-stone-500 dark:text-stone-400 text-sm leading-relaxed mb-4 flex-1 ${!isUnlocked ? 'opacity-80' : ''}`}>
                   {proj.description}
                 </p>
-                {isUnlocked && (
-                  showCaseStudyLink ? (
-                    <div className="flex items-center gap-2 text-sm font-medium text-stone-700 dark:text-stone-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                      <span>Read Case Study</span>
-                      <ChevronRight size={16} />
-                    </div>
+                <div
+                  className={`flex items-center gap-2 text-sm font-medium mt-auto pt-1 ${
+                    showCaseStudyLink
+                      ? 'text-stone-700 dark:text-stone-200 group-hover:text-blue-600 dark:group-hover:text-blue-400'
+                      : 'text-stone-500 dark:text-stone-400'
+                  }`}
+                >
+                  {isUnlocked ? (
+                    <LockOpen size={16} className="shrink-0 text-stone-400 dark:text-stone-500" aria-hidden />
                   ) : (
-                    <div className="flex items-center gap-2 text-sm font-medium text-stone-300 dark:text-stone-600 cursor-not-allowed">
-                      <span>Coming Soon</span>
-                      <ChevronRight size={16} />
-                    </div>
-                  )
-                )}
+                    <Lock size={16} className="shrink-0 text-stone-400 dark:text-stone-500" aria-hidden />
+                  )}
+                  {proj.caseStudyKey ? (
+                    <>
+                      <span>Read Case Study</span>
+                      {showCaseStudyLink ? <ChevronRight size={16} className="shrink-0 opacity-70 group-hover:opacity-100" aria-hidden /> : null}
+                    </>
+                  ) : (
+                    <span className="text-stone-400 dark:text-stone-500">Coming Soon</span>
+                  )}
+                </div>
              </div>
             );
           })}
@@ -1031,6 +1057,19 @@ const ProjectsView = ({ scrollState }) => {
              </div>
            }>
              <AdoptAIPlatform onClose={() => setCaseStudyOpen(null)} />
+           </Suspense>
+         </div>,
+         document.body
+       )}
+
+       {caseStudyOpen === 'samacare-copilot' && typeof document !== 'undefined' && createPortal(
+         <div style={{ position: 'relative', zIndex: 60 }}>
+           <Suspense fallback={
+             <div className="fixed inset-0 z-[60] flex items-center justify-center bg-stone-50 dark:bg-stone-950">
+               <span className="text-stone-400 dark:text-stone-500 text-sm">Loading case study…</span>
+             </div>
+           }>
+             <SamaCareCopilotCaseStudy onClose={() => setCaseStudyOpen(null)} />
            </Suspense>
          </div>,
          document.body

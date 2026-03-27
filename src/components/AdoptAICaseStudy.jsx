@@ -116,6 +116,7 @@ const RESEARCH_METHODS = [
 
 const NAV_SECTION_IDS = ["context", "users", "research", "process", "principles", "solution", "impact"];
 
+
 export default function AdoptAICaseStudy({ onClose }) {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("context");
@@ -278,11 +279,25 @@ export default function AdoptAICaseStudy({ onClose }) {
           font-family:inherit; transition:color .15s; padding:0;
         }
         .cs-nav-back:hover { color:#1c1917; }
-        .cs-nav-id { font-size:12px; font-weight:600; color:#78716c; }
+        .cs-nav-id {
+          flex:1;
+          min-width:0;
+          text-align:center;
+          font-size:12px;
+          font-weight:600;
+          color:#78716c;
+        }
         .cs-nav-links { display:flex; gap:22px; list-style:none; }
         .cs-nav-links a { font-size:11.5px; font-weight:500; color:#a8a29e; text-decoration:none; transition:color .15s; }
         .cs-nav-links a:hover { color:#1c1917; }
         .cs-nav-links a.cs-nav-active { color:#1c1917; font-weight:600; }
+        .cs-nav-right {
+          display:flex;
+          align-items:center;
+          justify-content:flex-end;
+          gap:14px;
+          flex-shrink:0;
+        }
 
         /* ── LAYOUT ── */
         .cs-wrap { max-width:880px; margin:0 auto; padding:0 48px; }
@@ -837,18 +852,20 @@ export default function AdoptAICaseStudy({ onClose }) {
             Projects
           </button>
           <span className="cs-nav-id">Adopt AI · Action Builder</span>
-          <ul className="cs-nav-links">
-            {NAV_SECTION_IDS.map((id) => (
-              <li key={id}>
-                <a
-                  href={`#${id}`}
-                  className={activeSection === id ? "cs-nav-active" : ""}
-                >
-                  {id.charAt(0).toUpperCase() + id.slice(1)}
-                </a>
-              </li>
-            ))}
-          </ul>
+          <div className="cs-nav-right">
+            <ul className="cs-nav-links">
+              {NAV_SECTION_IDS.map((id) => (
+                <li key={id}>
+                  <a
+                    href={`#${id}`}
+                    className={activeSection === id ? "cs-nav-active" : ""}
+                  >
+                    {id.charAt(0).toUpperCase() + id.slice(1)}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </nav>
 
         {/* HERO */}
@@ -1252,6 +1269,7 @@ export default function AdoptAICaseStudy({ onClose }) {
         </footer>
 
       </div>
+
     </>
   );
 }
