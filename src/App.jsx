@@ -11,7 +11,6 @@ import ReactMarkdown from 'react-markdown';
 // Import the separated system prompt
 import { SYSTEM_PROMPT } from './ai-config';
 import WidgetLauncher from './components/widgets/WidgetLauncher';
-import StackedCards from './components/StackedCards';
 
 const AdoptAICaseStudy = lazy(() => import('./components/AdoptAICaseStudy'));
 const AdoptAIPlatform = lazy(() => import('./components/AdoptAIPlatform'));
@@ -947,15 +946,10 @@ const ProjectsView = ({ scrollState }) => {
         </div>
       </div>
 
-       <div className="overflow-visible relative z-10 mb-2.5">
-          <div className="mb-[50px] relative z-20">
-            <p className="text-stone-500 dark:text-stone-400 max-w-full text-base leading-relaxed">
-              Select recent projects case study adding soon.
-            </p>
-          </div>
-          <div className="flex justify-center mt-8 relative z-0">
-            <StackedCards />
-          </div>
+       <div className="relative z-10 mb-6">
+          <p className="text-stone-500 dark:text-stone-400 max-w-full text-base leading-relaxed">
+            Select recent projects case study adding soon.
+          </p>
        </div>
 
        {(() => {
