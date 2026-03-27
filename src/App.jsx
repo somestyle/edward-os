@@ -962,10 +962,16 @@ const ProjectsView = ({ scrollState }) => {
           const projects = [
             { title: 'Adopt AI · Action Builder', description: 'End-to-end workflow design for an AI action builder: 0-to-1 through five iterations, from node canvas to structured step templates.', caseStudyKey: 'adopt-action-builder' },
             { title: 'Adopt AI · Platform Vision', description: 'Founding designer shaping an AI copilot platform from whiteboard to dozens of signed enterprise customers in 6 months.', caseStudyKey: 'adopt-platform' },
-            { title: 'SamaCare · CoPilot', description: 'Chrome extension and onboarding for capturing payer portal prior authorization work into SamaCare: six months of discovery, design, and rollout in regulated healthcare SaaS.', caseStudyKey: 'samacare-copilot' },
             {
-              title: 'Recykle',
-              description: 'Multimodal Gemini Live agent with real-time vision and voice—cross-reference waste with local rules so you know which bin to use.',
+              title: 'SamaCare · CoPilot',
+              description:
+                'Payer-portal Chrome extension that syncs prior authorization work into SamaCare without leaving the insurer site.',
+              caseStudyKey: 'samacare-copilot',
+            },
+            {
+              title: 'Recykle App',
+              description:
+                'Gemini Live with camera and voice to identify waste and suggest the right bin from local rules.',
               projectUrl: 'https://github.com/somestyle/recykle-app',
             },
             { title: 'Blunt App', description: 'A savage AI life coach that roasts your bad habits with data, sarcasm, and zero sympathy.', caseStudyKey: null },
@@ -985,7 +991,7 @@ const ProjectsView = ({ scrollState }) => {
                   className="group relative bg-white dark:bg-stone-900 p-5 rounded-2xl border border-stone-200 dark:border-stone-800 hover:border-blue-200 dark:hover:border-blue-900 transition-all text-left flex flex-col cursor-pointer no-underline"
                 >
                   <h3 className="font-bold text-lg mb-2 leading-snug text-stone-900 dark:text-white">{proj.title}</h3>
-                  <p className="text-stone-500 dark:text-stone-400 text-sm leading-relaxed mb-4 flex-1">
+                  <p className="text-stone-500 dark:text-stone-400 text-sm leading-relaxed mb-4 flex-1 min-h-0 line-clamp-3">
                     {proj.description}
                   </p>
                   <div className="flex items-center gap-2 text-sm font-medium mt-auto pt-1 text-stone-700 dark:text-stone-200 group-hover:text-blue-600 dark:group-hover:text-blue-400">
@@ -1005,7 +1011,7 @@ const ProjectsView = ({ scrollState }) => {
                className={`group relative bg-white dark:bg-stone-900 p-5 rounded-2xl border border-stone-200 dark:border-stone-800 hover:border-blue-200 dark:hover:border-blue-900 transition-all text-left flex flex-col ${showCaseStudyLink ? 'cursor-pointer' : ''}`}
              >
                 <h3 className={`font-bold text-lg mb-2 leading-snug transition-colors ${isUnlocked ? 'text-stone-900 dark:text-white' : 'text-stone-700 dark:text-stone-300'}`}>{proj.title}</h3>
-                <p className={`text-stone-500 dark:text-stone-400 text-sm leading-relaxed mb-4 flex-1 ${!isUnlocked ? 'opacity-80' : ''}`}>
+                <p className={`text-stone-500 dark:text-stone-400 text-sm leading-relaxed mb-4 flex-1 min-h-0 line-clamp-3 ${!isUnlocked ? 'opacity-80' : ''}`}>
                   {proj.description}
                 </p>
                 <div
