@@ -4,7 +4,7 @@ import {
   Send, Sparkles, ChevronRight, ChevronDown, User, 
   Home, Briefcase, Award, Zap,
   Layout, GraduationCap, Layers,
-  BookOpen, Mail, Linkedin, ExternalLink, Lock, LockOpen,
+  BookOpen, Mail, Linkedin, ExternalLink, Lock,
   FileText, Mic2, Newspaper
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -918,10 +918,17 @@ const ProjectsView = ({ scrollState }) => {
               type="button"
               onClick={handleLock}
               title="Click to lock projects"
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 shadow-sm hover:bg-stone-50 dark:hover:bg-stone-800 hover:border-stone-300 dark:hover:border-stone-700 active:scale-[0.98] cursor-pointer transition-all duration-150"
+              className="group flex items-center gap-2 px-3 py-1.5 rounded-lg border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 shadow-sm hover:bg-stone-50 dark:hover:bg-stone-800 hover:border-stone-300 dark:hover:border-stone-700 active:scale-[0.98] cursor-pointer transition-all duration-150"
             >
               <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-              <span className="text-xs font-bold text-stone-600 dark:text-stone-300">Unlocked</span>
+              <span className="relative inline-flex h-4 min-w-[4.75rem] items-center justify-end">
+                <span className="text-xs font-bold text-stone-600 dark:text-stone-300 transition-opacity duration-150 group-hover:opacity-0">
+                  Unlocked
+                </span>
+                <span className="absolute right-0 text-xs font-bold text-stone-600 dark:text-stone-300 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+                  Lock it
+                </span>
+              </span>
             </button>
           ) : (
             <div className="bg-white dark:bg-stone-900 p-1 rounded-lg border border-stone-200 dark:border-stone-800 shadow-sm flex items-center gap-1">
@@ -1015,11 +1022,9 @@ const ProjectsView = ({ scrollState }) => {
                       : 'text-stone-500 dark:text-stone-400'
                   }`}
                 >
-                  {isUnlocked ? (
-                    <LockOpen size={16} className="shrink-0 text-stone-400 dark:text-stone-500" aria-hidden />
-                  ) : (
+                  {!isUnlocked ? (
                     <Lock size={16} className="shrink-0 text-stone-400 dark:text-stone-500" aria-hidden />
-                  )}
+                  ) : null}
                   {proj.caseStudyKey ? (
                     <>
                       <span>Read Case Study</span>

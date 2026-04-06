@@ -1,803 +1,391 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 
-/* ─── data · SamaCare CoPilot (Gamma deck order, 6 month program) ─── */
+/* ─── data ─────────────────────────────────────────────── */
 
-/** Chapters follow the published Gamma narrative (visuals deck_04–08), not a generic "iteration" template. */
-const DECK_CHAPTERS = [
-  {
-    version: "framing",
-    iterLabel: "Framing",
-    label: "Two worlds of work",
-    vColor: "#fff",
-    vBg: "#6d28d9",
-    headline: "Staff live in payer portals; SamaCare stays the system of record. CoPilot had to respect both without asking teams to start over in a new tab.",
-    mediaSrc: "/Projects/SamaCare/Copilot/deck_04.avif",
-    mediaLabel: "Deck beat: portal and SamaCare as paired contexts",
-    wins: ["Positioned CoPilot as a bridge, not a portal replacement", "Made save semantics and payer reference IDs first-class"],
-    gaps: ["Early mocks underplayed how different each payer UI could feel", "Needed a stance on recognized versus unknown portals"],
-  },
-  {
-    version: "save",
-    iterLabel: "Save flow",
-    label: "Fields that match real work",
-    vColor: "#fff",
-    vBg: "#6d28d9",
-    headline: "The deck centers a disciplined save path: patient, new or existing authorization, payor, HCPCS or drug, status, payer reference ID.",
-    mediaSrc: "/Projects/SamaCare/Copilot/deck_05.avif",
-    mediaLabel: "Deck beat: structured capture aligned to ops language",
-    wins: ["Same field order staff already use when they talk to each other", "Autocomplete when SamaCare has a match, manual entry when it does not"],
-    gaps: ["Screenshot timing and “stay on this tab” behavior needed engineering and UX lockstep", "Half-filled portal pages created edge cases in pilot"],
-  },
-  {
-    version: "trust",
-    iterLabel: "Trust",
-    label: "Feedback people can act on",
-    vColor: "#fff",
-    vBg: "#6d28d9",
-    headline: "Success states link straight back to the authorization in SamaCare. Async capture states say clearly when a screenshot is still running.",
-    mediaSrc: "/Projects/SamaCare/Copilot/deck_06.avif",
-    mediaLabel: "Deck beat: honest notifications",
-    wins: ["Toasts that deep-link into the web app after save", "Plain language while screenshots finish so nobody scrolls away too early"],
-    gaps: ["Portal reminders only where detection exists; coverage grows over time"],
-  },
-  {
-    version: "access",
-    iterLabel: "Presence",
-    label: "Meeting people in Chrome",
-    vColor: "#fff",
-    vBg: "#6d28d9",
-    headline: "Toolbar pin, in-page widget on returning portals, and a hard gate back through SamaCare login when session is missing.",
-    mediaSrc: "/Projects/SamaCare/Copilot/deck_07.avif",
-    mediaLabel: "Deck beat: how CoPilot shows up beside the job",
-    wins: ["Two front doors: omnibox icon and contextual widget", "Login path keeps every save tied to the right account and policy"],
-    gaps: ["First visit to a portal can lack the widget until a successful save teaches the site"],
-  },
-  {
-    version: "launch",
-    iterLabel: "Rollout",
-    label: "Docs and demos",
-    vColor: "#fff",
-    vBg: "#6d28d9",
-    headline: "Install steps, login requirements, notification glossary, and video walkthroughs matched how Customer Success already talks on the phone.",
-    mediaSrc: "/Projects/SamaCare/Copilot/deck_08.avif",
-    mediaLabel: "Deck beat: launch and education",
-    wins: ["Help article parity with shipped behavior", "Video covers end-to-end prior auth quest including waiting on capture"],
-    gaps: [],
-  },
-];
-
-const CHAPTER_BRIDGES = [
-  "Once the deck lands the two-world story, the next question is which fields must move in lockstep with operations.",
-  "After the field model felt credible, the deck pushes hard on honesty during async capture, especially screenshots.",
-  "Feedback patterns hold only if Chrome entry and session rules stay as strict as the web app.",
-  "When access patterns stabilize, scale is mostly teaching: docs, video, and support language.",
-];
-
-const PRINCIPLES = [
-  { n: "01", title: "Meet operators in the portal, record truth in SamaCare.", body: "The extension wins when it respects payer workflows and still produces clean records in one system of record, without doubling data entry." },
-  { n: "02", title: "Structure beats heroic copy.", body: "Field order, defaults, and escape hatches matter more than clever onboarding. Ops teams pattern-match to the forms they file hundreds of times a week." },
-  { n: "03", title: "Tell the truth about partial automation.", body: "When reminders or detection lag, the UI should say so. Quiet limits erode trust faster than honest scope." },
-  { n: "04", title: "Every save needs a door back to the app.", body: "Deep links and login gates keep the extension tied to permissions and audit trails in core SamaCare, which matters in regulated healthcare SaaS." },
-];
-
-const RESEARCH_METHODS = [
-  { icon: "🧪", label: "Workflow observation", note: "Shadowed prior auth staff on portal-heavy days" },
-  { icon: "📞", label: "Support and CS listening", note: "Stayed close to churn drivers, rework, and portal friction" },
-  { icon: "✅", label: "Prototype walkthroughs", note: "Walked early admins through save flows before store listing" },
-  { icon: "📋", label: "Content QA", note: "Matched extension strings to help center and compliance language" },
-  { icon: "🔐", label: "Security and privacy review", note: "Chrome permissions, sessions, screenshot handling with engineering" },
-  { icon: "📈", label: "Pilot feedback", note: "Tuned notifications, widget presence, and defaults as installs landed" },
-];
-
-/** Gamma “Solution: SamaCare Copilot” slide (feature column + extension mockup). */
 const SOLUTION_FEATURES = [
-  { icon: "🖥", title: "Chrome extension", body: "Lives alongside payer portals as a persistent surface." },
-  { icon: "🎧", title: "Contextual assistant", body: "Acts during submission and status workflows in real time." },
-  { icon: "🔗", title: "System connector", body: "Connects payer portals, SamaCare, and EHR systems in real time." },
-  { icon: "✨", title: "Future expansion", body: "Creates a persistent surface for workflow support and future expansion." },
+  { icon: "🖥", title: "Chrome Extension", body: "Lives alongside payer portals as a persistent surface." },
+  { icon: "🎧", title: "Contextual Assistant", body: "Acts during submission and status workflows in real time." },
+  { icon: "🔗", title: "System Connector", body: "Connects payer portals, SamaCare, and EHR systems in real time." },
+  { icon: "✨", title: "Future Expansion", body: "Creates a persistent surface for workflow support and future expansion." },
 ];
 
-const SOLUTION_CONSTRAINT_NOTE =
-  "Designed without direct API access to payer portals.";
+const SUBMISSION_STEPS = [
+  { n: "01", label: "Search & Select", body: "Users search and select patients within Copilot while on a payer portal." },
+  { n: "02", label: "Autofill", body: "Injects patient data such as name and MRN directly into portal forms." },
+  { n: "03", label: "Detection", body: "Copilot detects submission confirmation states automatically after form submission." },
+  { n: "04", label: "Extract & Save", body: "Extracts structured data such as authorization number and status, captures a screenshot, and saves all information directly into SamaCare without requiring user navigation." },
+];
 
-/* ─── component ──────────────────────────────────────────── */
+const STATUS_STEPS = [
+  { n: "01", label: "Search for Patient", body: "Users return to payer portals to check authorization status. Copilot allows users to search for a patient directly within the extension." },
+  { n: "02", label: "View Existing Authorizations", body: "Displays existing prior authorizations associated with the patient." },
+  { n: "03", label: "Update Status", body: "Users can update status such as approved or denied using a dropdown. Optional screenshot capture allows documentation of status changes." },
+];
 
-const NAV_SECTION_IDS = ["challenge", "people", "discovery", "journey", "principles", "solution", "impact"];
+const SCALE_TIERS = [
+  { label: "Unsupported", head: "Manual flow", desc: "Portal is accessible but Copilot has no automated capability. Users complete workflows manually.", tier: "unsupported" },
+  { label: "Assisted",    head: "Partial support", desc: "Copilot provides partial support such as autofill or manual capture triggers to reduce effort.", tier: "assisted" },
+  { label: "Fully Automated", head: "Full automation", desc: "End-to-end detection, extraction, screenshot, and save without user intervention.", tier: "automated" },
+];
 
-const NAV_LABELS = {
-  challenge: "Challenge",
-  people: "Who we serve",
-  discovery: "Discovery",
-  journey: "Design journey",
-  principles: "Principles",
-  solution: "Solution",
-  impact: "Impact",
-};
+const SYSTEM_DEPTH_BULLETS = [
+  "Enables multi-directional data flow between payer portals, SamaCare, and EHR",
+  "Supports creating new patient records based on portal input",
+  "Allows users to attach documents directly from EHR integrations without downloading",
+  "Eliminates redundant data entry and file handling steps",
+  "Maintains consistency across systems and reduces data drift",
+];
+
+const PAIN_POINTS = [
+  "Repeated entry of patient and authorization data across multiple systems",
+  "Constant switching between payer portals, EHR and SamaCare to complete tasks",
+  "Manual screenshots required to capture submission and status for compliance",
+  "Updating status requires navigating back to SamaCare and searching records",
+  "High risk of errors such as incorrect data entry, missed updates or wrong info",
+];
+
+const OPPORTUNITY_BULLETS = [
+  "Embed SamaCare capabilities directly into payer portals",
+  "Capture data at the source rather than reconstructing it later",
+  "Reduce context switching and enable real-time updates",
+  "Introduce a new interaction model where the product extends beyond its own interface",
+];
+
+const COPILOT_CAPABILITIES = [
+  { side: "cap", text: "Side panel" },
+  { side: "cap", text: "Autofill" },
+  { side: "cap", text: "Status update" },
+  { side: "cap", text: "Notification" },
+];
+
+const COPILOT_WHY = [
+  "Side panel enables in-context actions",
+  "Detection + prompts reduce missed steps",
+  "Designed for minimal disruption inside payer portals",
+  "Runs inside payer portals without API access",
+];
+
+const IMPACT_OUTCOMES = [
+  "Accelerated time to value by enabling use within existing workflows without full onboarding",
+  "Reduced manual work and system switching significantly",
+  "Improved data accuracy and reduced user errors",
+  "Embedded into daily workflows for submission and status tracking",
+  "Evolved into a prioritized product initiative with continued investment and expansion",
+];
+
+const NAV_SECTION_IDS = ["context", "insight", "problem", "solution", "workflows", "system", "impact"];
+const NAV_LABELS = { context: "Context", insight: "Insight", problem: "Problem", solution: "Solution", workflows: "Workflows", system: "System", impact: "Impact" };
+
+/* ─── component ─────────────────────────────────────────── */
+
 export default function SamaCareCopilotCaseStudy({ onClose }) {
-  const [scrolled, setScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState("challenge");
-  const rootRef = useRef(null);
+  const [scrolled, setScrolled]         = useState(false);
+  const [activeSection, setActive]      = useState("context");
+  const [lightbox, setLightbox]         = useState(null);   // src string or null
+  const rootRef    = useRef(null);
+  const metricRefs = useRef([]);
+  const [metricCounted, setMetricCounted] = useState(false);
 
+  /* ── scroll/active section ── */
   useEffect(() => {
-    const el = rootRef.current;
-    if (!el) return;
+    const el = rootRef.current; if (!el) return;
     const h = () => setScrolled(el.scrollTop > 48);
     el.addEventListener("scroll", h);
     return () => el.removeEventListener("scroll", h);
   }, []);
 
   useEffect(() => {
-    const el = rootRef.current;
-    if (!el) return;
-    const updateActiveSection = () => {
-      const triggerOffset = 140;
-      let current = NAV_SECTION_IDS[0];
+    const el = rootRef.current; if (!el) return;
+    const update = () => {
+      let cur = NAV_SECTION_IDS[0];
       for (const id of NAV_SECTION_IDS) {
-        const section = el.querySelector(`#${id}`);
-        if (section) {
-          const rect = section.getBoundingClientRect();
-          const containerRect = el.getBoundingClientRect();
-          const sectionTopRelative = rect.top - containerRect.top;
-          if (sectionTopRelative <= triggerOffset) current = id;
-        }
+        const s = el.querySelector(`#${id}`);
+        if (s && s.getBoundingClientRect().top - el.getBoundingClientRect().top <= 140) cur = id;
       }
-      setActiveSection(current);
+      setActive(cur);
     };
-    updateActiveSection();
-    el.addEventListener("scroll", updateActiveSection);
-    return () => el.removeEventListener("scroll", updateActiveSection);
+    update();
+    el.addEventListener("scroll", update);
+    return () => el.removeEventListener("scroll", update);
   }, []);
 
+  /* ── reveal on scroll ── */
   useEffect(() => {
-    const el = rootRef.current;
-    if (!el) return;
-    const nodes = el.querySelectorAll(".reveal");
+    const el = rootRef.current; if (!el) return;
     const obs = new IntersectionObserver(
-      (entries) => entries.forEach((e) => {
-        if (e.isIntersecting) { e.target.classList.add("revealed"); obs.unobserve(e.target); }
-      }),
+      (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("revealed"); obs.unobserve(e.target); } }),
       { threshold: 0.04, rootMargin: "0px 0px -20px 0px", root: el }
     );
-    nodes.forEach((n) => obs.observe(n));
+    el.querySelectorAll(".reveal").forEach((n) => obs.observe(n));
     return () => obs.disconnect();
   }, []);
 
+  /* ── metric count-up ── */
   useEffect(() => {
-    const el = rootRef.current;
-    if (!el) return;
-    const badges = el.querySelectorAll(".iter-badge-anim");
-    const obs = new IntersectionObserver(
-      (entries) => entries.forEach((e) => {
-        if (e.isIntersecting) { e.target.classList.add("badge-popped"); obs.unobserve(e.target); }
-      }),
-      { threshold: 0.3, root: el }
-    );
-    badges.forEach((b) => obs.observe(b));
+    if (metricCounted) return;
+    const el = rootRef.current; if (!el) return;
+    const targets = [
+      { ref: metricRefs.current[0], end: 3000,  suffix: "+", fmt: (n) => n.toLocaleString() },
+      { ref: metricRefs.current[1], end: 40,    suffix: "%", fmt: (n) => String(n) },
+      { ref: metricRefs.current[2], end: 40000, suffix: "+", fmt: (n) => n.toLocaleString() },
+    ];
+    const obs = new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (!e.isIntersecting || metricCounted) return;
+      setMetricCounted(true);
+      targets.forEach(({ ref, end, suffix, fmt }) => {
+        if (!ref) return;
+        let cur = 0; const dur = 1400; const step = 16; const inc = end / (dur / step);
+        const t = setInterval(() => { cur = Math.min(cur + inc, end); ref.textContent = fmt(Math.round(cur)) + suffix; if (cur >= end) clearInterval(t); }, step);
+      });
+    }), { threshold: 0.4, root: el });
+    if (metricRefs.current[0]) obs.observe(metricRefs.current[0].closest(".cs-metrics"));
     return () => obs.disconnect();
+  }, [metricCounted]);
+
+  /* ── lightbox ESC ── */
+  useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") setLightbox(null); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
   }, []);
 
-  useEffect(() => {
-    const el = rootRef.current;
-    if (!el) return;
-    const rows = el.querySelectorAll(".arch-row-anim");
-    const obs = new IntersectionObserver(
-      (entries) => entries.forEach((e) => {
-        if (e.isIntersecting) { e.target.classList.add("arch-row-in"); obs.unobserve(e.target); }
-      }),
-      { threshold: 0.2, root: el }
-    );
-    rows.forEach((r) => obs.observe(r));
-    return () => obs.disconnect();
-  }, []);
+  const openLightbox = useCallback((src) => setLightbox(src), []);
+  const closeLightbox = useCallback(() => setLightbox(null), []);
+
+  /* ─────────────────────────────────────────────────────── */
 
   return (
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,400;1,500;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap');
 
-        .cs-root {
-          position:fixed; inset:0; z-index:50;
-          overflow-y:auto; overflow-x:hidden;
-          background:#fcfbfa; color:#1c1917;
-          font-family:'DM Sans',ui-sans-serif,system-ui,sans-serif;
-          -webkit-font-smoothing:antialiased;
-          scroll-behavior:smooth;
-          overflow-x:hidden;
-        }
+        /* ── ROOT ── */
+        .cs-root { position:fixed; inset:0; z-index:50; overflow-y:auto; overflow-x:hidden; background:#fcfbfa; color:#1c1917; font-family:'DM Sans',ui-sans-serif,system-ui,sans-serif; -webkit-font-smoothing:antialiased; scroll-behavior:smooth; }
         .cs-root *, .cs-root *::before, .cs-root *::after { box-sizing:border-box; margin:0; padding:0; }
 
         /* ── NAV ── */
-        .cs-nav {
-          position:sticky; top:0; z-index:40;
-          height:52px; padding:0 48px;
-          display:flex; align-items:center; justify-content:space-between;
-          background:rgba(252,251,250,.92);
-          backdrop-filter:blur(20px);
-          border-bottom:1px solid transparent;
-          transition:border-color .25s;
-        }
+        .cs-nav { position:sticky; top:0; z-index:40; height:52px; padding:0 48px; display:flex; align-items:center; justify-content:space-between; background:rgba(252,251,250,.92); backdrop-filter:blur(20px); border-bottom:1px solid transparent; transition:border-color .25s; }
         .cs-nav.on { border-color:#e7e5e4; }
-        .cs-nav-back {
-          display:flex; align-items:center; gap:6px;
-          font-size:13px; font-weight:500; color:#a8a29e;
-          background:none; border:none; cursor:pointer;
-          font-family:inherit; transition:color .15s; padding:0;
-        }
+        .cs-nav-back { display:flex; align-items:center; gap:6px; font-size:13px; font-weight:500; color:#a8a29e; background:none; border:none; cursor:pointer; font-family:inherit; transition:color .15s; padding:0; }
         .cs-nav-back:hover { color:#1c1917; }
-        .cs-nav-id {
-          flex:1;
-          min-width:0;
-          text-align:center;
-          font-size:12px;
-          font-weight:600;
-          color:#78716c;
-        }
+        .cs-nav-id { flex:1; min-width:0; text-align:center; font-size:12px; font-weight:600; color:#78716c; }
         .cs-nav-links { display:flex; gap:22px; list-style:none; }
         .cs-nav-links a { font-size:11.5px; font-weight:500; color:#a8a29e; text-decoration:none; transition:color .15s; }
         .cs-nav-links a:hover { color:#1c1917; }
         .cs-nav-links a.cs-nav-active { color:#1c1917; font-weight:600; }
-        .cs-nav-right {
-          display:flex;
-          align-items:center;
-          justify-content:flex-end;
-          gap:14px;
-          flex-shrink:0;
-        }
-        .cs-nav-pres {
-          display:inline-flex;
-          align-items:center;
-          gap:6px;
-          padding:6px 12px 6px 10px;
-          border-radius:999px;
-          border:1px solid #e7e5e4;
-          background:#fff;
-          font-family:inherit;
-          font-size:12px;
-          font-weight:600;
-          letter-spacing:0.02em;
-          color:#44403c;
-          cursor:pointer;
-          transition:background .15s, border-color .15s, color .15s, box-shadow .15s;
-          box-shadow:0 1px 2px rgba(28,25,23,.04);
-        }
-        .cs-nav-pres:hover {
-          background:#f5f5f4;
-          border-color:#d6d3d1;
-          color:#0c0a09;
-        }
-        .cs-nav-pres svg {
-          flex-shrink:0;
-          color:#6d28d9;
-        }
-
-        .cs-wip-banner {
-          background:#fef3c7; color:#92400e;
-          text-align:center; padding:8px 16px;
-          font-size:12px; font-weight:500;
-          border-bottom:1px solid #fde68a;
-        }
 
         /* ── LAYOUT ── */
         .cs-wrap { max-width:880px; margin:0 auto; padding:0 48px; }
 
         /* ── HERO ── */
-        .cs-hero {
-          padding:80px 0 64px;
-          position:relative; border-bottom:1px solid #e7e5e4;
-        }
-        .cs-hero-tex {
-          position:absolute; top:0; bottom:0; left:50%; transform:translateX(-50%);
-          width:100vw; z-index:0; opacity:.35;
-          background-image: radial-gradient(circle, #c4b5a5 1px, transparent 1px);
-          background-size: 22px 22px;
-        }
-        .cs-hero-wash {
-          position:absolute; top:0; bottom:0; left:50%; transform:translateX(-50%);
-          width:100vw; z-index:1; pointer-events:none;
-          background:
-            radial-gradient(ellipse 65% 50% at 70% 0%, rgba(237,233,254,.88) 0%, transparent 60%),
-            radial-gradient(ellipse 40% 35% at 0% 85%, rgba(220,252,231,.55) 0%, transparent 55%),
-            linear-gradient(to bottom, rgba(252,251,250,0) 0%, rgba(252,251,250,.9) 100%);
-        }
-        .cs-hero-inner { position:relative; z-index:2; max-width:880px; margin:0 auto; padding:0 48px; }
+        .cs-hero { padding:80px 0 64px; position:relative; border-bottom:1px solid #e7e5e4; }
+        .cs-hero-tex { position:absolute; top:0; bottom:0; left:50%; transform:translateX(-50%); width:100vw; z-index:0; opacity:.35; background-image:radial-gradient(circle,#c4b5a5 1px,transparent 1px); background-size:22px 22px; }
+        .cs-hero-wash { position:absolute; top:0; bottom:0; left:50%; transform:translateX(-50%); width:100vw; z-index:1; pointer-events:none; background: radial-gradient(ellipse 65% 50% at 70% 0%,rgba(237,233,254,.88) 0%,transparent 60%), radial-gradient(ellipse 40% 35% at 0% 85%,rgba(220,252,231,.55) 0%,transparent 55%), linear-gradient(to bottom,rgba(252,251,250,0) 0%,rgba(252,251,250,.9) 100%); }
+        .cs-hero .cs-wrap { position:relative; z-index:2; }
 
         .cs-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:28px; }
-        .cs-pill {
-          font-size:10px; font-weight:700; letter-spacing:.11em;
-          text-transform:uppercase; padding:4px 11px;
-          border-radius:100px; border:1px solid; white-space:nowrap;
-        }
+        .cs-pill { font-size:10px; font-weight:700; letter-spacing:.11em; text-transform:uppercase; padding:4px 11px; border-radius:100px; border:1px solid; white-space:nowrap; }
         .cs-pill-brand { color:#6d28d9; border-color:#c4b5fd; background:#f5f3ff; }
         .cs-pill-green { color:#16a34a; border-color:#86efac; background:#f0fdf4; }
-        .cs-pill-warm  { color:#92400e; border-color:#fcd34d; background:#fffbeb; }
         .cs-pill-stone { color:#78716c; border-color:#d6d3d1; background:#fff; }
 
-        .cs-h1 {
-          font-family:'Lora',Georgia,serif;
-          font-size:clamp(42px,6vw,72px);
-          font-weight:700; line-height:1.03;
-          letter-spacing:-.025em; color:#0c0a09;
-          margin-bottom:8px;
-        }
+        .cs-h1 { font-family:'Lora',Georgia,serif; font-size:clamp(42px,6vw,72px); font-weight:700; line-height:1.03; letter-spacing:-.025em; color:#0c0a09; }
         .cs-h1 em { font-style:italic; color:#6d28d9; }
-        .cs-h1-word {
-          display:inline-block;
-          opacity:0; transform:translateY(18px);
-          animation:wordUp .55s ease forwards;
-        }
+        .cs-h1-word { display:inline-block; opacity:0; transform:translateY(18px); animation:wordUp .55s ease forwards; }
         @keyframes wordUp { to { opacity:1; transform:translateY(0); } }
 
-        .cs-h1-sub {
-          font-size:clamp(15px,2vw,18px); font-weight:300;
-          color:#a8a29e; letter-spacing:-.005em; margin-top:28px; margin-bottom:22px;
-          opacity:0; animation:wordUp .55s .5s ease forwards;
-        }
-        .cs-hero-gif {
-          width:100%;
-          max-width:100%;
-          height:auto;
-          border-radius:12px;
-          margin-bottom:32px;
-          display:block;
-          box-shadow:0 2px 12px rgba(0,0,0,.06);
-          border:1px solid #e7e5e4;
-          opacity:0; animation:wordUp .55s .58s ease forwards;
-        }
-        .cs-hero-lead {
-          font-size:16px; line-height:1.8; color:#57534e;
-          max-width:800px; margin-bottom:48px; font-weight:400;
-          opacity:0; animation:wordUp .55s .65s ease forwards;
-        }
+        .cs-h1-sub { font-size:clamp(15px,2vw,18px); font-weight:300; color:#a8a29e; letter-spacing:-.005em; margin-top:28px; margin-bottom:22px; opacity:0; animation:wordUp .55s .5s ease forwards; }
+        .cs-hero-gif { width:100%; height:auto; border-radius:12px; margin-bottom:32px; display:block; box-shadow:0 2px 12px rgba(0,0,0,.06); border:1px solid #e7e5e4; opacity:0; animation:wordUp .55s .58s ease forwards; }
+        .cs-hero-lead { font-size:16px; line-height:1.8; color:#57534e; max-width:800px; margin-bottom:48px; font-weight:400; opacity:0; animation:wordUp .55s .65s ease forwards; }
         .cs-hero-lead strong { color:#1c1917; font-weight:600; }
 
-        .cs-meta {
-          display:grid; grid-template-columns:repeat(4,1fr);
-          background:#fff; border:1px solid #e7e5e4;
-          border-radius:12px; overflow:hidden;
-          box-shadow:0 1px 4px rgba(0,0,0,.04);
-          opacity:0; animation:wordUp .55s .8s ease forwards;
-        }
+        .cs-meta { display:grid; grid-template-columns:repeat(4,1fr); background:#fff; border:1px solid #e7e5e4; border-radius:12px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,.04); opacity:0; animation:wordUp .55s .8s ease forwards; }
         .cs-meta-cell { padding:15px 20px; border-right:1px solid #e7e5e4; }
         .cs-meta-cell:last-child { border-right:none; }
         .cs-meta-k { font-size:9px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#a8a29e; margin-bottom:4px; }
         .cs-meta-v { font-size:13px; font-weight:600; color:#1c1917; line-height:1.35; }
 
-        /* ── SECTION ── */
+        /* ── SECTIONS ── */
         .cs-sec { padding:72px 0; border-bottom:1px solid #e7e5e4; }
         .cs-sec:last-of-type { border-bottom:none; }
-
-        .cs-kicker {
-          display:inline-flex; align-items:center; gap:10px;
-          font-size:10px; font-weight:700; letter-spacing:.14em;
-          text-transform:uppercase; color:#a8a29e; margin-bottom:14px;
-        }
+        .cs-kicker { display:inline-flex; align-items:center; gap:10px; font-size:10px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#a8a29e; margin-bottom:14px; }
         .cs-kicker-dot { width:6px; height:6px; border-radius:50%; background:#d6d3d1; flex-shrink:0; }
-
-        .cs-sh {
-          font-family:'Lora',Georgia,serif;
-          font-size:clamp(28px,4vw,42px);
-          font-weight:700; line-height:1.08;
-          letter-spacing:-.022em; color:#0c0a09; margin-bottom:18px;
-        }
+        .cs-sh { font-family:'Lora',Georgia,serif; font-size:clamp(28px,4vw,42px); font-weight:700; line-height:1.08; letter-spacing:-.022em; color:#0c0a09; margin-bottom:18px; }
         .cs-sh em { font-style:italic; color:#6d28d9; }
-
         .cs-p { font-size:15px; line-height:1.85; color:#57534e; max-width:800px; }
         .cs-p + .cs-p { margin-top:16px; }
         .cs-p strong { color:#1c1917; font-weight:600; }
 
-        .cs-hero .cs-wrap {
-          position:relative;
-          z-index:2;
-        }
-
-        /* ── SPLIT LAYOUTS (Gamma deck) ── */
-        .cs-hero-tags { margin-bottom:20px; }
-        .cs-hero-title-row { width:100%; margin-bottom:20px; }
-        .cs-hero-title-row .cs-h1 { max-width:none; }
-        .cs-hero-lead { max-width:none; }
-        .cs-challenge-split {
-          display:grid; grid-template-columns:1fr minmax(260px,400px); gap:36px; align-items:start; margin-top:8px;
-        }
-        .cs-challenge-visual { position:sticky; top:80px; }
-        .cs-challenge-visual img {
-          width:100%; height:auto; border-radius:12px; border:1px solid #e7e5e4;
-          box-shadow:0 6px 28px rgba(28,25,23,.08);
-        }
-        .cs-deck-split {
-          display:grid; grid-template-columns:1fr minmax(260px,44%); gap:32px; align-items:start; margin-top:4px;
-        }
-        .cs-deck-split-media { min-width:0; }
-        .cs-deck-split-media .cs-iter-media { margin-bottom:0; }
-        .cs-deck-split.is-rev .cs-deck-split-copy { grid-column:2; grid-row:1; }
-        .cs-deck-split.is-rev .cs-deck-split-media { grid-column:1; grid-row:1; }
-        .cs-deck-split-copy .cs-iter-headline { margin-bottom:0; }
-        .cs-iter-wide .cs-iter-analysis { margin-top:24px; }
-        .cs-sol-deck-head { margin-bottom:28px; }
-        .cs-sol-kicker-deck {
-          font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
-          color:#4338ca; margin-bottom:8px;
-        }
-        .cs-sol-title-deck {
-          font-family:'Lora',Georgia,serif; font-size:clamp(28px,4vw,38px);
-          font-weight:700; letter-spacing:-.02em; color:#2563eb; margin:0 0 6px;
-        }
-        .cs-sol-tagline {
-          font-size:16px; font-weight:500; color:#57534e; margin:0 0 20px;
-        }
-        .cs-solution-split {
-          display:grid; grid-template-columns:1fr minmax(280px,46%); gap:36px; align-items:start;
-        }
-        .cs-sol-card {
-          display:flex; gap:14px; align-items:flex-start;
-          padding:16px 18px; border:1px solid #e7e5e4; border-radius:12px; background:#fff;
-          margin-bottom:10px; box-shadow:0 1px 3px rgba(0,0,0,.04);
-        }
-        .cs-sol-card-icon {
-          width:40px; height:40px; flex-shrink:0; border-radius:10px; background:#f5f3ff;
-          border:1px solid #ddd6fe; display:flex; align-items:center; justify-content:center;
-          font-size:18px;
-        }
-        .cs-sol-card-t { font-size:14px; font-weight:700; color:#1c1917; margin-bottom:4px; }
-        .cs-sol-card-p { font-size:13px; line-height:1.65; color:#57534e; margin:0; }
-        .cs-sol-footnote {
-          margin-top:16px; padding:14px 16px; border-radius:12px;
-          background:linear-gradient(135deg,#eef2ff,#f5f3ff); border:1px solid #c4b5fd;
-          font-size:13px; line-height:1.6; color:#4338ca; font-weight:600;
-          display:flex; gap:10px; align-items:flex-start;
-        }
-        .cs-solution-visual img {
-          width:100%; height:auto; border-radius:12px; display:block;
-          border:1px solid #e7e5e4; box-shadow:0 12px 48px rgba(67,56,202,.12);
-        }
         /* ── CALLOUT ── */
-        .cs-callout {
-          margin:32px 0; padding:28px 32px 24px;
-          background:linear-gradient(140deg,#f5f3ff,#faf5ff); border:1px solid #ddd6fe; border-radius:14px;
-          position:relative; overflow:hidden;
-        }
-        .cs-callout::after {
-          content:''; position:absolute; inset:0; border-radius:14px; pointer-events:none;
-          opacity:.03;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-          background-size:160px;
-        }
-        .cs-callout-mark {
-          position:absolute; top:-16px; left:20px;
-          font-family:'Lora',serif; font-size:96px; font-weight:700;
-          color:#ede9fe; line-height:1; user-select:none; pointer-events:none;
-        }
-        .cs-callout-text {
-          font-family:'Lora',Georgia,serif;
-          font-size:18px; font-style:italic; font-weight:500;
-          line-height:1.65; color:#5b21b6;
-          position:relative; z-index:1; max-width:680px;
-        }
-        .cs-callout-label {
-          display:block; margin-top:12px;
-          font-size:10px; font-weight:700; letter-spacing:.12em;
-          text-transform:uppercase; color:#c4b5fd;
-          position:relative; z-index:1;
-        }
+        .cs-callout { margin:36px 0; padding:28px 32px 24px; background:linear-gradient(140deg,#f5f3ff,#faf5ff); border:1px solid #ddd6fe; border-radius:14px; position:relative; overflow:hidden; }
+        .cs-callout::after { content:''; position:absolute; inset:0; border-radius:14px; pointer-events:none; opacity:.03; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); background-size:160px; }
+        .cs-callout-mark { position:absolute; top:-16px; left:20px; font-family:'Lora',serif; font-size:96px; font-weight:700; color:#ede9fe; line-height:1; user-select:none; pointer-events:none; }
+        .cs-callout-text { font-family:'Lora',Georgia,serif; font-size:18px; font-style:italic; font-weight:500; line-height:1.65; color:#5b21b6; position:relative; z-index:1; max-width:680px; }
+        .cs-callout-label { display:block; margin-top:12px; font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#c4b5fd; position:relative; z-index:1; }
 
-        /* ── BEFORE / AFTER ── */
-        .cs-diff {
-          margin-top:32px; border-radius:12px; overflow:hidden;
-          border:1px solid #e7e5e4; background:#fff;
-          box-shadow:0 1px 6px rgba(0,0,0,.04);
-        }
-        .cs-diff-head {
-          padding:11px 20px; background:#fcfbfa;
-          border-bottom:1px solid #e7e5e4;
-          font-size:10px; font-weight:700; letter-spacing:.12em;
-          text-transform:uppercase; color:#a8a29e;
-        }
-        .cs-diff-row {
-          display:grid; grid-template-columns:96px 1fr;
-          gap:16px; padding:18px 20px; align-items:start;
-          border-bottom:1px solid #f5f5f4;
-        }
+        /* ── DIFF ── */
+        .cs-diff { margin-top:32px; border-radius:12px; overflow:hidden; border:1px solid #e7e5e4; background:#fff; box-shadow:0 1px 6px rgba(0,0,0,.04); }
+        .cs-diff-head { padding:11px 20px; background:#fcfbfa; border-bottom:1px solid #e7e5e4; font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#a8a29e; }
+        .cs-diff-row { display:grid; grid-template-columns:96px 1fr; gap:16px; padding:18px 20px; align-items:start; border-bottom:1px solid #f5f5f4; }
         .cs-diff-row:last-child { border-bottom:none; }
-        .cs-diff-badge {
-          font-size:9.5px; font-weight:700; letter-spacing:.07em;
-          text-transform:uppercase; padding:4px 0;
-          border-radius:5px; text-align:center; margin-top:2px;
-        }
+        .cs-diff-badge { font-size:9.5px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; padding:4px 0; border-radius:5px; text-align:center; margin-top:2px; }
         .cs-diff-badge.before { background:#fee2e2; color:#dc2626; }
         .cs-diff-badge.after  { background:#dcfce7; color:#16a34a; }
         .cs-diff-body { font-size:14px; line-height:1.75; color:#44403c; }
         .cs-diff-body strong { color:#15803d; font-weight:600; }
 
-        /* ── PERSONA ── */
-        .cs-persona-wrap { margin-top:28px; }
-        .cs-persona {
-          border-radius:14px; padding:16px 20px;
-          transition:transform .2s, box-shadow .2s;
-          border:1px solid #e7e5e4;
-          display:flex; gap:12px; align-items:flex-start;
+        /* ── SPLIT LAYOUT ── */
+        .cs-split { display:grid; grid-template-columns:1fr minmax(260px,420px); gap:40px; align-items:start; margin-top:32px; }
+        .cs-split-img { position:sticky; top:80px; }
+        .cs-split-img img { width:100%; height:auto; border-radius:12px; border:1px solid #e7e5e4; box-shadow:0 6px 28px rgba(28,25,23,.08); display:block; }
+        .cs-split.is-rev { grid-template-columns:minmax(260px,420px) 1fr; }
+        .cs-split.is-rev .cs-split-img { grid-column:1; grid-row:1; }
+        .cs-split.is-rev .cs-split-copy { grid-column:2; grid-row:1; }
+
+        /* ── PHOTO (no lightbox) ── */
+        .cs-photo { width:100%; height:auto; border-radius:12px; border:1px solid #e7e5e4; box-shadow:0 6px 28px rgba(28,25,23,.08); display:block; }
+
+        /* ── UI SCREENSHOT (lightbox-enabled) ── */
+        .cs-ui-img {
+          display:block; width:100%; height:auto; border-radius:12px;
+          border:1px solid #e7e5e4; box-shadow:0 4px 20px rgba(0,0,0,.08);
+          cursor:zoom-in; transition:box-shadow .2s, transform .2s;
+          position:relative;
         }
-        .cs-persona:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(0,0,0,.08); }
-        .cs-persona-pm  { background:#fafaf9; }
-        .cs-persona-avatar {
-          width:44px; height:44px; border-radius:12px;
+        .cs-ui-img:hover { box-shadow:0 8px 36px rgba(109,40,217,.14); transform:translateY(-1px); }
+        .cs-ui-wrap { position:relative; display:block; }
+        .cs-ui-wrap::after {
+          content:'⤢';
+          position:absolute; top:10px; right:10px;
+          width:28px; height:28px; border-radius:6px;
+          background:rgba(255,255,255,.9); backdrop-filter:blur(6px);
+          border:1px solid rgba(0,0,0,.08);
           display:flex; align-items:center; justify-content:center;
-          font-size:20px; flex-shrink:0; background:#f5f5f4;
+          font-size:13px; color:#44403c; pointer-events:none;
+          opacity:0; transition:opacity .2s;
+          display:flex; align-items:center; justify-content:center;
+          line-height:1;
         }
-        .cs-persona-body { flex:1; min-width:0; }
-        .cs-persona-role { font-size:9.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#a8a29e; margin-bottom:6px; }
-        .cs-persona-name { font-family:'Lora',serif; font-size:18px; font-weight:600; color:#0c0a09; margin-bottom:10px; line-height:1.3; }
-        .cs-persona-desc { font-size:13px; line-height:1.75; color:#78716c; margin-bottom:16px; }
-        .cs-persona-need { display:inline-block; font-size:11.5px; font-weight:600; padding:7px 12px; border-radius:8px; background:#f0f0ef; color:#44403c; }
+        .cs-ui-wrap:hover::after { opacity:1; }
 
-        /* ── RESEARCH GRID ── */
-        .cs-research-grid {
-          display:grid; grid-template-columns:repeat(3,1fr);
-          gap:10px; margin-top:28px;
+        /* ── LIGHTBOX ── */
+        .cs-lightbox {
+          position:fixed; inset:0; z-index:200;
+          background:rgba(12,10,9,.82); backdrop-filter:blur(10px);
+          display:flex; align-items:center; justify-content:center;
+          padding:24px; cursor:zoom-out;
+          animation:lbFade .18s ease;
         }
-        .cs-research-card {
-          background:#fff; border:1px solid #e7e5e4; border-radius:10px;
-          padding:16px; transition:border-color .2s;
+        @keyframes lbFade { from { opacity:0; } to { opacity:1; } }
+        .cs-lightbox-inner {
+          position:relative; max-width:min(1200px, 94vw); max-height:90vh;
+          cursor:default;
+          animation:lbScale .18s ease;
         }
-        .cs-research-card:hover { border-color:#c4b5fd; }
-        .cs-research-icon { font-size:18px; margin-bottom:8px; }
-        .cs-research-label { font-size:12px; font-weight:700; color:#1c1917; margin-bottom:3px; }
-        .cs-research-note { font-size:11.5px; line-height:1.6; color:#78716c; }
-
-        /* ── FDE CALLOUT (mid-iteration reveal) ── */
-        .cs-fde-reveal {
-          margin-top:20px;
-          padding:16px 20px;
-          background:#fffbeb; border:1px solid #fde68a; border-radius:14px;
-          display:flex; gap:12px; align-items:flex-start;
+        @keyframes lbScale { from { transform:scale(.96); opacity:0; } to { transform:scale(1); opacity:1; } }
+        .cs-lightbox-inner img {
+          display:block; width:100%; height:auto; max-height:90vh;
+          object-fit:contain; border-radius:10px;
+          box-shadow:0 24px 80px rgba(0,0,0,.6);
         }
-        .cs-fde-reveal-icon {
-          width:44px; height:44px; flex-shrink:0; border-radius:12px;
-          background:#fef3c7; display:flex; align-items:center; justify-content:center; font-size:20px;
-        }
-        .cs-fde-reveal-body { font-size:13px; line-height:1.7; color:#78716c; }
-        .cs-fde-reveal-body strong { color:#92400e; font-weight:600; }
-
-        /* ── ITERATIONS ── */
-        .cs-iters { margin-top:48px; }
-
-        /* ITERATION CARD - new stacked layout */
-        .cs-iter {
-          padding: 48px 0 40px;
-          border-bottom: 1px solid #e7e5e4;
-        }
-        .cs-iter:last-of-type { border-bottom: none; padding-bottom: 0; }
-
-        .cs-iter-header {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          margin-bottom: 16px;
-        }
-        .cs-iter-badge {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          padding: 5px 14px;
-          border-radius: 6px;
-          font-size: 12px;
-          font-weight: 700;
-          letter-spacing: .04em;
-          color: #fff;
-          white-space: nowrap;
-          flex-shrink: 0;
-        }
-        .cs-iter-name {
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: .12em;
-          text-transform: uppercase;
-          color: #a8a29e;
-        }
-
-        .cs-iter-headline {
-          font-family: 'Lora', Georgia, serif;
-          font-size: clamp(20px, 2.8vw, 28px);
-          font-weight: 700;
-          line-height: 1.15;
-          letter-spacing: -.018em;
-          color: #0c0a09;
-          margin-bottom: 24px;
-          max-width: 720px;
-        }
-
-        .cs-iter-media {
-          width: 100%;
-          border-radius: 12px;
-          overflow: hidden;
-          border: 1px solid #e7e5e4;
-          background: #f5f5f4;
-          margin-bottom: 28px;
-        }
-        .cs-iter-media img {
-          width: 100%;
-          height: auto;
-          display: block;
-        }
-
-        .cs-iter-analysis {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 16px;
-        }
-        .cs-iter-analysis.single-col {
-          grid-template-columns: 1fr;
-        }
-
-        .cs-iter-col {
-          background: #fff;
-          border: 1px solid #e7e5e4;
-          border-radius: 10px;
-          padding: 20px 22px;
-        }
-
-        .cs-iter-col-head {
-          display: flex;
-          align-items: center;
-          gap: 7px;
-          font-size: 10px;
-          font-weight: 700;
-          letter-spacing: .12em;
-          text-transform: uppercase;
-          margin-bottom: 14px;
-          padding-bottom: 12px;
-          border-bottom: 1px solid #f5f5f4;
-        }
-        .cs-iter-col-head.worked { color: #16a34a; }
-        .cs-iter-col-head.learned { color: #ea580c; }
-
-        .cs-iter-col-head-icon {
-          width: 14px;
-          height: 14px;
-          flex-shrink: 0;
-        }
-
-        .cs-iter-bullets {
-          list-style: none;
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-        }
-        .cs-iter-bullet {
-          display: flex;
-          align-items: flex-start;
-          gap: 9px;
-          font-size: 13px;
-          line-height: 1.6;
-          color: #57534e;
-        }
-        .cs-iter-bullet-dot {
-          width: 5px;
-          height: 5px;
-          border-radius: 50%;
-          margin-top: 7px;
-          flex-shrink: 0;
-        }
-        .cs-iter-bullet-dot.worked  { background: #16a34a; }
-        .cs-iter-bullet-dot.learned { background: #ea580c; }
-
-        /* ── PRINCIPLES ── */
-        .cs-prin-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:36px; }
-        .cs-prin {
-          background:#fff; border:1px solid #e7e5e4; border-radius:12px;
-          padding:26px; transition:border-color .2s, box-shadow .2s, transform .2s;
-          position:relative; overflow:hidden;
-        }
-        .cs-prin:hover { border-color:#c4b5fd; box-shadow:0 6px 24px rgba(109,40,217,.08); transform:translateY(-2px); }
-        .cs-prin::after {
-          content:''; position:absolute; inset:0; border-radius:12px; pointer-events:none; opacity:.02;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-          background-size:160px;
-        }
-        .cs-prin-num {
-          font-size:10px; font-weight:700; letter-spacing:.14em;
-          text-transform:uppercase; color:#7c3aed; margin-bottom:12px;
-          display:flex; align-items:center; gap:8px;
-        }
-        .cs-prin-num::after { content:''; flex:1; height:1px; background:#e7e5e4; }
-        .cs-prin-h { font-family:'Lora',serif; font-size:15px; font-weight:600; color:#0c0a09; margin-bottom:9px; line-height:1.45; }
-        .cs-prin-p { font-size:13px; line-height:1.8; color:#78716c; }
-
-        /* ── ARCHITECTURE ── */
-        .cs-arch {
-          margin-top:36px; border-radius:14px;
+        .cs-lightbox-close {
+          position:absolute; top:-14px; right:-14px;
+          width:32px; height:32px; border-radius:50%;
           background:#fff; border:1px solid #e7e5e4;
-          overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,.04);
+          font-size:18px; line-height:1; cursor:pointer;
+          display:flex; align-items:center; justify-content:center;
+          box-shadow:0 2px 8px rgba(0,0,0,.12);
+          color:#57534e; transition:color .15s;
+          font-family:system-ui; padding-bottom:1px;
         }
-        .cs-arch-head {
-          padding:14px 24px; background:#fcfbfa;
-          border-bottom:1px solid #e7e5e4;
-          display:flex; align-items:center; justify-content:space-between;
-        }
-        .cs-arch-head-title { font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#a8a29e; }
-        .cs-arch-head-hint  { font-size:11px; font-weight:500; color:#c4b5a5; font-style:italic; }
-        .cs-arch-body { padding:28px 24px 24px; }
-        .cs-arch-root-wrap { display:flex; justify-content:center; }
-        .cs-arch-root { background:#ede9fe; border-radius:10px; padding:14px 32px; text-align:center; min-width:180px; }
-        .cs-arch-root-k { font-size:9px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#6d28d9; margin-bottom:4px; }
-        .cs-arch-root-v { font-size:16px; font-weight:700; color:#1c1917; }
-        .cs-arch-vline-wrap { display:flex; justify-content:center; padding:6px 0; }
-        .cs-arch-vline { width:2px; height:20px; background:#d6d3d1; }
-        .cs-arch-hrow { position:relative; display:grid; gap:10px; }
-        .cs-arch-hrow.c4 { grid-template-columns:repeat(4,1fr); }
-        .cs-arch-hrow.c2 { grid-template-columns:1fr 1fr; }
-        .cs-arch-hrow::before { content:''; position:absolute; top:0; height:2px; background:#e7e5e4; }
-        .cs-arch-hrow.c4::before { left:12.5%; right:12.5%; }
-        .cs-arch-hrow.c2::before { left:25%; right:25%; }
+        .cs-lightbox-close:hover { color:#0c0a09; }
 
-        .arch-row-anim .cs-arch-node { opacity:0; transform:translateY(10px); }
-        .arch-row-in .cs-arch-node { opacity:1; transform:translateY(0); transition:opacity .35s ease, transform .35s ease; }
-        .arch-row-in .cs-arch-node:nth-child(1) { transition-delay:.0s; }
-        .arch-row-in .cs-arch-node:nth-child(2) { transition-delay:.07s; }
-        .arch-row-in .cs-arch-node:nth-child(3) { transition-delay:.14s; }
-        .arch-row-in .cs-arch-node:nth-child(4) { transition-delay:.21s; }
+        /* ── FULL-WIDTH IMAGE BLOCK ── */
+        .cs-img-full {
+          margin-top:28px; border-radius:14px; overflow:hidden;
+          border:1px solid #e7e5e4;
+          box-shadow:0 4px 24px rgba(0,0,0,.07);
+        }
+        .cs-img-full img { width:100%; height:auto; display:block; }
 
-        .cs-arch-node {
-          border-radius:9px; padding:12px 10px; text-align:center;
-          border:1px solid; position:relative;
-          transition:transform .15s, box-shadow .15s; cursor:default;
-        }
-        .cs-arch-node:hover { transform:translateY(-2px); box-shadow:0 4px 16px rgba(0,0,0,.08); }
-        .cs-arch-node::before {
-          content:''; position:absolute; top:-10px; left:50%; transform:translateX(-50%);
-          width:2px; height:10px; background:#e7e5e4;
-        }
-        .cs-arch-node-k { font-size:8.5px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; margin-bottom:4px; }
-        .cs-arch-node-v { font-size:12px; font-weight:600; line-height:1.3; }
-        .cs-arch-ui     { background:#fafaf9; border-color:#e7e5e4; }
-        .cs-arch-ui     .cs-arch-node-k { color:#a8a29e; }
-        .cs-arch-ui     .cs-arch-node-v { color:#44403c; }
-        .cs-arch-ui.act { background:#f5f3ff; border-color:#a78bfa; }
-        .cs-arch-ui.act .cs-arch-node-k { color:#7c3aed; }
-        .cs-arch-ui.act .cs-arch-node-v { color:#6d28d9; }
-        .cs-arch-type   { background:#f5f3ff; border-color:#c4b5fd; }
-        .cs-arch-type   .cs-arch-node-k { color:#7c3aed; }
-        .cs-arch-type   .cs-arch-node-v { color:#6d28d9; }
-        .cs-arch-today  { background:#fafaf9; border-color:#e7e5e4; }
-        .cs-arch-today  .cs-arch-node-k { color:#a8a29e; }
-        .cs-arch-today  .cs-arch-node-v { color:#44403c; }
-        .cs-arch-future { background:linear-gradient(135deg,#f5f3ff,#faf5ff); border-color:#a78bfa; }
-        .cs-arch-future .cs-arch-node-k { color:#7c3aed; }
-        .cs-arch-future .cs-arch-node-v { color:#6d28d9; }
-        .cs-arch-sync {
-          display:flex; align-items:center; gap:10px;
-          margin:12px 0; font-size:10px; font-weight:600;
-          letter-spacing:.08em; text-transform:uppercase; color:#a78bfa;
-        }
-        .cs-arch-sync::before, .cs-arch-sync::after { content:''; flex:1; height:1px; background:#c4b5fd; }
-        .cs-arch-users { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px; padding-top:16px; border-top:1px solid #f5f5f4; }
-        .cs-arch-user { border-radius:9px; padding:14px 16px; border:1px solid; }
-        .cs-arch-user-pm  { background:#fafaf9; border-color:#e7e5e4; }
-        .cs-arch-user-eng { background:#f5f3ff; border-color:#c4b5fd; }
-        .cs-arch-user-k { font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; margin-bottom:5px; }
-        .cs-arch-user-pm  .cs-arch-user-k { color:#a8a29e; }
-        .cs-arch-user-eng .cs-arch-user-k { color:#7c3aed; }
-        .cs-arch-user-v { font-size:12.5px; line-height:1.65; color:#57534e; }
+        /* ── PAIN LIST ── */
+        .cs-pain-list { list-style:none; margin-top:28px; }
+        .cs-pain-item { display:flex; align-items:flex-start; gap:12px; padding:13px 0; border-bottom:1px solid #f5f5f4; font-size:14px; line-height:1.7; color:#44403c; }
+        .cs-pain-item:last-child { border-bottom:none; }
+        .cs-pain-dot { width:6px; height:6px; border-radius:50%; background:#dc2626; flex-shrink:0; margin-top:7px; }
+
+        /* ── SOLUTION CARDS ── */
+        .cs-sol-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:28px; }
+        .cs-sol-card { display:flex; gap:14px; align-items:flex-start; padding:18px 20px; border:1px solid #e7e5e4; border-radius:12px; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.04); }
+        .cs-sol-card-icon { width:40px; height:40px; flex-shrink:0; border-radius:10px; background:#f5f3ff; border:1px solid #ddd6fe; display:flex; align-items:center; justify-content:center; font-size:18px; }
+        .cs-sol-card-t { font-size:14px; font-weight:700; color:#1c1917; margin-bottom:4px; }
+        .cs-sol-card-p { font-size:13px; line-height:1.65; color:#57534e; margin:0; }
+        .cs-sol-footnote { margin-top:14px; padding:12px 16px; border-radius:10px; background:linear-gradient(135deg,#eef2ff,#f5f3ff); border:1px solid #c4b5fd; font-size:13px; line-height:1.6; color:#4338ca; font-weight:600; display:flex; gap:10px; align-items:flex-start; }
+
+        /* ── RELIABILITY ── */
+        .cs-reliability { margin-top:40px; border-radius:14px; overflow:hidden; border:1px solid #e7e5e4; background:#fff; box-shadow:0 2px 12px rgba(0,0,0,.04); }
+        .cs-reliability-head { padding:14px 24px; background:#fcfbfa; border-bottom:1px solid #e7e5e4; font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#a8a29e; }
+        .cs-reliability-body { display:grid; grid-template-columns:1fr 1fr; }
+        .cs-reliability-col { padding:24px 28px; }
+        .cs-reliability-col:first-child { border-right:1px solid #e7e5e4; }
+        .cs-rel-label { font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; margin-bottom:8px; }
+        .cs-rel-label.supported { color:#16a34a; }
+        .cs-rel-label.fallback   { color:#d97706; }
+        .cs-rel-h { font-family:'Lora',serif; font-size:16px; font-weight:600; color:#0c0a09; margin-bottom:10px; line-height:1.35; }
+        .cs-rel-p { font-size:13px; line-height:1.75; color:#57534e; }
+
+        /* ── WORKFLOW STEPS ── */
+        .cs-wf-label { font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#6d28d9; margin-bottom:18px; display:flex; align-items:center; gap:10px; }
+        .cs-wf-label::after { content:''; flex:1; height:1px; background:#e7e5e4; }
+        .cs-wf-steps { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+        .cs-wf-steps.three { grid-template-columns:repeat(3,1fr); }
+        .cs-wf-step { background:#fff; border:1px solid #e7e5e4; border-radius:12px; padding:20px 18px; transition:border-color .2s, box-shadow .2s; }
+        .cs-wf-step:hover { border-color:#c4b5fd; box-shadow:0 4px 16px rgba(109,40,217,.07); }
+        .cs-wf-step-n { font-size:9px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#a8a29e; margin-bottom:8px; }
+        .cs-wf-step-label { font-family:'Lora',serif; font-size:15px; font-weight:600; color:#0c0a09; margin-bottom:8px; line-height:1.3; }
+        .cs-wf-step-body { font-size:12.5px; line-height:1.7; color:#57534e; }
+        .cs-wf-note { margin-top:16px; padding:12px 16px; background:#f0fdf4; border:1px solid #86efac; border-radius:10px; font-size:13px; color:#15803d; font-weight:600; line-height:1.6; }
+
+        /* ── SYSTEM ── */
+        .cs-system-bullets { list-style:none; }
+        .cs-system-bullet { display:flex; align-items:flex-start; gap:12px; padding:13px 0; border-bottom:1px solid #f5f5f4; font-size:14px; line-height:1.7; color:#44403c; }
+        .cs-system-bullet:last-child { border-bottom:none; }
+        .cs-system-dot { width:6px; height:6px; border-radius:50%; background:#6d28d9; flex-shrink:0; margin-top:7px; }
+
+        /* ── TIER GRID ── */
+        .cs-tier-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:28px; }
+        .cs-tier { border-radius:12px; padding:24px; border:1px solid; transition:transform .2s, box-shadow .2s; }
+        .cs-tier:hover { transform:translateY(-2px); box-shadow:0 6px 24px rgba(0,0,0,.08); }
+        .cs-tier.unsupported { background:#fafaf9; border-color:#e7e5e4; }
+        .cs-tier.assisted    { background:#fffbeb; border-color:#fde68a; }
+        .cs-tier.automated   { background:#f0fdf4; border-color:#86efac; }
+        .cs-tier-label { font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; margin-bottom:8px; }
+        .cs-tier.unsupported .cs-tier-label { color:#78716c; }
+        .cs-tier.assisted    .cs-tier-label { color:#92400e; }
+        .cs-tier.automated   .cs-tier-label { color:#15803d; }
+        .cs-tier-h { font-family:'Lora',serif; font-size:16px; font-weight:600; color:#0c0a09; margin-bottom:8px; line-height:1.3; }
+        .cs-tier-p { font-size:13px; line-height:1.7; color:#57534e; }
+
+        /* ── INSIGHT CARDS ── */
+        .cs-insight-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:28px; }
+        .cs-insight-card { border-radius:12px; padding:22px 24px; border:1px solid; }
+        .cs-insight-card.blind { background:#fffbeb; border-color:#fde68a; }
+        .cs-insight-card.field { background:#f0fdf4; border-color:#86efac; }
+        .cs-insight-label { font-size:9.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; margin-bottom:10px; }
+        .cs-insight-card.blind .cs-insight-label { color:#92400e; }
+        .cs-insight-card.field .cs-insight-label { color:#15803d; }
+        .cs-insight-h { font-family:'Lora',serif; font-size:15px; font-weight:600; color:#0c0a09; margin-bottom:8px; line-height:1.35; }
+        .cs-insight-p { font-size:13px; line-height:1.7; color:#57534e; }
 
         /* ── METRICS ── */
-        .cs-metrics {
-          display:grid; grid-template-columns:repeat(3,1fr);
-          border:1px solid #e7e5e4; border-radius:14px;
-          overflow:hidden; margin-top:36px;
-          background:#fff; box-shadow:0 2px 12px rgba(0,0,0,.04);
-        }
+        .cs-metrics { display:grid; grid-template-columns:repeat(3,1fr); border:1px solid #e7e5e4; border-radius:14px; overflow:hidden; margin-top:36px; background:#fff; box-shadow:0 2px 12px rgba(0,0,0,.04); }
         .cs-metric { padding:32px 26px; border-right:1px solid #e7e5e4; position:relative; overflow:hidden; }
         .cs-metric:last-child { border-right:none; }
-        .cs-metric::before {
-          content:''; position:absolute; inset:0; pointer-events:none;
-          background-image: repeating-linear-gradient(-45deg, transparent, transparent 5px, rgba(0,0,0,.018) 5px, rgba(0,0,0,.018) 6px);
-        }
-        .cs-metric-num {
-          font-family:'Lora',serif;
-          font-size:clamp(28px,4vw,44px); font-weight:700; line-height:1.1;
-          letter-spacing:-.02em; margin-bottom:8px; position:relative; z-index:1;
-        }
+        .cs-metric::before { content:''; position:absolute; inset:0; pointer-events:none; background-image:repeating-linear-gradient(-45deg,transparent,transparent 5px,rgba(0,0,0,.018) 5px,rgba(0,0,0,.018) 6px); }
+        .cs-metric-num { font-family:'Lora',serif; font-size:clamp(28px,4vw,44px); font-weight:700; line-height:1.1; letter-spacing:-.02em; margin-bottom:8px; position:relative; z-index:1; }
         .cs-metric-num.violet { color:#6d28d9; }
         .cs-metric-num.green  { color:#16a34a; }
-        .cs-metric-num.amber { color:#d97706; }
+        .cs-metric-num.amber  { color:#d97706; }
         .cs-metric-lbl { font-size:13px; font-weight:700; color:#1c1917; margin-bottom:4px; position:relative; z-index:1; }
         .cs-metric-sub { font-size:11px; font-weight:500; color:#a8a29e; letter-spacing:.06em; text-transform:uppercase; position:relative; z-index:1; }
 
@@ -811,15 +399,8 @@ export default function SamaCareCopilotCaseStudy({ onClose }) {
         .cs-outcome-h { font-size:13px; font-weight:600; color:#1c1917; margin-bottom:2px; }
         .cs-outcome-p { font-size:12.5px; line-height:1.7; color:#78716c; }
         .cs-stat-col { display:flex; flex-direction:column; gap:12px; }
-        .cs-stat-hero {
-          background:linear-gradient(140deg,#f5f3ff,#ede9fe);
-          border:1px solid #c4b5fd; border-radius:12px; padding:24px;
-          position:relative; overflow:hidden;
-        }
-        .cs-stat-hero::before {
-          content:''; position:absolute; inset:0; border-radius:12px; pointer-events:none;
-          background-image: repeating-linear-gradient(-45deg, transparent, transparent 5px, rgba(109,40,217,.04) 5px, rgba(109,40,217,.04) 6px);
-        }
+        .cs-stat-hero { background:linear-gradient(140deg,#f5f3ff,#ede9fe); border:1px solid #c4b5fd; border-radius:12px; padding:24px; position:relative; overflow:hidden; }
+        .cs-stat-hero::before { content:''; position:absolute; inset:0; border-radius:12px; pointer-events:none; background-image:repeating-linear-gradient(-45deg,transparent,transparent 5px,rgba(109,40,217,.04) 5px,rgba(109,40,217,.04) 6px); }
         .cs-stat-hero-n { font-family:'Lora',serif; font-size:42px; font-weight:700; letter-spacing:-.035em; color:#6d28d9; line-height:1; margin-bottom:6px; position:relative; z-index:1; }
         .cs-stat-hero-l { font-size:13px; font-weight:700; color:#1c1917; margin-bottom:4px; position:relative; z-index:1; }
         .cs-stat-hero-s { font-size:12.5px; line-height:1.65; color:#78716c; position:relative; z-index:1; }
@@ -828,37 +409,14 @@ export default function SamaCareCopilotCaseStudy({ onClose }) {
         .cs-stat-next-p { font-size:13px; line-height:1.7; color:#57534e; }
         .cs-stat-next-p strong { color:#1c1917; font-weight:600; }
 
-        /* ── LEARNINGS ── */
-        .cs-learnings { list-style:none; margin-top:36px; display:flex; flex-direction:column; gap:0; }
-        .cs-learning {
-          display:grid; grid-template-columns:52px 1fr;
-          gap:22px; padding:24px 0;
-          border-bottom:1px solid #e7e5e4; align-items:start;
-        }
-        .cs-learning:last-child { border-bottom:none; padding-bottom:0; }
-        .cs-learning-n {
-          width:44px; height:44px; border-radius:12px; flex-shrink:0;
-          background:linear-gradient(135deg,#f5f3ff,#ede9fe);
-          border:1px solid #c4b5fd;
-          display:flex; align-items:center; justify-content:center;
-          font-size:13px; font-weight:700; color:#6d28d9;
-        }
-        .cs-learning-h { font-family:'Lora',serif; font-size:16px; font-weight:600; color:#0c0a09; margin-bottom:5px; line-height:1.35; letter-spacing:-.01em; }
-        .cs-learning-p { font-size:13px; line-height:1.75; color:#57534e; }
-
         /* ── FOOTER ── */
         .cs-foot { max-width:880px; margin:0 auto; padding:40px 48px 72px; display:flex; align-items:center; justify-content:space-between; }
-        .cs-foot-back {
-          display:flex; align-items:center; gap:7px;
-          font-size:13px; font-weight:500; color:#a8a29e;
-          background:none; border:none; cursor:pointer;
-          font-family:inherit; transition:color .15s; padding:0;
-        }
+        .cs-foot-back { display:flex; align-items:center; gap:7px; font-size:13px; font-weight:500; color:#a8a29e; background:none; border:none; cursor:pointer; font-family:inherit; transition:color .15s; padding:0; }
         .cs-foot-back:hover { color:#1c1917; }
         .cs-foot-sig { font-size:12px; color:#c4b5a5; }
 
         /* ── REVEAL ── */
-        .reveal { opacity:0; transform:translateY(20px); transition:opacity .5s ease, transform .5s ease; }
+        .reveal { opacity:0; transform:translateY(20px); transition:opacity .5s ease,transform .5s ease; }
         .reveal.s1 { transition-delay:.06s; }
         .reveal.s2 { transition-delay:.12s; }
         .reveal.s3 { transition-delay:.18s; }
@@ -867,12 +425,14 @@ export default function SamaCareCopilotCaseStudy({ onClose }) {
 
         /* ── RESPONSIVE ── */
         @media (max-width:960px) {
-          .cs-challenge-split { grid-template-columns:1fr; }
-          .cs-challenge-visual { position:relative; top:0; order:-1; }
-          .cs-deck-split, .cs-deck-split.is-rev { grid-template-columns:1fr; }
-          .cs-deck-split.is-rev .cs-deck-split-copy,
-          .cs-deck-split.is-rev .cs-deck-split-media { grid-column:1; grid-row:auto; }
-          .cs-solution-split { grid-template-columns:1fr; }
+          .cs-split, .cs-split.is-rev { grid-template-columns:1fr; }
+          .cs-split-img, .cs-split.is-rev .cs-split-img { position:relative; top:0; grid-column:1; grid-row:auto; }
+          .cs-split.is-rev .cs-split-copy { grid-column:1; grid-row:auto; }
+          .cs-wf-steps { grid-template-columns:1fr 1fr; }
+          .cs-wf-steps.three { grid-template-columns:1fr 1fr; }
+          .cs-insight-row { grid-template-columns:1fr; }
+          .cs-sol-grid { grid-template-columns:1fr; }
+          .cs-impact-grid { grid-template-columns:1fr; }
         }
         @media (max-width:700px) {
           .cs-nav { padding:0 20px; }
@@ -882,22 +442,30 @@ export default function SamaCareCopilotCaseStudy({ onClose }) {
           .cs-meta { grid-template-columns:1fr 1fr; }
           .cs-meta-cell:nth-child(2n) { border-right:none; }
           .cs-meta-cell:nth-child(n+3) { border-top:1px solid #e7e5e4; }
-          .cs-prin-grid, .cs-arch-users, .cs-impact-grid { grid-template-columns:1fr; }
-          .cs-research-grid { grid-template-columns:1fr 1fr; }
-          .cs-arch-hrow.c4 { grid-template-columns:1fr 1fr; }
-          .cs-arch-hrow.c4::before, .cs-arch-hrow.c2::before { display:none; }
-          .cs-arch-node::before { display:none; }
+          .cs-tier-grid { grid-template-columns:1fr; }
+          .cs-wf-steps, .cs-wf-steps.three { grid-template-columns:1fr; }
+          .cs-reliability-body { grid-template-columns:1fr; }
+          .cs-reliability-col:first-child { border-right:none; border-bottom:1px solid #e7e5e4; }
           .cs-metrics { grid-template-columns:1fr; }
           .cs-metric { border-right:none; border-bottom:1px solid #e7e5e4; }
           .cs-metric:last-child { border-bottom:none; }
-          .cs-iter-analysis { grid-template-columns: 1fr; }
           .cs-foot { flex-direction:column; gap:14px; align-items:flex-start; padding:32px 20px 56px; }
         }
       `}</style>
 
+      {/* ── LIGHTBOX ── */}
+      {lightbox && (
+        <div className="cs-lightbox" onClick={closeLightbox}>
+          <div className="cs-lightbox-inner" onClick={(e) => e.stopPropagation()}>
+            <button className="cs-lightbox-close" onClick={closeLightbox} aria-label="Close">×</button>
+            <img src={lightbox} alt="Enlarged view" />
+          </div>
+        </div>
+      )}
+
       <div className="cs-root" ref={rootRef}>
 
-        {/* NAV */}
+        {/* ── NAV ── */}
         <nav className={`cs-nav${scrolled ? " on" : ""}`}>
           <button className="cs-nav-back" type="button" onClick={onClose}>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.7">
@@ -906,440 +474,384 @@ export default function SamaCareCopilotCaseStudy({ onClose }) {
             Projects
           </button>
           <span className="cs-nav-id">SamaCare · CoPilot</span>
-          <div className="cs-nav-right">
-            <ul className="cs-nav-links">
-              {NAV_SECTION_IDS.map((id) => (
-                <li key={id}>
-                  <a
-                    href={`#${id}`}
-                    className={activeSection === id ? "cs-nav-active" : ""}
-                  >
-                    {NAV_LABELS[id] || id}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <ul className="cs-nav-links">
+            {NAV_SECTION_IDS.map((id) => (
+              <li key={id}>
+                <a href={`#${id}`} className={activeSection === id ? "cs-nav-active" : ""}>{NAV_LABELS[id]}</a>
+              </li>
+            ))}
+          </ul>
         </nav>
 
-        <div className="cs-wip-banner" role="status">Work in progress, not finalized</div>
-
-        {/* HERO */}
-        <header className="cs-hero" id="top">
-            <div className="cs-hero-tex"/>
-            <div className="cs-hero-wash"/>
-            <div className="cs-wrap">
-              <div className="cs-tags cs-hero-tags">
-                <span className="cs-pill cs-pill-green">0 to 1 design</span>
-                <span className="cs-pill cs-pill-brand">Chrome extension</span>
-                <span className="cs-pill cs-pill-stone">Healthcare SaaS</span>
-              </div>
-              <div className="cs-hero-title-row">
-                <h1 className="cs-h1">
-                  {"Bring portal work".split(" ").map((w, i) => (
-                    <span key={w+i} className="cs-h1-word" style={{ animationDelay:`${i*0.1}s`, marginRight:"0.22em" }}>{w}</span>
-                  ))}
-                  <br/>
-                  <em className="cs-h1-word" style={{ animationDelay:"0.4s" }}>home to SamaCare</em>
-                </h1>
-              </div>
-              <img
-                className="cs-hero-gif"
-                src="/Projects/SamaCare/Copilot/deck_09.gif"
-                alt="SamaCare CoPilot workflow animation from the Gamma deck"
-              />
-              <p className="cs-h1-sub">SamaCare CoPilot</p>
-              <p className="cs-hero-lead">
-                CoPilot is the Chrome extension from my Gamma deck: it lets authorization teams <strong>capture payer portal work into SamaCare</strong> with patient, payor, codes, status, and payer reference IDs, without walking away from the site where the work happens. This page follows the same story arc as that presentation: six months of discovery, design, and rollout support in a regulated, ops-heavy setting.
-              </p>
-              <div className="cs-meta">
-                {[["Role","Staff Product Designer"],["Scope","0 to 1 extension and onboarding"],["Timeline","6 months"],["Surface","B2B healthcare SaaS"]].map(([k,v])=>(
-                  <div className="cs-meta-cell" key={k}>
-                    <div className="cs-meta-k">{k}</div>
-                    <div className="cs-meta-v">{v}</div>
-                  </div>
-                ))}
-              </div>
+        {/* ── HERO ── */}
+        <header className="cs-hero">
+          <div className="cs-hero-tex"/>
+          <div className="cs-hero-wash"/>
+          <div className="cs-wrap">
+            <div className="cs-tags" style={{ marginBottom: 28 }}>
+              <span className="cs-pill cs-pill-green">0 to 1 design</span>
+              <span className="cs-pill cs-pill-brand">Chrome extension</span>
+              <span className="cs-pill cs-pill-stone">Healthcare SaaS</span>
             </div>
+            <h1 className="cs-h1">
+              {"Bring portal work".split(" ").map((w, i) => (
+                <span key={w+i} className="cs-h1-word" style={{ animationDelay:`${i*0.1}s`, marginRight:"0.22em" }}>{w}</span>
+              ))}
+              <br/>
+              <em className="cs-h1-word" style={{ animationDelay:"0.4s" }}>home to SamaCare</em>
+            </h1>
+            <p className="cs-h1-sub">SamaCare CoPilot</p>
+            <img
+              className="cs-hero-gif"
+              src="/Projects/SamaCare/Copilot/deck_09.gif"
+              alt="SamaCare CoPilot workflow animation"
+            />
+            <p className="cs-hero-lead">
+              Prior authorization teams live inside payer portals all day — but SamaCare, the system of record, lived somewhere else. <strong>CoPilot is the Chrome extension that closes that gap</strong>, letting staff capture submissions, check status, and sync records without ever leaving the site where the work happens.
+            </p>
+            <div className="cs-meta">
+              {[["Role","Sole Staff Product Designer"],["Scope","Discovery, concept, validation, launch"],["Timeline","~6 months"],["Collaboration","Engineering and product"]].map(([k,v])=>(
+                <div className="cs-meta-cell" key={k}>
+                  <div className="cs-meta-k">{k}</div>
+                  <div className="cs-meta-v">{v}</div>
+                </div>
+              ))}
+            </div>
+          </div>
         </header>
 
         <div className="cs-wrap">
 
-          {/* 01 CHALLENGE */}
-          <section className="cs-sec reveal" id="challenge">
-            <div className="cs-kicker"><span className="cs-kicker-dot"/>01 · The challenge</div>
-            <h2 className="cs-sh">Capture at the <em>portal</em>,<br/>truth in SamaCare</h2>
-            <div className="cs-challenge-split">
-              <div className="cs-challenge-copy">
-                <p className="cs-p">
-                  The presentation opens from the same operational reality SamaCare already serves: prior authorization, benefit checks, and enrollment. <strong>CoPilot carries that workflow onto payer websites.</strong> Staff finish or review work on the insurer site, then save or update the authorization in SamaCare, with optional screenshots, so every determination stays tied to a single record.
-                </p>
-                <p className="cs-p">
-                  Over six months I owned interaction design, onboarding content, and the feedback patterns that make a browser extension feel as trustworthy as the core app, where HIPAA-adjacent expectations and support load leave no room for “good enough” states.
-                </p>
-                <div className="cs-callout reveal">
-                  <span className="cs-callout-mark">"</span>
-                  <p className="cs-callout-text">If the extension misleads on save state, portal coverage, or what actually happened on the payer site, teams remove it. Forensic honesty, not clever defaults, is the north star.</p>
-                  <span className="cs-callout-label">The core design challenge</span>
+          {/* ── 01 CONTEXT ── */}
+          <section className="cs-sec" id="context">
+            <div className="cs-kicker reveal"><span className="cs-kicker-dot"/>01 · Context</div>
+            <div className="cs-split reveal">
+              <div className="cs-split-copy">
+                <h2 className="cs-sh">The workflow<br/><em>landscape</em></h2>
+                <p className="cs-p">SamaCare is a prior authorization management platform used by practice admins. It serves as the system of record for tracking authorization status and supporting billing workflows. Practice admins must interact with multiple payer portals to submit and check authorization status. Patient data originates from EHR systems, which introduces another system dependency.</p>
+                <p className="cs-p" style={{ marginTop: 16 }}>This creates a workflow that spans EHR, payer portals, and SamaCare.</p>
+                <div style={{ marginTop: 28, display: "grid", gridTemplateColumns: "1fr auto 1fr auto 1fr", gap: "0", alignItems: "center" }}>
+                  {[
+                    { k: "EHR", sub: "Patient data", bg: "#f5f3ff", border: "#c4b5fd", kc: "#7c3aed" },
+                    { k: "SamaCare", sub: "Manage Prior Authorization", bg: "#ede9fe", border: "#a78bfa", kc: "#6d28d9" },
+                    { k: "Payer Portal", sub: "Submit, Check Status, Follow-up", bg: "#fafaf9", border: "#e7e5e4", kc: "#a8a29e" },
+                  ].map((node, i) => (
+                    <React.Fragment key={node.k}>
+                      <div style={{ background: node.bg, border: `1px solid ${node.border}`, borderRadius: 10, padding: "14px 12px", textAlign: "center" }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: "#0c0a09", lineHeight: 1.3, marginBottom: 4 }}>{node.k}</div>
+                        <div style={{ fontSize: 11, color: "#78716c", lineHeight: 1.4 }}>{node.sub}</div>
+                      </div>
+                      {i < 2 && <div style={{ textAlign: "center", color: "#c4b5a5", fontSize: 18, fontWeight: 300, padding: "0 4px" }}>→</div>}
+                    </React.Fragment>
+                  ))}
                 </div>
-                <div className="cs-diff reveal">
-                  <div className="cs-diff-head">Why CoPilot exists</div>
-                  <div className="cs-diff-row">
-                    <span className="cs-diff-badge before">Without CoPilot</span>
-                    <span className="cs-diff-body">Portal work and SamaCare records drift apart. Staff re-type details, lose reference IDs, or skip proof, which creates rework, audit anxiety, and a fuzzy picture of status.</span>
-                  </div>
-                  <div className="cs-diff-row">
-                    <span className="cs-diff-badge after">With CoPilot</span>
-                    <span className="cs-diff-body">Teams <strong>save from the payer site into SamaCare in one structured flow</strong>, with optional screenshots and explicit success paths back into the main application.</span>
-                  </div>
-                </div>
+                <p className="cs-p" style={{ marginTop: 16, fontSize: 13, color: "#a8a29e", fontStyle: "italic" }}>Prior authorization is a multi-system operational workflow</p>
               </div>
-              <div className="cs-challenge-visual">
+              <div className="cs-split-img">
                 <img
+                  className="cs-photo"
                   src="/Projects/SamaCare/Copilot/deck_03.avif"
-                  alt="Supporting deck visual for operational context of portal and SamaCare work"
+                  alt="Healthcare operations context"
                   loading="lazy"
                 />
               </div>
             </div>
           </section>
 
-          {/* 02 WHO WE SERVE */}
-          <section className="cs-sec reveal" id="people">
-            <div className="cs-kicker"><span className="cs-kicker-dot"/>02 · Who we serve</div>
-            <h2 className="cs-sh">Ops at the payer edge,<br/><em>product in the record</em></h2>
-            <p className="cs-p">
-              CoPilot is for the people who live in payer portals all day: prior authorization specialists, benefits coordinators, and practice admins who already file the same forms hundreds of times a week. They are not looking for a new destination. They need <strong>the portal they are in</strong> to stay honest while SamaCare remains the system of record.
-            </p>
-            <div className="cs-persona-wrap reveal">
-              <div className="cs-persona cs-persona-pm">
-                <div className="cs-persona-avatar">📋</div>
-                <div className="cs-persona-body">
-                  <div className="cs-persona-role">Primary · Clinical operations</div>
-                  <div className="cs-persona-name">Prior authorization specialist</div>
-                  <p className="cs-persona-desc">Juggles multiple payer sites, tight turnaround times, and audit expectations. Needs the extension to mirror how they already describe work to peers: patient, authorization, payor, codes, status, reference ID.</p>
-                  <span className="cs-persona-need">Needs: speed without rework, proof on save</span>
-                </div>
+          {/* ── 02 INSIGHT ── */}
+          <section className="cs-sec" id="insight">
+            <div className="cs-kicker reveal"><span className="cs-kicker-dot"/>02 · Key Insight</div>
+            <h2 className="cs-sh reveal">Where the work<br/><em>actually happens</em></h2>
+
+            <div className="cs-insight-row reveal">
+              <div className="cs-insight-card blind">
+                <div className="cs-insight-label">SamaCare was a tracking tool, not where work happens</div>
+                <div className="cs-insight-h">Users relied on SamaCare to track, not to complete work</div>
+                <p className="cs-insight-p">Most critical actions happen outside SamaCare. Submission and status checks happen inside payer portals, not just SamaCare.</p>
               </div>
-              <div className="cs-persona cs-persona-pm" style={{ marginTop: 14 }}>
-                <div className="cs-persona-avatar">🏥</div>
-                <div className="cs-persona-body">
-                  <div className="cs-persona-role">Secondary · IT and admin</div>
-                  <div className="cs-persona-name">Practice administrator</div>
-                  <p className="cs-persona-desc">Owns Chrome install policy, training, and escalation when something blocks in the browser. Needs clear login boundaries, permissions language, and help-center parity with what ships.</p>
-                  <span className="cs-persona-need">Needs: trust, compliance-friendly rollout</span>
-                </div>
+              <div className="cs-insight-card field">
+                <div className="cs-insight-label">Insight discovered through field research, not analytics</div>
+                <div className="cs-insight-h">Analytics had a blind spot</div>
+                <p className="cs-insight-p">In-product analytic metrics did not capture this behavior. On-site observation showed constant switching across systems.</p>
               </div>
+            </div>
+
+            {/* SamaCare UI before CoPilot */}
+            <div className="cs-img-full reveal" style={{ marginTop: 32 }}>
+              <button className="cs-ui-wrap" style={{ all: "unset", display: "block", cursor: "zoom-in", width: "100%" }} onClick={() => openLightbox("/Projects/SamaCare/Copilot/deck_01.avif")} aria-label="View SamaCare patient interface">
+                <img className="cs-ui-img" src="/Projects/SamaCare/Copilot/deck_01.avif" alt="SamaCare patient view — the tracking interface before CoPilot" loading="lazy" style={{ borderRadius: 12 }}/>
+              </button>
+              <div style={{ padding: "10px 16px", background: "#fcfbfa", borderTop: "1px solid #e7e5e4", fontSize: 11.5, color: "#a8a29e", fontWeight: 500 }}>SamaCare — the system of record that lived separately from where work happened</div>
             </div>
           </section>
 
-          {/* 03 DISCOVERY */}
-          <section className="cs-sec reveal" id="discovery">
-            <div className="cs-kicker"><span className="cs-kicker-dot"/>03 · Discovery</div>
-            <h2 className="cs-sh">Grounding the extension<br/><em>in real portals</em></h2>
-            <p className="cs-p">
-              Discovery mixed live observation with support listening and security review. The goal was not “more interviews” but a shared picture of where portals diverge, where staff distrust automation, and where screenshots and sessions actually matter.
-            </p>
-            <div className="cs-research-grid reveal">
-              {RESEARCH_METHODS.map((m) => (
-                <div key={m.label} className="cs-research-card">
-                  <div className="cs-research-icon">{m.icon}</div>
-                  <div className="cs-research-label">{m.label}</div>
-                  <div className="cs-research-note">{m.note}</div>
-                </div>
+          {/* ── 03 PROBLEM ── */}
+          <section className="cs-sec" id="problem">
+            <div className="cs-kicker reveal"><span className="cs-kicker-dot"/>03 · Problem</div>
+            <h2 className="cs-sh reveal">Fragmented and manual<br/><em>workflows</em></h2>
+            <p className="cs-p reveal">Core work happens across disconnected systems. The copy → switch → upload loop repeated dozens of times per day creates compounding inefficiency and error risk. Compliance requirements require proof of submission and status.</p>
+
+            <ul className="cs-pain-list reveal">
+              {PAIN_POINTS.map((pt) => (
+                <li key={pt} className="cs-pain-item">
+                  <span className="cs-pain-dot"/>
+                  {pt}
+                </li>
               ))}
+            </ul>
+
+            <div className="cs-diff reveal">
+              <div className="cs-diff-head">Opportunity — shift the product boundary</div>
+              <div className="cs-diff-row">
+                <span className="cs-diff-badge before">The old approach</span>
+                <span className="cs-diff-body">Improving SamaCare's internal UI would not address the core workflow problem. Users still had to leave the portal, navigate to SamaCare, and manually reconstruct context.</span>
+              </div>
+              <div className="cs-diff-row">
+                <span className="cs-diff-badge after">Bridging the gap</span>
+                <div className="cs-diff-body">
+                  <p style={{ marginBottom: 10, color: "#15803d", fontWeight: 600 }}>Meet users where they already work. The problem is not the UI, it is where the product exists.</p>
+                  <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 6 }}>
+                    {OPPORTUNITY_BULLETS.map((b) => (
+                      <li key={b} style={{ display: "flex", gap: 8, alignItems: "flex-start", fontSize: 13.5, lineHeight: 1.65, color: "#44403c" }}>
+                        <span style={{ color: "#16a34a", marginTop: 1, flexShrink: 0 }}>→</span>
+                        {b}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             </div>
           </section>
 
-          {/* 04 DESIGN JOURNEY */}
-          <section className="cs-sec reveal" id="journey">
-            <div className="cs-kicker"><span className="cs-kicker-dot"/>04 · Design journey</div>
-            <h2 className="cs-sh">The deck’s five beats,<br/><em>in the order we told them</em></h2>
-            <p className="cs-p">
-              The Gamma presentation is organized as a story, not a lab note. Each beat below mirrors a chapter from that deck (with matching visuals). The columns record what advanced the work and what we kept watching as pilots landed.
-            </p>
-            <div className="cs-iters">
-              {DECK_CHAPTERS.map((iter, i) => (
-                <React.Fragment key={iter.version}>
-                  <div className="cs-iter cs-iter-wide reveal">
-                    <div className={`cs-deck-split${i % 2 === 1 ? " is-rev" : ""}`}>
-                      <div className="cs-deck-split-copy">
-                        <div className="cs-iter-header">
-                          <div className="cs-iter-badge" style={{ background: iter.vBg }}>
-                            {iter.iterLabel}
-                          </div>
-                          <div className="cs-iter-name">{iter.label}</div>
-                        </div>
-                        <div className="cs-iter-headline">{iter.headline}</div>
-                      </div>
-                      <div className="cs-deck-split-media">
-                        <div className="cs-iter-media">
-                          <img
-                            src={iter.mediaSrc}
-                            alt={iter.mediaLabel}
-                            loading="lazy"
-                          />
-                        </div>
-                      </div>
-                    </div>
+          {/* ── 04 SOLUTION ── */}
+          <section className="cs-sec" id="solution">
+            <div className="cs-kicker reveal"><span className="cs-kicker-dot"/>04 · Solution</div>
+            <h2 className="cs-sh reveal">SamaCare Copilot</h2>
+            <p className="cs-p reveal">A browser-based integration layer.</p>
 
-                    <div className={`cs-iter-analysis${!iter.gaps || iter.gaps.length === 0 ? " single-col" : ""}`}>
-                      <div className="cs-iter-col">
-                        <div className="cs-iter-col-head worked">
-                          <svg className="cs-iter-col-head-icon" viewBox="0 0 14 14" fill="none">
-                            <path d="M2.5 7.5l3 3 6-6" stroke="#16a34a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                          What advanced
-                        </div>
-                        <ul className="cs-iter-bullets">
-                          {iter.wins.map((w) => (
-                            <li key={w} className="cs-iter-bullet">
-                              <span className="cs-iter-bullet-dot worked" />
-                              {w}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      {iter.gaps && iter.gaps.length > 0 && (
-                        <div className="cs-iter-col">
-                          <div className="cs-iter-col-head learned">
-                            <svg className="cs-iter-col-head-icon" viewBox="0 0 14 14" fill="none">
-                              <circle cx="7" cy="7" r="5" stroke="#ea580c" strokeWidth="1.6"/>
-                              <path d="M7 4.5v3M7 9.5v.5" stroke="#ea580c" strokeWidth="1.6" strokeLinecap="round"/>
-                            </svg>
-                            What we watched
-                          </div>
-                          <ul className="cs-iter-bullets">
-                            {iter.gaps.map((g) => (
-                              <li key={g} className="cs-iter-bullet">
-                                <span className="cs-iter-bullet-dot learned" />
-                                {g}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
+            {/* Feature cards + panel screenshot */}
+            <div className="cs-sol-grid reveal">
+              {SOLUTION_FEATURES.map((f) => (
+                <div key={f.title} className="cs-sol-card">
+                  <div className="cs-sol-card-icon" aria-hidden>{f.icon}</div>
+                  <div>
+                    <div className="cs-sol-card-t">{f.title}</div>
+                    <p className="cs-sol-card-p">{f.body}</p>
                   </div>
-                  {i < DECK_CHAPTERS.length - 1 && (
-                    <div style={{ borderTop: "1px solid #e7e5e4", padding: "20px 0", textAlign: "center", fontSize: 13, fontStyle: "italic", color: "#a8a29e" }}>
-                      <p style={{ margin: 0 }}>{CHAPTER_BRIDGES[i]}</p>
-                    </div>
-                  )}
-                </React.Fragment>
-              ))}
-            </div>
-          </section>
-
-          {/* 05 PRINCIPLES */}
-          <section className="cs-sec reveal" id="principles">
-            <div className="cs-kicker"><span className="cs-kicker-dot"/>05 · Principles</div>
-            <h2 className="cs-sh">Rules pulled<br/><em>from the deck</em></h2>
-            <p className="cs-p">
-              These are the lines that stayed taped above my monitor once pilots began, the non-negotiables for regulated ops tooling.
-            </p>
-            <div className="cs-prin-grid">
-              {PRINCIPLES.map((p, i) => (
-                <div key={p.n} className={`cs-prin reveal s${i + 1}`}>
-                  <div className="cs-prin-num">{p.n}</div>
-                  <h4 className="cs-prin-h">{p.title}</h4>
-                  <p className="cs-prin-p">{p.body}</p>
                 </div>
               ))}
             </div>
+            <div className="cs-sol-footnote reveal" style={{ marginTop: 14 }}>
+              <span aria-hidden>📄</span>
+              <span>Designed without direct API access to payer portals.</span>
+            </div>
+
+            {/* Extension panel screenshot — full width, clickable */}
+            <div className="cs-img-full reveal" style={{ marginTop: 36 }}>
+              <button className="cs-ui-wrap" style={{ all: "unset", display: "block", cursor: "zoom-in", width: "100%" }} onClick={() => openLightbox("/Projects/SamaCare/Copilot/solution-copilot-panel.png")} aria-label="View CoPilot panel">
+                <img className="cs-ui-img" src="/Projects/SamaCare/Copilot/solution-copilot-panel.png" alt="SamaCare CoPilot extension panel" loading="lazy" style={{ borderRadius: 12 }}/>
+              </button>
+              <div style={{ padding: "10px 16px", background: "#fcfbfa", borderTop: "1px solid #e7e5e4", fontSize: 11.5, color: "#a8a29e", fontWeight: 500 }}>The CoPilot panel — lives alongside the payer portal in the browser sidebar</div>
+            </div>
+
+            {/* Reliability */}
+            <div className="cs-reliability reveal">
+              <div className="cs-reliability-head">Designing for real-world variability · Automation cannot cover all cases</div>
+              <div className="cs-reliability-body">
+                <div className="cs-reliability-col">
+                  <div className="cs-rel-label supported">Supported Portals</div>
+                  <div className="cs-rel-h">Automatic Detection</div>
+                  <p className="cs-rel-p">Works well for supported portals. Copilot detects confirmation states, extracts structured data, and captures screenshots without user intervention.</p>
+                </div>
+                <div className="cs-reliability-col">
+                  <div className="cs-rel-label fallback">All Other Portals</div>
+                  <div className="cs-rel-h">Manual Fallback Flow</div>
+                  <p className="cs-rel-p">Designed a manual fallback flow that allows users to trigger capture and save actions. Ensures that users can always complete their workflow regardless of portal support. Avoids failure states where users are blocked or forced to revert to manual processes.</p>
+                </div>
+              </div>
+              <div style={{ padding: "12px 24px", borderTop: "1px solid #e7e5e4", fontSize: 12, color: "#a8a29e", fontStyle: "italic" }}>
+                Payer portals vary widely in structure, behavior, and consistency. Designed for non-deterministic environments.
+              </div>
+            </div>
           </section>
 
-          {/* 06 SOLUTION */}
-          <section className="cs-sec reveal" id="solution">
-            <div className="cs-kicker"><span className="cs-kicker-dot"/>06 · Solution</div>
-            <div className="cs-sol-deck-head">
-              <div className="cs-sol-kicker-deck">Solution</div>
-              <h2 className="cs-sol-title-deck">SamaCare CoPilot</h2>
-              <p className="cs-sol-tagline">A browser-based integration layer.</p>
-            </div>
-            <div className="cs-solution-split">
-              <div className="cs-solution-copy">
-                <p className="cs-p" style={{ maxWidth: "none", marginBottom: 18 }}>
-                  The live panel matches what we shipped: a <strong>save and update surface</strong> from Chrome after people authenticate into SamaCare. Structured fields, optional screenshots, and success with deep links align with the help article and with the workflow motion further down this page.
-                </p>
-                {SOLUTION_FEATURES.map((f) => (
-                  <div key={f.title} className="cs-sol-card">
-                    <div className="cs-sol-card-icon" aria-hidden>{f.icon}</div>
-                    <div>
-                      <div className="cs-sol-card-t">{f.title}</div>
-                      <p className="cs-sol-card-p">{f.body}</p>
-                    </div>
+          {/* ── 05 WORKFLOWS ── */}
+          <section className="cs-sec" id="workflows">
+            <div className="cs-kicker reveal"><span className="cs-kicker-dot"/>05 · Workflows</div>
+            <h2 className="cs-sh reveal">Supporting submission and status<br/><em>directly within payer portals</em></h2>
+
+            {/* Submission */}
+            <div style={{ marginTop: 8 }} className="reveal">
+              <div className="cs-wf-label">Submission Workflow · From manual entry to automated capture</div>
+              <div className="cs-wf-steps">
+                {SUBMISSION_STEPS.map((s) => (
+                  <div key={s.n} className="cs-wf-step">
+                    <div className="cs-wf-step-n">{s.n}</div>
+                    <div className="cs-wf-step-label">{s.label}</div>
+                    <div className="cs-wf-step-body">{s.body}</div>
                   </div>
                 ))}
-                <div className="cs-sol-footnote">
-                  <span aria-hidden>📄</span>
-                  <span>{SOLUTION_CONSTRAINT_NOTE}</span>
-                </div>
-              </div>
-              <div className="cs-solution-visual">
-                <img
-                  src="/Projects/SamaCare/Copilot/solution-copilot-panel.png"
-                  alt="SamaCare CoPilot extension panel: save prior authorization form alongside deck feature list"
-                  loading="lazy"
-                />
               </div>
             </div>
 
-            <div className="cs-arch reveal">
-              <div className="cs-arch-head">
-                <span className="cs-arch-head-title">Extension → platform record</span>
-                <span className="cs-arch-head-hint">Session, capture, notify</span>
+            <div className="cs-img-full reveal">
+              <button className="cs-ui-wrap" style={{ all: "unset", display: "block", cursor: "zoom-in", width: "100%" }} onClick={() => openLightbox("/Projects/SamaCare/Copilot/deck_05.avif")} aria-label="View submission workflow designs">
+                <img className="cs-ui-img" src="/Projects/SamaCare/Copilot/deck_05.avif" alt="Submission workflow designs" loading="lazy" style={{ borderRadius: "12px 12px 0 0" }}/>
+              </button>
+              <div style={{ padding: "10px 16px", background: "#fcfbfa", borderTop: "1px solid #e7e5e4", fontSize: 11.5, color: "#a8a29e", fontWeight: 500 }}>Submission flow — patient search, autofill, confirmation detection, and save to SamaCare</div>
+            </div>
+
+            {/* Status */}
+            <div style={{ marginTop: 56 }} className="reveal">
+              <div className="cs-wf-label">Status Workflow · Updating without switching · Keep users in the same context</div>
+              <div className="cs-wf-steps three">
+                {STATUS_STEPS.map((s) => (
+                  <div key={s.n} className="cs-wf-step">
+                    <div className="cs-wf-step-n">{s.n}</div>
+                    <div className="cs-wf-step-label">{s.label}</div>
+                    <div className="cs-wf-step-body">{s.body}</div>
+                  </div>
+                ))}
               </div>
-              <div className="cs-arch-body">
-                <div className="cs-arch-root-wrap">
-                  <div className="cs-arch-root">
-                    <div className="cs-arch-root-k">Surface</div>
-                    <div className="cs-arch-root-v">SamaCare CoPilot</div>
-                  </div>
-                </div>
-                <div className="cs-arch-vline-wrap"><div className="cs-arch-vline"/></div>
+              <div style={{ marginTop: 12, padding: "16px 20px", background: "#f5f3ff", border: "1px solid #ddd6fe", borderRadius: 10 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".12em", textTransform: "uppercase", color: "#7c3aed", marginBottom: 6 }}>No Return Trip Required</div>
+                <p style={{ fontSize: 13.5, lineHeight: 1.7, color: "#44403c", margin: 0 }}>Eliminates the need to return to SamaCare and manually update records.</p>
+              </div>
+            </div>
 
-                <div className="cs-arch-hrow c4 arch-row-anim">
-                  {[["Gate","SamaCare login",true],["Form","Patient + auth fields",false],["Capture","Optional screenshot",false],["Sync","Save / update APIs",false]].map(([k,v,a])=>(
-                    <div key={k} className={`cs-arch-node cs-arch-ui${a?" act":""}`}>
-                      <div className="cs-arch-node-k">{k}</div>
-                      <div className="cs-arch-node-v">{v}</div>
-                    </div>
+            <div className="cs-img-full reveal">
+              <button className="cs-ui-wrap" style={{ all: "unset", display: "block", cursor: "zoom-in", width: "100%" }} onClick={() => openLightbox("/Projects/SamaCare/Copilot/deck_06.avif")} aria-label="View status workflow designs">
+                <img className="cs-ui-img" src="/Projects/SamaCare/Copilot/deck_06.avif" alt="Status workflow designs" loading="lazy" style={{ borderRadius: "12px 12px 0 0" }}/>
+              </button>
+              <div style={{ padding: "10px 16px", background: "#fcfbfa", borderTop: "1px solid #e7e5e4", fontSize: 11.5, color: "#a8a29e", fontWeight: 500 }}>Status flow — check and update authorization status without leaving the portal</div>
+            </div>
+
+            <div className="cs-wf-note reveal">By keeping users inside the payer portal context, Copilot eliminates an entire round-trip navigation loop that previously interrupted every status check. Reduces workflow latency and missed updates.</div>
+
+            {/* How Copilot works in context */}
+            <div className="reveal" style={{ marginTop: 40, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              <div style={{ background: "#fff", border: "1px solid #e7e5e4", borderRadius: 12, padding: "22px 24px" }}>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".12em", textTransform: "uppercase", color: "#a8a29e", marginBottom: 14, paddingBottom: 12, borderBottom: "1px solid #f5f5f4" }}>Core capabilities</div>
+                <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 10 }}>
+                  {COPILOT_CAPABILITIES.map((c) => (
+                    <li key={c.text} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 14, fontWeight: 500, color: "#1c1917" }}>
+                      <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#6d28d9", flexShrink: 0 }}/>
+                      {c.text}
+                    </li>
                   ))}
-                </div>
-
-                <div className="cs-arch-sync">Structured fields · autocomplete when data exists, manual entry when it does not</div>
-
-                <div className="cs-arch-hrow c4 arch-row-anim">
-                  {["Patient","Authorization","Payor","HCPCS / J-code"].map((v)=>(
-                    <div key={v} className="cs-arch-node cs-arch-type">
-                      <div className="cs-arch-node-k">Field</div>
-                      <div className="cs-arch-node-v">{v}</div>
-                    </div>
+                </ul>
+              </div>
+              <div style={{ background: "#fff", border: "1px solid #e7e5e4", borderRadius: 12, padding: "22px 24px" }}>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".12em", textTransform: "uppercase", color: "#a8a29e", marginBottom: 14, paddingBottom: 12, borderBottom: "1px solid #f5f5f4" }}>Why this works</div>
+                <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 10 }}>
+                  {COPILOT_WHY.map((w) => (
+                    <li key={w} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 13.5, lineHeight: 1.65, color: "#57534e" }}>
+                      <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#16a34a", flexShrink: 0, marginTop: 6 }}/>
+                      {w}
+                    </li>
                   ))}
-                </div>
-
-                <div className="cs-arch-sync">Notifications · deep link back to authorization in the web app</div>
-
-                <div className="cs-arch-hrow c2 arch-row-anim">
-                  <div className="cs-arch-node cs-arch-today">
-                    <div className="cs-arch-node-k">Today</div>
-                    <div className="cs-arch-node-v">Payer portals + Chrome</div>
-                  </div>
-                  <div className="cs-arch-node cs-arch-future">
-                    <div className="cs-arch-node-k">Roadmap</div>
-                    <div className="cs-arch-node-v">Broader workflow surfaces</div>
-                  </div>
-                </div>
-
-                <div className="cs-arch-users">
-                  <div className="cs-arch-user cs-arch-user-pm">
-                    <div className="cs-arch-user-k">Authorization staff get</div>
-                    <div className="cs-arch-user-v">A disciplined save path beside the portal, optional proof capture, and clear success that returns them to the record in SamaCare.</div>
-                  </div>
-                  <div className="cs-arch-user cs-arch-user-eng">
-                    <div className="cs-arch-user-k">Platform gets</div>
-                    <div className="cs-arch-user-v">Session-bound actions, structured payloads into core SamaCare, and notification copy aligned to the help center for support.</div>
-                  </div>
-                </div>
+                </ul>
               </div>
             </div>
           </section>
 
-          {/* 07 IMPACT */}
-          <section className="cs-sec reveal" id="impact">
-            <div className="cs-kicker"><span className="cs-kicker-dot"/>07 · Impact</div>
-            <h2 className="cs-sh">What changed<br/><em>for teams and support</em></h2>
-            <p className="cs-p">
-              I am not quoting hard percentages without a shared analytics definition across customers. The impact story here is operational: fewer duplicate entries, clearer audit trails, and extension behavior that matches the help center so support can trust what they read on the phone.
-            </p>
+          {/* ── 06 SYSTEM ── */}
+          <section className="cs-sec" id="system">
+            <div className="cs-kicker reveal"><span className="cs-kicker-dot"/>06 · System</div>
+
+            {/* System Depth */}
+            <h2 className="cs-sh reveal">Beyond UI,<br/><em>a system layer</em></h2>
+            <div className="cs-split reveal">
+              <div className="cs-split-copy">
+                <p className="cs-p">Connecting data across systems.</p>
+                <ul className="cs-system-bullets" style={{ marginTop: 16 }}>
+                  {SYSTEM_DEPTH_BULLETS.map((b) => (
+                    <li key={b} className="cs-system-bullet">
+                      <span className="cs-system-dot"/>
+                      {b}
+                    </li>
+                  ))}
+                </ul>
+                <p className="cs-p" style={{ marginTop: 16, fontSize: 13, color: "#a8a29e", fontStyle: "italic" }}>Removes entire categories of work such as file handling.</p>
+              </div>
+              <div className="cs-split-img">
+                <button className="cs-ui-wrap" style={{ all: "unset", display: "block", cursor: "zoom-in", width: "100%" }} onClick={() => openLightbox("/Projects/SamaCare/Copilot/deck_04.avif")} aria-label="View system context diagram">
+                  <img className="cs-ui-img" src="/Projects/SamaCare/Copilot/deck_04.avif" alt="System context — portal and SamaCare as paired workflows" loading="lazy"/>
+                </button>
+              </div>
+            </div>
+
+            {/* Scalability */}
+            <div style={{ marginTop: 56 }} className="reveal">
+              <div className="cs-wf-label">Scalability · Supporting an evolving ecosystem</div>
+              <p className="cs-p">Not all portals are equally supported due to variability and lack of standardization. Defined three levels of support to allow the system to function across all portals while improving over time.</p>
+              <div className="cs-tier-grid">
+                {SCALE_TIERS.map((t) => (
+                  <div key={t.label} className={`cs-tier ${t.tier}`}>
+                    <div className="cs-tier-label">{t.label}</div>
+                    <div className="cs-tier-h">{t.head}</div>
+                    <p className="cs-tier-p">{t.desc}</p>
+                  </div>
+                ))}
+              </div>
+              <p style={{ marginTop: 14, fontSize: 13, color: "#78716c", lineHeight: 1.7 }}>Enables prioritization of portals based on user usage patterns. Provides a clear path for incremental automation expansion.</p>
+            </div>
+
+            {/* Launch + education visual */}
+            <div className="cs-img-full reveal" style={{ marginTop: 40 }}>
+              <button className="cs-ui-wrap" style={{ all: "unset", display: "block", cursor: "zoom-in", width: "100%" }} onClick={() => openLightbox("/Projects/SamaCare/Copilot/deck_08.avif")} aria-label="View launch and education materials">
+                <img className="cs-ui-img" src="/Projects/SamaCare/Copilot/deck_08.avif" alt="Launch documentation and education materials" loading="lazy" style={{ borderRadius: "12px 12px 0 0" }}/>
+              </button>
+              <div style={{ padding: "10px 16px", background: "#fcfbfa", borderTop: "1px solid #e7e5e4", fontSize: 11.5, color: "#a8a29e", fontWeight: 500 }}>Install steps, login requirements, notification glossary, and video walkthroughs — help center parity was a design requirement</div>
+            </div>
+          </section>
+
+          {/* ── 07 IMPACT ── */}
+          <section className="cs-sec" id="impact">
+            <div className="cs-kicker reveal"><span className="cs-kicker-dot"/>07 · Adoption and Business Impact</div>
+            <h2 className="cs-sh reveal">From concept<br/><em>to core workflow</em></h2>
 
             <div className="cs-metrics">
               {[
-                { t: "Aligned", l: "Help center parity", s: "Extension strings and flows matched public documentation" },
-                { t: "Faster", l: "Less re-keying", s: "Structured capture from the portal into one authorization record" },
-                { t: "Safer", l: "Honest scope", s: "Async capture and portal detection called out in plain language" },
+                { ref: (el) => (metricRefs.current[0] = el), initial: "3,000+", lbl: "Users Adopted", sub: "Across the platform", cls: "violet" },
+                { ref: (el) => (metricRefs.current[1] = el), initial: "40%",    lbl: "Time Reduction", sub: "Time spent switching between systems", cls: "green" },
+                { ref: (el) => (metricRefs.current[2] = el), initial: "40,000+", lbl: "Providers", sub: "Platform scale", cls: "amber" },
               ].map((m) => (
-                <div key={m.l} className="cs-metric">
-                  <div className="cs-metric-num violet">{m.t}</div>
-                  <div className="cs-metric-lbl">{m.l}</div>
-                  <div className="cs-metric-sub">{m.s}</div>
+                <div key={m.lbl} className="cs-metric">
+                  <div className={`cs-metric-num ${m.cls}`} ref={m.ref}>{m.initial}</div>
+                  <div className="cs-metric-lbl">{m.lbl}</div>
+                  <div className="cs-metric-sub">{m.sub}</div>
                 </div>
               ))}
             </div>
 
             <div className="cs-impact-grid reveal">
               <div className="cs-outcome-card">
-                <div className="cs-outcome-head">Outcomes we optimized for</div>
-                {[
-                  { h: "Single record of truth", p: "Authorization details and payer reference IDs land in SamaCare without a second pass of manual entry from notes." },
-                  { h: "Defensible audit posture", p: "Optional screenshots and explicit success paths give teams proof they can stand behind." },
-                  { h: "Supportable rollout", p: "Install, login, and notification language stayed consistent with Customer Success scripts and the published FAQ." },
-                ].map((o) => (
-                  <div key={o.h} className="cs-outcome-row">
+                <div className="cs-outcome-head">Outcomes</div>
+                {IMPACT_OUTCOMES.map((o) => (
+                  <div key={o} className="cs-outcome-row">
                     <div className="cs-outcome-dot"/>
-                    <div>
-                      <div className="cs-outcome-h">{o.h}</div>
-                      <p className="cs-outcome-p">{o.p}</p>
-                    </div>
+                    <div className="cs-outcome-h" style={{ fontWeight: 400, fontSize: 13.5, lineHeight: 1.7, color: "#44403c" }}>{o}</div>
                   </div>
                 ))}
               </div>
               <div className="cs-stat-col">
                 <div className="cs-stat-hero">
                   <div className="cs-stat-hero-n">6 mo</div>
-                  <div className="cs-stat-hero-l">Program timeline</div>
-                  <p className="cs-stat-hero-s">Discovery through pilot support for a regulated B2B healthcare workflow surface, with design and content in lockstep with engineering and compliance.</p>
+                  <div className="cs-stat-hero-l">Research to launch</div>
+                  <p className="cs-stat-hero-s">Drove discovery, concept, validation, and launch. Partnered closely with engineering and product to build initial POC and scale.</p>
                 </div>
                 <div className="cs-stat-next">
-                  <div className="cs-stat-next-k">What stayed open</div>
-                  <p className="cs-stat-next-p">Payer coverage and portal detection continue to expand. The product pattern that scales is honest scope: say what the extension does on this site, today, and route everything else back to human workflow.</p>
+                  <div className="cs-stat-next-k">Collaboration</div>
+                  <p className="cs-stat-next-p">Sole Staff product designer leading this initiative end-to-end. <strong>Partnered closely with engineering and product</strong> to build initial POC and scale.</p>
                 </div>
               </div>
             </div>
           </section>
 
-          {/* 08 REFLECTION */}
-          <section className="cs-sec reveal">
-            <div className="cs-kicker"><span className="cs-kicker-dot"/>08 · Reflection</div>
-            <h2 className="cs-sh">What I carry<br/><em>into the next regulated surface</em></h2>
-            <p className="cs-p">
-              Building in browser extensions next to third-party sites means you own the honesty of every line of copy. Small exaggerations show up as support tickets and uninstalls.
-            </p>
-            <ul className="cs-learnings">
-              {[
-                {
-                  h: "Design for the worst portal day",
-                  b: "If flows only work on happy paths, teams will blame the product when a payer throws a curveball. Edge cases belong in the same story as the demo.",
-                },
-                {
-                  h: "Pair every promise with a recovery path",
-                  b: "Screenshots, sessions, and sync will fail sometimes. The UI has to say what is still running, what to avoid clicking, and when it is safe to retry.",
-                },
-                {
-                  h: "Treat the help article as part of the interface",
-                  b: "When CS and customers read different words than the extension shows, trust erodes. Content QA is product work.",
-                },
-                {
-                  h: "Keep scope visible",
-                  b: "Unknown portals and partial automation are fine if labeled clearly. Quiet limits read like bugs.",
-                },
-              ].map((l, i) => (
-                <li key={l.h} className={`cs-learning reveal s${i + 1}`}>
-                  <div className="cs-learning-n">{String(i + 1).padStart(2, "0")}</div>
-                  <div>
-                    <div className="cs-learning-h">{l.h}</div>
-                    <p className="cs-learning-p">{l.b}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </section>
-
         </div>
 
-        {/* FOOTER */}
+        {/* ── FOOTER ── */}
         <footer className="cs-foot">
           <button className="cs-foot-back" type="button" onClick={onClose}>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.7">
@@ -1351,7 +863,6 @@ export default function SamaCareCopilotCaseStudy({ onClose }) {
         </footer>
 
       </div>
-
     </>
   );
 }
