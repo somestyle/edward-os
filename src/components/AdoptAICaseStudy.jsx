@@ -509,6 +509,7 @@ export default function AdoptAICaseStudy({ onClose }) {
         }
         .cs-fde-reveal-body { font-size:13px; line-height:1.7; color:#78716c; }
         .cs-fde-reveal-body strong { color:#92400e; font-weight:600; }
+        .cs-fde-reveal-body strong.cs-fde-body-strong { color:#78716c; font-weight:600; }
 
         /* ── ITERATIONS ── */
         .cs-iters { margin-top:48px; }
@@ -892,7 +893,7 @@ export default function AdoptAICaseStudy({ onClose }) {
                 className="cs-hero-gif"
               />
               <p className="cs-hero-lead">
-                When AI stops <strong>advising</strong> and starts <strong>acting</strong>, the design problem changes entirely. This is the story of how I designed a workflow system that gave enterprise teams the confidence to let AI execute on their behalf, and what it took to earn that trust across four iterations.
+                When AI stops <strong>advising</strong> and starts <strong>acting</strong>, the design problem changes entirely. The challenge shifts to making system behavior understandable and predictable. This is the story of how I designed a workflow system that gave enterprise teams the confidence to let AI execute on their behalf.
               </p>
               <div className="cs-meta">
                 {[["Role","Founding Staff Designer"],["Scope","0 to 1 · End-to-End"],["Timeline","6 Months"],["Platform","Enterprise SaaS · B2B2C"]].map(([k,v])=>(
@@ -944,6 +945,8 @@ export default function AdoptAICaseStudy({ onClose }) {
             </p>
             <p className="cs-p">
               We started with one primary target user.
+              <br />
+              Too much flexibility made it hard for users to predict what would happen when an action executed.
             </p>
             <div className="cs-persona-wrap reveal">
               <div className="cs-persona cs-persona-pm">
@@ -1065,6 +1068,9 @@ export default function AdoptAICaseStudy({ onClose }) {
                             <strong>A second user enters the picture.</strong>
                             <br/>
                             Forward Deploy Engineers (FDEs - the team responsible for debugging and maintaining actions in production) were using the builder far more intensively than we had anticipated. They needed surgical code-level access, not just a visual interface. Designing for one user had left the other without the tools they needed. Both had to be served from the same surface.
+                            <br/>
+                            <br/>
+                            <strong className="cs-fde-body-strong">This fundamentally changed the product from a self-serve tool into a system that needed to balance usability with deep technical control.</strong>
                           </p>
                         </div>
                       )}
