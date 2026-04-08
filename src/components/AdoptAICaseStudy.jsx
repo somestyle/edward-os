@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import AdoptPresentationMode from "./AdoptPresentationMode.jsx";
 
 /* ─── data ──────────────────────────────────────────────── */
 
@@ -123,6 +124,7 @@ export default function AdoptAICaseStudy({ onClose }) {
   const rootRef = useRef(null);
   const metricRefs = useRef([]);
   const [metricCounted, setMetricCounted] = useState(false);
+  const [presentationOpen, setPresentationOpen] = useState(false);
 
   useEffect(() => {
     const el = rootRef.current;
@@ -297,6 +299,36 @@ export default function AdoptAICaseStudy({ onClose }) {
           justify-content:flex-end;
           gap:14px;
           flex-shrink:0;
+          min-height:100%;
+        }
+        .cs-nav-present {
+          display:inline-flex;
+          align-items:center;
+          justify-content:center;
+          gap:6px;
+          padding:5px 10px;
+          font-size:12px;
+          font-weight:600;
+          letter-spacing:0.01em;
+          color:#44403c;
+          background:#fff;
+          border:1px solid #d6d3d1;
+          border-radius:8px;
+          box-shadow:0 1px 2px rgba(0,0,0,.04);
+          cursor:pointer;
+          font-family:inherit;
+          line-height:1;
+          transition:border-color .15s, background .15s, box-shadow .15s;
+        }
+        .cs-nav-present:hover {
+          border-color:#a8a29e;
+          background:#fafaf9;
+          box-shadow:0 1px 3px rgba(0,0,0,.06);
+        }
+        .cs-nav-present-icon {
+          flex-shrink:0;
+          display:block;
+          color:#2563eb;
         }
 
         /* ── LAYOUT ── */
@@ -866,6 +898,18 @@ export default function AdoptAICaseStudy({ onClose }) {
                 </li>
               ))}
             </ul>
+            <button
+              type="button"
+              className="cs-nav-present"
+              aria-label="Present"
+              title="Present"
+              onClick={() => setPresentationOpen(true)}
+            >
+              <svg className="cs-nav-present-icon" width="11" height="11" viewBox="0 0 24 24" aria-hidden>
+                <path fill="currentColor" d="M8 5v14l11-7z" />
+              </svg>
+              Present
+            </button>
           </div>
         </nav>
 
@@ -941,7 +985,7 @@ export default function AdoptAICaseStudy({ onClose }) {
             <div className="cs-kicker"><span className="cs-kicker-dot"/>02 · User</div>
             <h2 className="cs-sh">One original target.<br/><em>A constraint that changed everything.</em></h2>
             <p className="cs-p">
-              Adopt is B2B2C. Adopt's customers are SaaS companies that embed the Copilot into their own product. The Action Builder is the tool their internal team uses to configure, refine, and maintain the workflows their end users will execute. We are not designing for Adopt's own team. We are designing for the people inside each customer's organisation.
+              Adopt is B2B2C. Adopt's customers are SaaS companies that embed the Copilot into their own product. The Action Builder is the tool their internal team uses to configure, refine, and maintain the workflows their end users will execute. We are not designing for Adopt's own team. We are designing for the people inside each customer's organization.
             </p>
             <p className="cs-p">
               We started with one primary target user.
@@ -1278,6 +1322,14 @@ export default function AdoptAICaseStudy({ onClose }) {
 
       </div>
 
+      <AdoptPresentationMode
+        open={presentationOpen}
+        onClose={() => setPresentationOpen(false)}
+        iterations={ITERATIONS}
+        iterationBridges={ITERATION_BRIDGES}
+        principles={PRINCIPLES}
+        researchMethods={RESEARCH_METHODS}
+      />
     </>
   );
 }
