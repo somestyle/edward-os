@@ -947,6 +947,8 @@ export default function AdoptAICaseStudy({ onClose }) {
               We started with one primary target user.
               <br />
               Too much flexibility made it hard for users to predict what would happen when an action executed.
+              <br />
+              We introduced constraints to make the system easier to reason about.
             </p>
             <div className="cs-persona-wrap reveal">
               <div className="cs-persona cs-persona-pm">
