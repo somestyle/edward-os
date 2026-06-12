@@ -16,8 +16,11 @@ const AdoptAICaseStudy = lazy(() => import('./components/AdoptAICaseStudy'));
 const AdoptAIPlatform = lazy(() => import('./components/AdoptAIPlatform'));
 const SamaCareCopilotCaseStudy = lazy(() => import('./components/SamaCareCopilotCaseStudy'));
 
-// --- Typewriter streaming hook ---
-function useTypewriter(fullText, { speedMs = 15, enabled = true } = {}) {
+const prefersReducedMotion = () =>
+  typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+// --- Typewriter streaming hook: reveals text word-by-word ---
+function useTypewriter(fullText, { speedMs = 45, enabled = true } = {}) {
   const [displayedLength, setDisplayedLength] = useState(0);
   const fullLength = fullText?.length ?? 0;
 
@@ -26,24 +29,32 @@ function useTypewriter(fullText, { speedMs = 15, enabled = true } = {}) {
       setDisplayedLength(0);
       return;
     }
-    setDisplayedLength(0);
-  }, [enabled, fullText]);
+    // Reduced motion: skip the animation and show the full reply at once
+    setDisplayedLength(prefersReducedMotion() ? fullLength : 0);
+  }, [enabled, fullText, fullLength]);
 
   useEffect(() => {
     if (!enabled || fullLength === 0) return;
     if (displayedLength >= fullLength) return;
-    const t = setTimeout(() => setDisplayedLength((n) => Math.min(n + 1, fullLength)), speedMs);
+    const t = setTimeout(() => {
+      setDisplayedLength((n) => {
+        if (n >= fullLength) return n;
+        const nextSpace = fullText.indexOf(' ', n + 1);
+        return nextSpace === -1 ? fullLength : Math.min(nextSpace + 1, fullLength);
+      });
+    }, speedMs);
     return () => clearTimeout(t);
-  }, [enabled, fullLength, displayedLength, speedMs]);
+  }, [enabled, fullText, fullLength, displayedLength, speedMs]);
 
   const displayed = fullText?.slice(0, displayedLength) ?? '';
   const isComplete = fullLength > 0 && displayedLength >= fullLength;
-  return [displayed, isComplete];
+  const skip = useCallback(() => setDisplayedLength(fullLength), [fullLength]);
+  return [displayed, isComplete, skip];
 }
 
-// --- Typewriter component: reveals text char-by-char and calls onComplete when done ---
-function TypewriterText({ content, onComplete, speedMs = 20 }) {
-  const [displayed, isComplete] = useTypewriter(content, { speedMs, enabled: !!content });
+// --- Typewriter component: reveals text word-by-word and calls onComplete when done ---
+function TypewriterText({ content, onComplete, speedMs = 45 }) {
+  const [displayed, isComplete, skip] = useTypewriter(content, { speedMs, enabled: !!content });
   const onCompleteRef = useRef(onComplete);
   const hasCalledRef = useRef(false);
   onCompleteRef.current = onComplete;
@@ -61,7 +72,11 @@ function TypewriterText({ content, onComplete, speedMs = 20 }) {
     }
   }, [content, isComplete]);
   if (!content || content.length === 0) return null;
-  return <MarkdownRenderer>{displayed}</MarkdownRenderer>;
+  return (
+    <span onClick={isComplete ? undefined : skip} className={isComplete ? '' : 'cursor-pointer'} title={isComplete ? undefined : 'Click to show full reply'}>
+      <MarkdownRenderer>{displayed}</MarkdownRenderer>
+    </span>
+  );
 }
 
 // --- Markdown renderer for chat (bold, links, etc.) ---
@@ -279,6 +294,8 @@ const FlickeringGrid = ({
     );
     intersectionObserver.observe(container);
 
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
     const render = () => {
       if (!gridParams) return;
       const { cols, rows, squares } = gridParams;
@@ -301,7 +318,8 @@ const FlickeringGrid = ({
         }
       }
       ctx.globalAlpha = 1;
-      animationFrameId = requestAnimationFrame(render);
+      // Reduced motion: draw a single static frame instead of flickering
+      if (!reducedMotion) animationFrameId = requestAnimationFrame(render);
     };
 
     if (isInView) {
@@ -385,10 +403,10 @@ const HomeView = ({ onNavigate }) => {
   }, [panchiModalOpen, closePanchiModal]);
 
   return (
-  <div className="space-y-12 animate-in fade-in duration-500 pb-24 relative">
-    
+  <div className="space-y-12 pb-24 relative">
+
     {/* Intro Section */}
-    <div className="mt-8 relative z-10">
+    <div className="mt-8 relative z-10 stagger-item" style={{ '--stagger-index': 0 }}>
       <div>
         <h1 className="text-3xl md:text-4xl font-bold text-stone-900 dark:text-white mb-3 tracking-tight">
           <span
@@ -421,7 +439,7 @@ const HomeView = ({ onNavigate }) => {
     </div>
 
     {/* What I'm up to recently */}
-    <div className="relative z-10">
+    <div className="relative z-10 stagger-item" style={{ '--stagger-index': 1 }}>
       <h2 className="text-sm font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider mb-4">What I'm up to recently</h2>
       <p className="text-stone-500 dark:text-stone-400 text-sm mb-2">👨🏻‍💻 Designing with AI, Designing for AI and Designing the AI</p>
       <p className="text-stone-500 dark:text-stone-400 text-sm mb-6">
@@ -523,7 +541,7 @@ const HomeView = ({ onNavigate }) => {
     )}
 
     {/* Recent Experience Section */}
-    <div className="relative z-10">
+    <div className="relative z-10 stagger-item" style={{ '--stagger-index': 2 }}>
       <div className="flex justify-between items-baseline mb-6">
         <h2 className="text-sm font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider">Recent roles shaping my work today</h2>
       </div>
@@ -574,7 +592,7 @@ const HomeView = ({ onNavigate }) => {
     </div>
 
     {/* Footer */}
-    <footer className="mt-12 mb-8 text-center relative z-10">
+    <footer className="mt-12 mb-8 text-center relative z-10 stagger-item" style={{ '--stagger-index': 3 }}>
       <p className="text-xs text-stone-400 dark:text-stone-500 mb-2 leading-relaxed">
         Built with{' '}
         <a href="https://react.dev/" target="_blank" rel="noreferrer" className="hover:text-stone-600 dark:hover:text-stone-300 underline underline-offset-2 decoration-stone-200 dark:decoration-stone-700 transition-colors">React</a>,{' '}
@@ -1107,6 +1125,7 @@ const ChatView = () => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [streamingForIndex, setStreamingForIndex] = useState(null);
+  const [isLiveStream, setIsLiveStream] = useState(false);
   const inputRef = useRef(null);
   const abortControllerRef = useRef(null);
   const lastUserMessageRef = useRef(null);
@@ -1129,7 +1148,7 @@ const ChatView = () => {
     if (loading && lastUserMessageRef.current) {
       // Snap the user's question to the top
       lastUserMessageRef.current.scrollIntoView({
-        behavior: 'smooth',
+        behavior: prefersReducedMotion() ? 'auto' : 'smooth',
         block: 'start'
       });
     }
@@ -1147,6 +1166,9 @@ const ChatView = () => {
     setInput("");
     setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
     setLoading(true);
+
+    // Index where the model reply will land: existing messages + the user message above
+    const replyIndex = messages.length + 1;
 
     let unlockInFinally = true;
     abortControllerRef.current = new AbortController();
@@ -1175,18 +1197,64 @@ const ChatView = () => {
         setMessages(prev => [...prev, { role: 'system', text: "I'm having trouble connecting to my AI services right now. While I'm offline, you can reach the real me at [ed@edwardchu.xyz](mailto:ed@edwardchu.xyz)." }]);
         return;
       }
-      const data = await response.json();
-      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "I'm processing that... try asking differently?";
-      setMessages(prev => {
-        const next = [...prev, { role: 'system', text: reply }];
-        setStreamingForIndex(next.length - 1);
-        return next;
-      });
-      unlockInFinally = false;
+
+      const contentType = response.headers.get('content-type') || '';
+      if (contentType.includes('text/event-stream') && response.body) {
+        // Live SSE stream from the Gemini proxy: render tokens as they arrive
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let fullText = '';
+        let started = false;
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() ?? '';
+          for (const line of lines) {
+            if (!line.startsWith('data:')) continue;
+            const payload = line.slice(5).trim();
+            if (!payload || payload === '[DONE]') continue;
+            let chunkText = '';
+            try {
+              chunkText = JSON.parse(payload).candidates?.[0]?.content?.parts?.[0]?.text || '';
+            } catch { /* incomplete JSON across chunks; skip */ }
+            if (!chunkText) continue;
+            fullText += chunkText;
+            const snapshot = fullText;
+            if (!started) {
+              started = true;
+              setIsLiveStream(true);
+              setStreamingForIndex(replyIndex);
+              setMessages(prev => [...prev, { role: 'system', text: snapshot }]);
+            } else {
+              setMessages(prev => prev.map((m, idx) => idx === replyIndex ? { ...m, text: snapshot } : m));
+            }
+          }
+        }
+        if (!started) {
+          setMessages(prev => [...prev, { role: 'system', text: "I'm processing that... try asking differently?" }]);
+        }
+        setStreamingForIndex(null);
+        setIsLiveStream(false);
+      } else {
+        // Non-streaming fallback: full JSON reply revealed with the typewriter
+        const data = await response.json();
+        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "I'm processing that... try asking differently?";
+        setMessages(prev => {
+          const next = [...prev, { role: 'system', text: reply }];
+          setStreamingForIndex(next.length - 1);
+          return next;
+        });
+        unlockInFinally = false;
+      }
     } catch (err) {
       if (err?.name !== 'AbortError') {
         setMessages(prev => [...prev, { role: 'system', text: "Connection error. Please try again." }]);
       }
+      setStreamingForIndex(null);
+      setIsLiveStream(false);
     } finally {
       abortControllerRef.current = null;
       if (unlockInFinally) {
@@ -1206,6 +1274,7 @@ const ChatView = () => {
     }
     setLoading(false);
     setStreamingForIndex(null);
+    setIsLiveStream(false);
     setMessages([DEFAULT_INTRO]);
     sessionStorage.removeItem(CHAT_STORAGE_KEY);
     inputRef.current?.focus();
@@ -1258,11 +1327,15 @@ const ChatView = () => {
                 {msg.role === 'user' ? (
                   msg.text
                 ) : i === streamingForIndex ? (
-                  <TypewriterText
-                    content={msg.text}
-                    onComplete={handleTypewriterComplete}
-                    speedMs={20}
-                  />
+                  isLiveStream ? (
+                    <MarkdownRenderer>{msg.text}</MarkdownRenderer>
+                  ) : (
+                    <TypewriterText
+                      content={msg.text}
+                      onComplete={handleTypewriterComplete}
+                      speedMs={45}
+                    />
+                  )
                 ) : (
                   <MarkdownRenderer>{msg.text}</MarkdownRenderer>
                 )}
