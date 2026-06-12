@@ -221,6 +221,16 @@ html, body {
   animation: lightbox-fade-out 0.15s ease-in forwards;
 }
 
+/* Staggered entrance for homepage sections — delay driven by --stagger-index */
+@keyframes rise-fade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.stagger-item {
+  animation: rise-fade 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--stagger-index, 0) * 70ms);
+}
+
 /* Email copied toast — 60px from top, fast fade in, same fade out */
 @keyframes email-copied-toast {
   0% { opacity: 0; transform: translate(-50%, -8px); }
@@ -258,4 +268,22 @@ html, body {
 }
 .theme-retro.dark .app-dock button:hover {
   outline: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+/* ---------------------------------------------------------------------------
+   Reduced motion — collapse all CSS animations/transitions to a single frame.
+   JS-driven motion (typewriter, FlickeringGrid, smooth scroll) checks the same
+   media query in App.jsx.
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* Keep the toast visible — it's feedback, not decoration; unmounts via JS after 4s */
+  .email-copied-toast {
+    animation: none;
+  }
 }
