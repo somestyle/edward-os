@@ -246,12 +246,77 @@ html, body {
    Dock bar — uses theme variables; one rule for all themes
    --------------------------------------------------------------------------- */
 .app-dock {
+  position: relative;
+  isolation: isolate;
   background: var(--dock-bg);
   border: var(--dock-border);
   box-shadow: var(--dock-shadow);
   border-radius: var(--dock-radius);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+}
+
+/* ---------------------------------------------------------------------------
+   Modern theme: Apple "Liquid Glass" dock — heavy frosted blur with a
+   saturation/brightness boost so content behind reads vividly, a translucent
+   top-lit fill, specular edge highlights (inset), and a glossy sheen overlay.
+   Scoped to .theme-modern so the retro/brutalist dock keeps its hard look.
+   --------------------------------------------------------------------------- */
+.theme-modern .app-dock {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.55),
+    rgba(255, 255, 255, 0.3)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(22px) saturate(185%) brightness(1.06);
+  -webkit-backdrop-filter: blur(22px) saturate(185%) brightness(1.06);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.18),               /* ambient floating shadow */
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    inset 0 1px 1px rgba(255, 255, 255, 0.9),      /* top specular highlight */
+    inset 0 -1px 2px rgba(255, 255, 255, 0.25),    /* soft bottom bounce light */
+    inset 0 0 0 1px rgba(255, 255, 255, 0.18);     /* inner rim light */
+}
+
+/* Glossy sheen across the top of the glass */
+.theme-modern .app-dock::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0.08) 42%,
+    transparent 62%
+  );
+  pointer-events: none;
+}
+
+.theme-modern.dark .app-dock {
+  background: linear-gradient(
+    to bottom,
+    rgba(44, 44, 48, 0.55),
+    rgba(20, 20, 22, 0.4)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.55),
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.18),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.05),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.theme-modern.dark .app-dock::before {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(255, 255, 255, 0.03) 42%,
+    transparent 62%
+  );
 }
 
 /* Modern theme: 1px light grey outline on dock icon hover */
