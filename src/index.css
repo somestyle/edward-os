@@ -265,10 +265,10 @@ html, body {
 .theme-modern .app-dock {
   background: linear-gradient(
     to bottom,
-    rgba(255, 255, 255, 0.55),
-    rgba(255, 255, 255, 0.3)
+    rgba(255, 255, 255, 0.78),
+    rgba(255, 255, 255, 0.6)
   );
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(22px) saturate(185%) brightness(1.06);
   -webkit-backdrop-filter: blur(22px) saturate(185%) brightness(1.06);
   box-shadow:
@@ -298,8 +298,8 @@ html, body {
 .theme-modern.dark .app-dock {
   background: linear-gradient(
     to bottom,
-    rgba(44, 44, 48, 0.55),
-    rgba(20, 20, 22, 0.4)
+    rgba(38, 38, 42, 0.82),
+    rgba(22, 22, 25, 0.7)
   );
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow:
