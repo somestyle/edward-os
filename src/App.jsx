@@ -110,9 +110,9 @@ const cvData = {
   experience: [
     {
       company: "Adopt AI",
-      role: "Founding Staff Product Designer",
+      role: "Design Advisor",
       period: "Nov 2024 – Present",
-      summary: "End-to-end product design for an AI copilot platform spanning agent workflows, tooling, and system UX.",
+      summary: "Founding Staff Product Designer leading end-to-end experience for the AI Copilot platform spanning agent workflows, tooling, and system UX.",
       highlights: [
         "Led 0–1 design of an agentic copilot across both customer console and end-user experiences",
         "Owned core system surfaces including Tools, Actions, Agents, Data, and integration setup flows",
