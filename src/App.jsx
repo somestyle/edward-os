@@ -5,7 +5,7 @@ import {
   Home, Briefcase, Award, Zap,
   Layout, GraduationCap, Layers,
   BookOpen, Mail, Linkedin, ExternalLink, Lock,
-  FileText, Mic2, Newspaper, Download
+  FileText, Mic2, Newspaper, Download, X
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import WidgetLauncher from './components/widgets/WidgetLauncher';
@@ -635,7 +635,14 @@ const HomeView = ({ onNavigate }) => {
         <a href="https://ai.google.dev/" target="_blank" rel="noreferrer" className="hover:text-stone-600 dark:hover:text-stone-300 underline underline-offset-2 decoration-stone-200 dark:decoration-stone-700 transition-colors">Gemini API</a>.
       </p>
       <p className="text-[10px] text-stone-300 dark:text-stone-600">
-        © 2026 Edward Chu. All rights reserved.
+        © 2026 Edward Chu. All rights reserved.{' '}
+        <button
+          type="button"
+          onClick={() => onNavigate('privacy')}
+          className="underline underline-offset-2 decoration-stone-200 dark:decoration-stone-700 hover:text-stone-500 dark:hover:text-stone-400 transition-colors"
+        >
+          Privacy & Use
+        </button>
       </p>
     </footer>
 
@@ -1687,6 +1694,117 @@ const CHANGELOG_ENTRIES = [
   },
 ];
 
+const PrivacySection = ({ title, children }) => (
+  <div className="mb-8">
+    <h3 className="text-sm font-bold text-stone-900 dark:text-white mb-2">{title}</h3>
+    <div className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed space-y-2">{children}</div>
+  </div>
+);
+
+const ConnectLink = ({ onNavigate, children }) => (
+  <button
+    type="button"
+    onClick={() => onNavigate('contact')}
+    className="underline underline-offset-2 decoration-stone-300 dark:decoration-stone-600 hover:text-brand dark:hover:text-blue-400 transition-colors"
+  >
+    {children}
+  </button>
+);
+
+const PrivacyView = ({ scrollState, onNavigate }) => {
+  const isAtTop = scrollState?.y < 50;
+  const showBackground = !isAtTop;
+
+  return (
+    <div className="animate-in fade-in duration-500 pb-32 relative">
+      <div
+        className={`sticky top-0 z-30 -mx-6 px-6 md:-mx-12 md:px-12 py-4 mb-8 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          showBackground
+            ? 'bg-stone-50/90 dark:bg-stone-950/90 backdrop-blur-xl border-b border-stone-200 dark:border-stone-800 shadow-sm'
+            : 'bg-transparent border-b border-transparent'
+        }`}
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-3xl font-bold text-stone-900 dark:text-white tracking-tight">
+              Privacy & Use
+            </h2>
+            <p className="text-sm text-stone-500 dark:text-stone-400 mt-1">
+              What this site collects, and what the AI can and cannot tell you
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => onNavigate('home')}
+            aria-label="Close and return home"
+            className="shrink-0 p-2 -mr-2 rounded-lg text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+          >
+            <X size={20} />
+          </button>
+        </div>
+      </div>
+
+      <div className="bg-white dark:bg-stone-900 p-6 md:p-8 rounded-2xl border border-stone-100 dark:border-stone-800 shadow-sm relative z-10">
+        <PrivacySection title="What this site collects">
+          <p>
+            <strong className="text-stone-800 dark:text-stone-200">Aggregate visitor analytics.</strong> Page views and
+            general traffic patterns through Vercel Analytics. No cookies, and no profile of you as an individual.
+          </p>
+          <p>
+            <strong className="text-stone-800 dark:text-stone-200">Your theme preference,</strong> stored in your own
+            browser so the site remembers light or dark mode. It never leaves your device.
+          </p>
+          <p>
+            <strong className="text-stone-800 dark:text-stone-200">Conversations with my AI twin.</strong> Messages you
+            send and the replies you get are saved, along with a random session ID that groups one conversation
+            together. I read these to find questions it answers badly. Your IP address is not stored, and the session ID
+            is not linked to you.
+          </p>
+        </PrivacySection>
+
+        <PrivacySection title="Who else sees it">
+          <p>
+            Chat messages are sent to Google's Gemini API to generate a reply. Conversations are stored in a Supabase
+            database hosted in Canada. Hosting and analytics run on Vercel. Nothing is sold, and nothing is shared for
+            advertising.
+          </p>
+        </PrivacySection>
+
+        <PrivacySection title="How long it is kept">
+          <p>
+            Conversation logs are kept for 90 days, then deleted. If you would like a conversation removed sooner,
+            {' '}<ConnectLink onNavigate={onNavigate}>get in touch</ConnectLink> and tell me roughly when we spoke.
+          </p>
+        </PrivacySection>
+
+        <PrivacySection title="About the AI twin">
+          <p>
+            The chat is an AI trained on notes about my career. It speaks as me, but it is not me. It can be wrong, it
+            can miss context, and nothing it says is a commitment, an offer, or a formal representation of my work
+            history. For anything that matters, <ConnectLink onNavigate={onNavigate}>reach the real me</ConnectLink> and
+            we will talk properly.
+          </p>
+          <p>
+            Please do not enter passwords, financial details, or anyone else's personal information into the chat.
+          </p>
+        </PrivacySection>
+
+        <PrivacySection title="Using this site">
+          <p>
+            Everything here is my own work, shared so you can get a sense of how I think. The writing, case studies, and
+            images are mine. Feel free to link to any of it. Please ask before republishing it as your own.
+          </p>
+        </PrivacySection>
+
+        <p className="text-xs text-stone-400 dark:text-stone-500 pt-2 border-t border-stone-100 dark:border-stone-800">
+          Last updated August 2026. Questions about any of this are welcome from the{' '}
+          <ConnectLink onNavigate={onNavigate}>Connect page</ConnectLink>.
+        </p>
+      </div>
+    </div>
+  );
+};
+
 const ReleaseNotesView = ({ scrollState }) => {
   const isAtTop = scrollState?.y < 50;
   const showBackground = !isAtTop;
@@ -1849,6 +1967,7 @@ export default function App() {
               {activeTab === 'chat' && <ChatView />}
               {activeTab === 'contact' && <ContactView scrollState={scrollState} />}
               {activeTab === 'changelog' && <ReleaseNotesView scrollState={scrollState} />}
+              {activeTab === 'privacy' && <PrivacyView scrollState={scrollState} onNavigate={setActiveTab} />}
            </div>
         </div>
       </main>
