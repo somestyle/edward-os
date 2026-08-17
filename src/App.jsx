@@ -110,9 +110,9 @@ const cvData = {
   experience: [
     {
       company: "Adopt AI",
-      role: "Design Advisor",
+      role: "Design Advisor (Founding Staff Product Designer)",
       period: "Nov 2024 – Present",
-      summary: "Founding Staff Product Designer leading end-to-end experience for the AI Copilot platform spanning agent workflows, tooling, and system UX.",
+      summary: "Led end-to-end experience for the AI Copilot platform spanning agent workflows, tooling, and system UX.",
       highlights: [
         "Led 0–1 design of an agentic copilot across both customer console and end-user experiences",
         "Owned core system surfaces including Tools, Actions, Agents, Data, and integration setup flows",
@@ -442,17 +442,8 @@ const HomeView = ({ onNavigate }) => {
     <div className="relative z-10 stagger-item" style={{ '--stagger-index': 1 }}>
       <h2 className="text-sm font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider mb-4">What I'm up to recently</h2>
       <p className="text-stone-500 dark:text-stone-400 text-sm mb-2">👨🏻‍💻 Designing with AI, Designing for AI and Designing the AI</p>
-      <p className="text-stone-500 dark:text-stone-400 text-sm mb-6">
-        Participated in the Multimodal Gemini Live Agent hackathon, take a look at my Recykle app{' '}
-        <a
-          href="https://devpost.com/software/recykle-ai-recycling-assistant"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline underline-offset-2 decoration-stone-300 dark:decoration-stone-600 hover:decoration-stone-500 dark:hover:decoration-stone-400"
-        >
-          here
-        </a>
-        .
+      <p className="text-stone-500 dark:text-stone-400 text-sm mb-6 text-pretty">
+        Building with AI daily. Advising early-stage teams on agentic products, product discovery, and prototyping. Also helping small businesses automate everyday workflows.
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 text-sm text-stone-600 dark:text-stone-300">
         {/* Left: Listening */}
@@ -505,7 +496,21 @@ const HomeView = ({ onNavigate }) => {
           </div>
           <div>
             <p className="font-semibold text-stone-500 dark:text-stone-400 mb-1.5">🛠️ Tools</p>
-            <p>Claude Code, Cursor, v0</p>
+            <p>Claude Code, Cursor, v0, Storybook</p>
+          </div>
+          <div>
+            <p className="font-semibold text-stone-500 dark:text-stone-400 mb-1.5">🧪 Playing</p>
+            <p>
+              Multimodal Gemini Live agents,{' '}
+              <a
+                href="https://devpost.com/software/recykle-ai-recycling-assistant"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-2 decoration-stone-300 dark:decoration-stone-600 hover:decoration-stone-500 dark:hover:decoration-stone-400"
+              >
+                Recykle
+              </a>
+            </p>
           </div>
           <div>
             <p className="font-semibold text-stone-500 dark:text-stone-400 mb-2">🐵 Following</p>
