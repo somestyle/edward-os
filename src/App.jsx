@@ -8,8 +8,6 @@ import {
   FileText, Mic2, Newspaper, Download
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
-// Import the separated system prompt
-import { SYSTEM_PROMPT } from './ai-config';
 import WidgetLauncher from './components/widgets/WidgetLauncher';
 
 const AdoptAICaseStudy = lazy(() => import('./components/AdoptAICaseStudy'));
@@ -18,6 +16,22 @@ const SamaCareCopilotCaseStudy = lazy(() => import('./components/SamaCareCopilot
 
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+// Random per-tab id so chat turns can be read back as a conversation.
+// Not tied to identity and cleared when the tab closes.
+const CHAT_SESSION_KEY = 'chat_session_id';
+function getChatSessionId() {
+  try {
+    let id = sessionStorage.getItem(CHAT_SESSION_KEY);
+    if (!id) {
+      id = crypto.randomUUID();
+      sessionStorage.setItem(CHAT_SESSION_KEY, id);
+    }
+    return id;
+  } catch {
+    return null; // private mode: log the turn without a thread id
+  }
+}
 
 // --- Typewriter streaming hook: reveals text word-by-word ---
 function useTypewriter(fullText, { speedMs = 45, enabled = true } = {}) {
@@ -1231,7 +1245,7 @@ const ChatView = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: history,
-          systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          sessionId: getChatSessionId(),
         }),
         signal,
       });
