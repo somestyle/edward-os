@@ -277,7 +277,7 @@ export default function SudokuWidget() {
                       : 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500 focus-visible:outline-offset-1'
                     }
                     ${isRelated && !isSelected ? 'bg-stone-50 dark:bg-stone-800/60' : ''}
-                    ${isSameNumber && !isSelected ? 'text-blue-600 dark:text-blue-400 font-extrabold' : 'text-stone-900 dark:text-white'}
+                    ${isSameNumber && !isSelected ? 'text-brand dark:text-blue-400 font-extrabold' : 'text-stone-900 dark:text-white'}
                     ${isConflict ? '!text-red-600 dark:!text-red-400 !bg-red-100 dark:!bg-red-900/30' : ''}
                   `}
                 >

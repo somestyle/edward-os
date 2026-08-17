@@ -5,7 +5,7 @@ import {
   Home, Briefcase, Award, Zap,
   Layout, GraduationCap, Layers,
   BookOpen, Mail, Linkedin, ExternalLink, Lock,
-  FileText, Mic2, Newspaper
+  FileText, Mic2, Newspaper, Download
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 // Import the separated system prompt
@@ -126,7 +126,7 @@ const cvData = {
       company: "SamaCare",
       role: "Staff Product Designer",
       period: "Aug 2022 – Oct 2024",
-      summary: "Sole designer leading healthcare workflows and expanding product offerings through Series B growth.",
+      summary: "First design hire and sole designer, leading healthcare workflows and expanding product offerings through Series B growth.",
       highlights: [
         "First and sole designer for a healthcare SaaS platform managing prior authorization, benefit verification, and enrollment workflows",
         "Designed complex, state-heavy, multi-role workflows in a regulated healthcare environment",
@@ -139,9 +139,9 @@ const cvData = {
       company: "Kea AI",
       role: "Head of Product Design",
       period: "Mar 2021 – Aug 2022",
-      summary: "Led design for the company's flagship AI product and foundational design systems.",
+      summary: "First design hire, establishing the design function for an AI-powered voice ordering platform running in live restaurant environments.",
       highlights: [
-        "Led 0–1 design for an AI product spanning multiple user roles and workflows",
+        "Led 0–1 design for a voice ordering platform spanning restaurant operators, staff, and end customers",
         "Built the company's first design system and established scalable interaction patterns",
         "Defined conversational and suggestion-driven UX patterns to support AI learning and iteration"
       ],
@@ -171,7 +171,7 @@ const cvData = {
       tags: ["Fintech", "B2B SaaS", "Product Design", "Team Leadership"]
     },
     {
-      company: "Hubub Inc.",
+      company: "Hubub Inc. (acquired by Stagwell Technologies)",
       role: "UX/UI Designer",
       period: "Apr 2016 – Oct 2016",
       summary: "Redesigned SaaS wealth management platforms to improve usability and system coherence.",
@@ -187,7 +187,7 @@ const cvData = {
       period: "Mar 2015 – Apr 2016",
       summary: "Led design pods for the StarTouch iPad app.",
       highlights: [
-        "Designed and refined the StarTouch iPad app experience",
+        "Designed and refined the StarTouch iPad app experience, recognized on Apple's App Store Best of Year list with over 200,000 downloads within 4 months of launch",
         "Led small design pods and developed reusable templates for editorial workflows"
       ],
       tags: ["Media", "Mobile Design", "Team Leadership"]
@@ -458,41 +458,54 @@ const HomeView = ({ onNavigate }) => {
         {/* Left: Listening */}
         <div>
           <p className="font-semibold text-stone-500 dark:text-stone-400 mb-3">🎧 Listening</p>
-          <ul className="space-y-5">
+          <ul className="space-y-4">
             <li>
-              <a href="https://youtu.be/eh8bcBIAAFo?si=19N7eiMtHa0JDP-t" target="_blank" rel="noopener noreferrer" className="block group/link hover:text-stone-900 dark:hover:text-white transition-colors underline underline-offset-2 decoration-stone-200 dark:decoration-stone-700 hover:decoration-stone-400">
-                <span className="block font-medium">Design process is dead & what's replacing it</span>
+              <a href="https://open.spotify.com/show/2dR1MUZEHCOnz1LVfNac0j" target="_blank" rel="noopener noreferrer" className="block group/link hover:text-stone-900 dark:hover:text-white transition-colors underline underline-offset-2 decoration-stone-200 dark:decoration-stone-700 hover:decoration-stone-400">
+                <span className="block font-medium">Lenny's Podcast</span>
                 <span className="text-stone-400 dark:text-stone-500 group-hover/link:text-stone-500 dark:group-hover/link:text-stone-400 text-xs inline-flex items-center gap-1 mt-0.5">
-                  Jenny Wen, Claude · Lenny's Podcast
+                  Lenny Rachitsky
                   <ExternalLink size={10} className="shrink-0 opacity-70" />
                 </span>
               </a>
             </li>
             <li>
-              <a href="https://open.spotify.com/episode/6LeYeJbwutFrQBNLJwcE6n?si=7e252f426c544cfd" target="_blank" rel="noopener noreferrer" className="block group/link hover:text-stone-900 dark:hover:text-white transition-colors underline underline-offset-2 decoration-stone-200 dark:decoration-stone-700 hover:decoration-stone-400">
-                <span className="block font-medium">Elon Musk on AGI Timeline</span>
+              <a href="https://open.spotify.com/show/5Y1NyT6srGx38f5LINbH6c" target="_blank" rel="noopener noreferrer" className="block group/link hover:text-stone-900 dark:hover:text-white transition-colors underline underline-offset-2 decoration-stone-200 dark:decoration-stone-700 hover:decoration-stone-400">
+                <span className="block font-medium">Moonshots</span>
                 <span className="text-stone-400 dark:text-stone-500 group-hover/link:text-stone-500 dark:group-hover/link:text-stone-400 text-xs inline-flex items-center gap-1 mt-0.5">
-                  Moonshots with Peter Diamandis
+                  Peter Diamandis
                   <ExternalLink size={10} className="shrink-0 opacity-70" />
                 </span>
               </a>
             </li>
             <li>
-              <a href="https://open.spotify.com/episode/7sj2zpcWmS8NqJjfjV8o31?si=33ebd2d306e143b5" target="_blank" rel="noopener noreferrer" className="block group/link hover:text-stone-900 dark:hover:text-white transition-colors underline underline-offset-2 decoration-stone-200 dark:decoration-stone-700 hover:decoration-stone-400">
-                <span className="block font-medium">A Motorcycle for the Mind</span>
+              <a href="https://open.spotify.com/show/7qZAVw03FuurfYnWIWwkHY" target="_blank" rel="noopener noreferrer" className="block group/link hover:text-stone-900 dark:hover:text-white transition-colors underline underline-offset-2 decoration-stone-200 dark:decoration-stone-700 hover:decoration-stone-400">
+                <span className="block font-medium">Naval</span>
                 <span className="text-stone-400 dark:text-stone-500 group-hover/link:text-stone-500 dark:group-hover/link:text-stone-400 text-xs inline-flex items-center gap-1 mt-0.5">
-                  Naval
+                  Naval Ravikant
+                  <ExternalLink size={10} className="shrink-0 opacity-70" />
+                </span>
+              </a>
+            </li>
+            <li>
+              <a href="https://open.spotify.com/show/4aRP2XSavdtrLG5FZoonOK" target="_blank" rel="noopener noreferrer" className="block group/link hover:text-stone-900 dark:hover:text-white transition-colors underline underline-offset-2 decoration-stone-200 dark:decoration-stone-700 hover:decoration-stone-400">
+                <span className="block font-medium">How I AI</span>
+                <span className="text-stone-400 dark:text-stone-500 group-hover/link:text-stone-500 dark:group-hover/link:text-stone-400 text-xs inline-flex items-center gap-1 mt-0.5">
+                  Claire Vo
                   <ExternalLink size={10} className="shrink-0 opacity-70" />
                 </span>
               </a>
             </li>
           </ul>
         </div>
-        {/* Right: Practicing + Following */}
+        {/* Right: Practicing + Tools + Following */}
         <div className="space-y-5">
           <div>
             <p className="font-semibold text-stone-500 dark:text-stone-400 mb-1.5">☕ Practicing</p>
-            <p>Latte art, Cursor, Claude Code, 🦞</p>
+            <p>Latte art, 🦞, ✍️</p>
+          </div>
+          <div>
+            <p className="font-semibold text-stone-500 dark:text-stone-400 mb-1.5">🛠️ Tools</p>
+            <p>Claude Code, Cursor, v0</p>
           </div>
           <div>
             <p className="font-semibold text-stone-500 dark:text-stone-400 mb-2">🐵 Following</p>
@@ -558,7 +571,7 @@ const HomeView = ({ onNavigate }) => {
               <p className="font-bold text-lg text-stone-900 dark:text-white">Ask my AI twin about my work</p>
               <p className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">Learn more about my experience, design thinking, and problem-solving.</p>
             </div>
-            <div className="bg-stone-50 dark:bg-stone-800 p-2 rounded-full text-stone-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+            <div className="bg-stone-50 dark:bg-stone-800 p-2 rounded-full text-stone-400 group-hover:text-brand dark:group-hover:text-blue-400 transition-colors">
               <ChevronRight size={20} />
             </div>
           </div>
@@ -658,9 +671,19 @@ const CareerView = ({ scrollState }) => {
               </button>
             </div>
           </div>
-          <p className="text-xs text-stone-400 dark:text-stone-500">
-            Brief shows recent roles. Detailed shows full history.
-          </p>
+          <div className="flex items-center justify-between gap-4">
+            <p className="text-xs text-stone-400 dark:text-stone-500">
+              Brief shows recent roles. Detailed shows full history.
+            </p>
+            <a
+              href="/Edward_Chu_Resume.pdf"
+              download
+              className="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold text-stone-500 dark:text-stone-400 hover:text-brand dark:hover:text-blue-400 transition-colors"
+            >
+              <Download size={14} className="shrink-0" />
+              Download Resume
+            </a>
+          </div>
         </div>
       </div>
 
@@ -679,7 +702,7 @@ const CareerView = ({ scrollState }) => {
                       <> {job.company.split(' (acquired by')[0]} <span className="text-sm font-normal text-stone-600 dark:text-stone-400">(acquired by {job.company.split(' (acquired by')[1]}</span> </>
                     ) : job.company}
                   </h3>
-                  <p className="text-blue-600 dark:text-blue-400 font-medium text-sm">{job.role}</p>
+                  <p className="text-brand dark:text-blue-400 font-medium text-sm">{job.role}</p>
                 </div>
                 <span className="text-xs font-medium bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 px-2 py-1 rounded w-fit whitespace-nowrap">
                   {job.period}
@@ -708,7 +731,7 @@ const CareerView = ({ scrollState }) => {
                       <> {job.company.split(' (acquired by')[0]} <span className="text-sm font-normal text-stone-600 dark:text-stone-400">(acquired by {job.company.split(' (acquired by')[1]}</span> </>
                     ) : job.company}
                   </h3>
-                  <p className="text-blue-600 dark:text-blue-400 font-medium text-sm">{job.role}</p>
+                  <p className="text-brand dark:text-blue-400 font-medium text-sm">{job.role}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-medium bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 px-2 py-1 rounded w-fit whitespace-nowrap shrink-0">
@@ -786,7 +809,7 @@ const CareerView = ({ scrollState }) => {
         {/* Skills */}
         <div className="bg-white dark:bg-stone-900 p-6 rounded-2xl border border-stone-100 dark:border-stone-800 shadow-sm">
           <div className="flex items-center gap-3 mb-4">
-             <div className="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg">
+             <div className="p-2 bg-blue-100 dark:bg-blue-900/30 text-brand dark:text-blue-400 rounded-lg">
                <Layers size={18} />
              </div>
              <h3 className="font-bold text-stone-900 dark:text-white">Expertise</h3>
@@ -809,32 +832,49 @@ const CareerView = ({ scrollState }) => {
             <div className="p-2 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-lg">
               <BookOpen size={18} />
             </div>
-            <h3 className="font-bold text-stone-900 dark:text-white">Publications & Media</h3>
+            <h3 className="font-bold text-stone-900 dark:text-white">Recognition & Publications</h3>
           </div>
           <div className="space-y-8">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <Award size={16} className="text-rose-600 dark:text-rose-400 shrink-0" />
+                <span className="text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">Recognition</span>
+              </div>
+              <ul className="space-y-3">
+                <li className="text-sm text-stone-700 dark:text-stone-300">
+                  <span className="font-semibold">Apple App Store, Best of Year</span>
+                  <span className="block text-xs text-stone-500 dark:text-stone-400 mt-0.5">Toronto Star StarTouch iPad app, over 200,000 downloads within 4 months of launch</span>
+                </li>
+                <li className="text-sm text-stone-700 dark:text-stone-300">
+                  <span className="font-semibold">Best Mobile Solutions Provider, Waters Rankings</span>
+                  <span className="block text-xs text-stone-500 dark:text-stone-400 mt-0.5">Tier1 Financial Solutions</span>
+                </li>
+              </ul>
+            </div>
+
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <FileText size={16} className="text-amber-600 dark:text-amber-400 shrink-0" />
                 <span className="text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">Patents</span>
               </div>
-              <a href="https://patents.google.com/patent/US12430227B1" target="_blank" rel="noreferrer" className="group block w-full text-sm text-stone-700 dark:text-stone-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              <a href="https://patents.google.com/patent/US12430227B1" target="_blank" rel="noreferrer" className="group block w-full text-sm text-stone-700 dark:text-stone-300 hover:text-brand dark:hover:text-blue-400 transition-colors">
                 AI-based system and method for automated API discovery and action workflow generation <ExternalLink size={12} className="inline-block ml-0.5 align-baseline opacity-60 group-hover:opacity-100" />
               </a>
             </div>
 
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <BookOpen size={16} className="text-blue-600 dark:text-blue-400 shrink-0" />
+                <BookOpen size={16} className="text-brand dark:text-blue-400 shrink-0" />
                 <span className="text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">Writing</span>
               </div>
               <ul className="space-y-2">
                 <li>
-                  <a href="https://www.linkedin.com/pulse/building-collaborative-design-culture-todays-world-edward-chu/" target="_blank" rel="noreferrer" className="group block w-full text-sm text-stone-700 dark:text-stone-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                  <a href="https://www.linkedin.com/pulse/building-collaborative-design-culture-todays-world-edward-chu/" target="_blank" rel="noreferrer" className="group block w-full text-sm text-stone-700 dark:text-stone-300 hover:text-brand dark:hover:text-blue-400 transition-colors">
                     Building a collaborative design culture for today's world <ExternalLink size={12} className="inline-block ml-0.5 align-baseline opacity-60 group-hover:opacity-100" />
                   </a>
                 </li>
                 <li>
-                  <a href="https://www.linkedin.com/pulse/storytelling-data-making-analytics-work-your-user-edward-chu%3FtrackingId=VE%252BSYf93TJmyileXyo1E6g%253D%253D/?trackingId=VE%2BSYf93TJmyileXyo1E6g%3D%3D" target="_blank" rel="noreferrer" className="group block w-full text-sm text-stone-700 dark:text-stone-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                  <a href="https://www.linkedin.com/pulse/storytelling-data-making-analytics-work-your-user-edward-chu%3FtrackingId=VE%252BSYf93TJmyileXyo1E6g%253D%253D/?trackingId=VE%2BSYf93TJmyileXyo1E6g%3D%3D" target="_blank" rel="noreferrer" className="group block w-full text-sm text-stone-700 dark:text-stone-300 hover:text-brand dark:hover:text-blue-400 transition-colors">
                     Storytelling with data: Making data analytics work for your user <ExternalLink size={12} className="inline-block ml-0.5 align-baseline opacity-60 group-hover:opacity-100" />
                   </a>
                 </li>
@@ -848,12 +888,12 @@ const CareerView = ({ scrollState }) => {
               </div>
               <ul className="space-y-2">
                 <li>
-                  <a href="https://www.adopt.ai/webinar/uncovering-blind-spots-agentic-ai-ux" target="_blank" rel="noreferrer" className="group block w-full text-sm text-stone-700 dark:text-stone-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                  <a href="https://www.adopt.ai/webinar/uncovering-blind-spots-agentic-ai-ux" target="_blank" rel="noreferrer" className="group block w-full text-sm text-stone-700 dark:text-stone-300 hover:text-brand dark:hover:text-blue-400 transition-colors">
                     Designing Agentic AI Experiences Beyond the GUI <ExternalLink size={12} className="inline-block ml-0.5 align-baseline opacity-60 group-hover:opacity-100" />
                   </a>
                 </li>
                 <li>
-                  <a href="https://www.youtube.com/watch?v=VzQ5U_inmGM" target="_blank" rel="noreferrer" className="group block w-full text-sm text-stone-700 dark:text-stone-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                  <a href="https://www.youtube.com/watch?v=VzQ5U_inmGM" target="_blank" rel="noreferrer" className="group block w-full text-sm text-stone-700 dark:text-stone-300 hover:text-brand dark:hover:text-blue-400 transition-colors">
                     The Journey into Product Design – ADPList x Sketch x Springboard <ExternalLink size={12} className="inline-block ml-0.5 align-baseline opacity-60 group-hover:opacity-100" />
                   </a>
                 </li>
@@ -865,7 +905,7 @@ const CareerView = ({ scrollState }) => {
                 <Newspaper size={16} className="text-violet-600 dark:text-violet-400 shrink-0" />
                 <span className="text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">Interviews & Press</span>
               </div>
-              <a href="https://www.builtinsf.com/2022/03/24/how-designers-simplify-user-journey" target="_blank" rel="noreferrer" className="group block w-full text-sm text-stone-700 dark:text-stone-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              <a href="https://www.builtinsf.com/2022/03/24/how-designers-simplify-user-journey" target="_blank" rel="noreferrer" className="group block w-full text-sm text-stone-700 dark:text-stone-300 hover:text-brand dark:hover:text-blue-400 transition-colors">
                 Seeking a Simplified User Journey? Stop Adding Solutions - BuiltinSF <ExternalLink size={12} className="inline-block ml-0.5 align-baseline opacity-60 group-hover:opacity-100" />
               </a>
             </div>
@@ -1014,7 +1054,7 @@ const ProjectsView = ({ scrollState }) => {
                   <p className="text-stone-500 dark:text-stone-400 text-sm leading-relaxed mb-4 flex-1 min-h-0 line-clamp-3">
                     {proj.description}
                   </p>
-                  <div className="flex items-center gap-2 text-sm font-medium mt-auto pt-1 text-stone-700 dark:text-stone-200 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                  <div className="flex items-center gap-2 text-sm font-medium mt-auto pt-1 text-stone-700 dark:text-stone-200 group-hover:text-brand dark:group-hover:text-blue-400">
                     <span>View Project</span>
                     <ExternalLink size={16} className="shrink-0 opacity-70 group-hover:opacity-100" aria-hidden />
                   </div>
@@ -1037,7 +1077,7 @@ const ProjectsView = ({ scrollState }) => {
                 <div
                   className={`flex items-center gap-2 text-sm font-medium mt-auto pt-1 ${
                     showCaseStudyLink
-                      ? 'text-stone-700 dark:text-stone-200 group-hover:text-blue-600 dark:group-hover:text-blue-400'
+                      ? 'text-stone-700 dark:text-stone-200 group-hover:text-brand dark:group-hover:text-blue-400'
                       : 'text-stone-500 dark:text-stone-400'
                   }`}
                 >
@@ -1549,7 +1589,7 @@ const ContactView = ({ scrollState }) => {
       >
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-             <div className="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 p-4 rounded-2xl">
+             <div className="bg-blue-50 dark:bg-blue-900/30 text-brand dark:text-blue-400 p-4 rounded-2xl">
                <Mail size={24} />
              </div>
              <div>
@@ -1678,6 +1718,9 @@ const ReleaseNotesView = ({ scrollState }) => {
   );
 };
 
+const systemPrefersDark = () =>
+  typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+
 function loadThemePreferences() {
   try {
     const raw = localStorage.getItem(THEME_STORAGE_KEY);
@@ -1687,15 +1730,25 @@ function loadThemePreferences() {
       themeStyle: data.themeStyle === 'retro' ? 'retro' : 'modern',
       accentColor: ['blue', 'purple', 'emerald', 'orange'].includes(data.accentColor) ? data.accentColor : 'blue',
       darkMode: !!data.darkMode,
+      // Preferences saved before the toggle was tracked have no flag. Dark could only
+      // have come from a deliberate toggle back then, so treat it as explicit.
+      darkModeExplicit: !!data.darkModeExplicit || data.darkMode === true,
     };
   } catch {
     return null;
   }
 }
 
+// An explicit toggle wins; otherwise follow the visitor's OS setting.
+function resolveInitialDarkMode() {
+  const stored = loadThemePreferences();
+  return stored?.darkModeExplicit ? stored.darkMode : systemPrefersDark();
+}
+
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
-  const [darkMode, setDarkMode] = useState(() => loadThemePreferences()?.darkMode ?? false);
+  const [darkMode, setDarkMode] = useState(resolveInitialDarkMode);
+  const [darkModeExplicit, setDarkModeExplicit] = useState(() => !!loadThemePreferences()?.darkModeExplicit);
   const [themeStyle, setThemeStyle] = useState(() => loadThemePreferences()?.themeStyle ?? 'modern');
   const [themeAccent, setThemeAccent] = useState(() => loadThemePreferences()?.accentColor ?? 'blue');
   const [scrollState, setScrollState] = useState({ dir: 'up', y: 0 });
@@ -1706,8 +1759,24 @@ export default function App() {
       themeStyle,
       accentColor: themeAccent,
       darkMode,
+      darkModeExplicit,
     }));
-  }, [themeStyle, themeAccent, darkMode]);
+  }, [themeStyle, themeAccent, darkMode, darkModeExplicit]);
+
+  // Follow the OS setting live, until the visitor picks a theme themselves.
+  useEffect(() => {
+    if (darkModeExplicit) return;
+    const query = window.matchMedia?.('(prefers-color-scheme: dark)');
+    if (!query) return;
+    const onChange = (e) => setDarkMode(e.matches);
+    query.addEventListener('change', onChange);
+    return () => query.removeEventListener('change', onChange);
+  }, [darkModeExplicit]);
+
+  const handleDarkModeChange = useCallback((value) => {
+    setDarkModeExplicit(true);
+    setDarkMode(value);
+  }, []);
 
   // Apply --accent CSS variable when accent color changes
   useEffect(() => {
@@ -1807,7 +1876,7 @@ export default function App() {
             themeStyle={themeStyle}
             onThemeStyleChange={setThemeStyle}
             darkMode={darkMode}
-            onDarkModeChange={setDarkMode}
+            onDarkModeChange={handleDarkModeChange}
             onChangelogClick={() => setActiveTab('changelog')}
           />
         </div>

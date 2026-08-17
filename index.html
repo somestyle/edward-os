@@ -8,6 +8,22 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover" />
     <title>Edward Chu</title>
+    <script>
+      // Applies the theme before first paint so dark-mode visitors never see a light flash.
+      // Mirrors the resolution order in App.jsx: an explicit toggle wins, otherwise the OS setting.
+      (function () {
+        try {
+          var stored = JSON.parse(localStorage.getItem('edward-os-theme') || 'null');
+          var explicit = stored && (stored.darkModeExplicit || stored.darkMode === true);
+          var dark = explicit
+            ? !!stored.darkMode
+            : window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (dark) document.documentElement.classList.add('dark');
+        } catch (e) {
+          /* localStorage unavailable (private mode): fall through to light */
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

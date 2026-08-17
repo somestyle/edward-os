@@ -5,6 +5,13 @@
 */
 @variant dark (&:where(.dark, .dark *));
 
+/* Light-mode brand blue for text and links.
+   Same hue and chroma as the dark-mode blue-400 (#50a2ff), lightness lowered
+   until it clears WCAG AA on white (4.5:1). Dark mode keeps blue-400. */
+@theme {
+  --color-brand: oklch(0.57 0.165 254.624); /* #2177d5 */
+}
+
 /* ---------------------------------------------------------------------------
    Design tokens as CSS variables.
    Theme classes: .theme-modern (blur/glass), .theme-retro (brutalist)
