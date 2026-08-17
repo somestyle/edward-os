@@ -125,7 +125,7 @@ const cvData = {
     {
       company: "Adopt AI",
       role: "Design Advisor (Founding Staff Product Designer)",
-      period: "Nov 2024 – Present",
+      period: "Oct 2024 – Present",
       summary: "Led end-to-end experience for the AI Copilot platform spanning agent workflows, tooling, and system UX.",
       highlights: [
         "Led 0–1 design of an agentic copilot across both customer console and end-user experiences",
@@ -139,7 +139,7 @@ const cvData = {
     {
       company: "SamaCare",
       role: "Staff Product Designer",
-      period: "Aug 2022 – Oct 2024",
+      period: "Aug 2022 – Sept 2024",
       summary: "First design hire and sole designer, leading healthcare workflows and expanding product offerings through Series B growth.",
       highlights: [
         "First and sole designer for a healthcare SaaS platform managing prior authorization, benefit verification, and enrollment workflows",
@@ -152,7 +152,7 @@ const cvData = {
     {
       company: "Kea AI",
       role: "Head of Product Design",
-      period: "Mar 2021 – Aug 2022",
+      period: "Mar 2021 – Jul 2022",
       summary: "First design hire, establishing the design function for an AI-powered voice ordering platform running in live restaurant environments.",
       highlights: [
         "Led 0–1 design for a voice ordering platform spanning restaurant operators, staff, and end customers",
