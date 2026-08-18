@@ -652,6 +652,23 @@ const HomeView = ({ onNavigate }) => {
 
 const BRIEF_ROLE_COUNT = 4; // Adopt AI, SamaCare, Kea AI, Tier1
 
+// Brief mode leads with the four roles that carry the most weight, which is why
+// cvData keeps Tier1 (and its acquisition) ahead of the shorter Flybits stint.
+// Detailed mode is a full history, so it sorts strictly by start date instead.
+const MONTH_INDEX = {
+  Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
+  Jul: 6, Aug: 7, Sep: 8, Sept: 8, Oct: 9, Nov: 10, Dec: 11,
+};
+
+function roleStartValue(period) {
+  const [month, year] = period.split('–')[0].trim().split(/\s+/);
+  return Number(year) * 12 + (MONTH_INDEX[month] ?? 0);
+}
+
+const rolesByStartDate = [...cvData.experience].sort(
+  (a, b) => roleStartValue(b.period) - roleStartValue(a.period)
+);
+
 const CareerView = ({ scrollState }) => {
   const [isDetailed, setIsDetailed] = useState(false);
   const [expandedIndex, setExpandedIndex] = useState(() =>
@@ -664,7 +681,7 @@ const CareerView = ({ scrollState }) => {
   const toggleExpanded = (i) => setExpandedIndex((prev) => prev.map((v, idx) => idx === i ? !v : v));
 
   const briefRoles = cvData.experience.slice(0, BRIEF_ROLE_COUNT);
-  const allRoles = cvData.experience;
+  const allRoles = rolesByStartDate;
 
   return (
     <div className="animate-in fade-in duration-500 pb-32 relative">
