@@ -1,10 +1,45 @@
 {
   "artboards": [
-    { "file": "Journey.dc.html", "title": "The journey", "x": 0, "y": 0, "w": 1400, "h": 440 },
-    { "file": "Main.dc.html", "title": "04 · Read", "x": 0, "y": 880, "w": 620, "h": 860 },
-    { "file": "Continuity.dc.html", "title": "06 · Leave", "x": 720, "y": 880, "w": 620, "h": 760 },
-    { "file": "Phone.dc.html", "title": "On a phone", "x": 1440, "y": 880, "w": 390, "h": 844 },
-    { "file": "Ending.dc.html", "title": "07 · End", "x": 1930, "y": 880, "w": 620, "h": 760 }
+    {
+      "file": "Journey.dc.html",
+      "title": "The journey",
+      "x": 0,
+      "y": 0,
+      "w": 1400,
+      "h": 262
+    },
+    {
+      "file": "Main.dc.html",
+      "title": "04 \u00b7 Read",
+      "x": 0,
+      "y": 980,
+      "w": 620,
+      "h": 786
+    },
+    {
+      "file": "Continuity.dc.html",
+      "title": "06 \u00b7 Leave",
+      "x": 720,
+      "y": 980,
+      "w": 620,
+      "h": 760
+    },
+    {
+      "file": "Phone.dc.html",
+      "title": "On a phone",
+      "x": 1440,
+      "y": 980,
+      "w": 390,
+      "h": 844
+    },
+    {
+      "file": "Ending.dc.html",
+      "title": "07 \u00b7 End",
+      "x": 1930,
+      "y": 980,
+      "w": 620,
+      "h": 760
+    }
   ],
   "annotations": [
     {
@@ -12,36 +47,38 @@
       "x": 0,
       "y": -250,
       "w": 620,
-      "text": "WHAT I CHECKED\n\nI drove the shipped build in a browser rather than reading for smells, so each finding below has a reproduction behind it.\n\nStages 02–04 are the ones we fixed last round and they hold up. The leaks are all at the edges of the conversation — before it starts, after an answer lands, and every way it ends. Four of the seven stages are open.\n\nOne of them (06) is partly my doing: moving the streaming text out of the message list to stop per-token re-renders also means a half-written answer is no longer anywhere durable. That trade needs paying for."
+      "text": "WHAT I CHECKED\n\nI drove the shipped build in a browser rather than reading for smells, so each finding below has a reproduction behind it.\n\nStages 02\u201304 are the ones we fixed last round and they hold up. The leaks are all at the edges of the conversation \u2014 before it starts, after an answer lands, and every way it ends. Four of the seven stages are open.\n\nOne of them (06) is partly my doing: moving the streaming text out of the message list to stop per-token re-renders also means a half-written answer is no longer anywhere durable. That trade needs paying for."
     },
     {
       "id": "n-answer",
       "x": 0,
-      "y": 540,
+      "y": 480,
       "w": 620,
-      "text": "04 · READ — the biggest one\n\nThe system prompt tells the twin to answer in bullet points and to use Markdown links. The renderer maps three elements: a, strong and p. Everything else falls through.\n\nMeasured on the shipped build: list-style: none, padding-left: 0px, margin: 0px on the ul, and 0px between paragraphs. So a three-item list renders as three unmarked, unindented lines with no separation from the sentence above it — five equal-weight lines where the twin wrote structure. The CSS reset strips the markers and nothing puts them back.\n\nFix is small: map ul/ol/li/em/code/headings in MarkdownRenderer and give p a bottom margin.\n\n05 · ACT is in the same bubble because it is the same moment. The answer names Adopt AI and SamaCare — both are real screens in this app — and offers no way to reach them. No copy either. Press the buttons; the follow-ups are the twin's suggestions rather than a menu the reader has to invent."
+      "text": "04 \u00b7 READ \u2014 the biggest one\n\nThe system prompt tells the twin to answer in bullet points and to use Markdown links. The renderer maps three elements: a, strong and p. Everything else falls through.\n\nMeasured on the shipped build: list-style: none, padding-left: 0px, margin: 0px on the ul, and 0px between paragraphs. So a three-item list renders as three unmarked, unindented lines with no separation from the sentence above it \u2014 five equal-weight lines where the twin wrote structure. The CSS reset strips the markers and nothing puts them back.\n\nFix is small: map ul/ol/li/em/code/headings in MarkdownRenderer and give p a bottom margin.\n\n05 \u00b7 ACT is in the same bubble because it is the same moment. The answer names Adopt AI and SamaCare \u2014 both are real screens in this app \u2014 and offers no way to reach them. No copy either. Press the buttons; the follow-ups are the twin's suggestions rather than a menu the reader has to invent."
     },
     {
       "id": "n-continuity",
       "x": 720,
-      "y": 540,
+      "y": 480,
       "w": 620,
-      "text": "06 · LEAVE — the serious one\n\nStep through it. ChatView is mounted as {activeTab === 'chat' && <ChatView />}, so switching tabs unmounts it mid-answer.\n\nReproduced: 57 characters had streamed, I tapped Home, came back — the question was still there and the answer was gone, with nothing to say it had ever existed. The AbortController is never fired on unmount either, so the request keeps running and writing into a component that no longer exists.\n\nTwo things to fix, in order: commit whatever has streamed before the view goes away, so nothing is ever silently lost; then keep the turn alive across the switch — either hoist the conversation above the tab or keep the view mounted and hidden — so leaving for ten seconds does not cost you the answer."
+      "text": "06 \u00b7 LEAVE \u2014 the serious one\n\nStep through it. ChatView is mounted as {activeTab === 'chat' && <ChatView />}, so switching tabs unmounts it mid-answer.\n\nReproduced: 57 characters had streamed, I tapped Home, came back \u2014 the question was still there and the answer was gone, with nothing to say it had ever existed. The AbortController is never fired on unmount either, so the request keeps running and writing into a component that no longer exists.\n\nTwo things to fix, in order: commit whatever has streamed before the view goes away, so nothing is ever silently lost; then keep the turn alive across the switch \u2014 either hoist the conversation above the tab or keep the view mounted and hidden \u2014 so leaving for ten seconds does not cost you the answer."
     },
     {
       "id": "n-phone",
       "x": 1440,
-      "y": 540,
+      "y": 480,
       "w": 390,
       "text": "ON A PHONE\n\nAt 390px the placeholder I wrote last round wraps to a second line and gets clipped by the single-row textarea. Shorter copy fixes it.\n\nThe three chips stack into three rows and eat a third of the screen. One horizontally scrollable rail holds more of them in a fraction of the height, and 44px targets throughout.\n\nThe key hints are desktop-only truths. A soft keyboard has no Shift+Enter, so they should not render on touch."
     },
     {
       "id": "n-ending",
       "x": 1930,
-      "y": 540,
+      "y": 400,
       "w": 620,
-      "text": "07 · END — three exits, none of them a door\n\nOut of replies: the 429 comes from Gemini's quota, passed straight through by the proxy. The copy says to check out the rest of the site and links to none of it. This is the one moment the twin cannot answer, so it is the moment it most needs to hand off — to the case studies and to a real email link.\n\nCut off mid-sentence: once the proxy has sent headers it streams; if the upstream dies after that, the catch does res.end() and the client sees a clean close. A truncated answer is then indistinguishable from a short one. Mark the turn and offer to continue.\n\nCleared: one click wipes the thread — no confirmation, no way back, and it drops the session id too. An undo window is cheaper than a modal and kinder than neither.\n\nNot drawn, worth doing: the streaming reply has no aria-live region, so a screen reader hears nothing arrive; and history lives in sessionStorage, so closing the tab quietly discards the conversation."
+      "text": "07 \u00b7 END \u2014 three exits, none of them a door\n\nOut of replies: the 429 comes from Gemini's quota, passed straight through by the proxy. The copy says to check out the rest of the site and links to none of it. This is the one moment the twin cannot answer, so it is the moment it most needs to hand off \u2014 to the case studies and to a real email link.\n\nCut off mid-sentence: once the proxy has sent headers it streams; if the upstream dies after that, the catch does res.end() and the client sees a clean close. A truncated answer is then indistinguishable from a short one. Mark the turn and offer to continue.\n\nCleared: one click wipes the thread \u2014 no confirmation, no way back, and it drops the session id too. An undo window is cheaper than a modal and kinder than neither.\n\nNot drawn, worth doing: the streaming reply has no aria-live region, so a screen reader hears nothing arrive; and history lives in sessionStorage, so closing the tab quietly discards the conversation."
     }
   ],
-  "launch": { "view": "canvas" }
+  "launch": {
+    "view": "canvas"
+  }
 }

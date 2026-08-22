@@ -13,7 +13,7 @@
 </style>
 </helmet>
 
-<div style="display:flex; flex-direction:column; height:440px; box-sizing:border-box; padding:24px 26px">
+<div style="display:flex; flex-direction:column; height:262px; box-sizing:border-box; padding:24px 26px">
 
   <div style="display:flex; align-items:baseline; justify-content:space-between; flex-shrink:0; margin-bottom:4px">
     <div style="font-size:18px; font-weight:700; letter-spacing:-0.02em">One conversation, end to end</div>
@@ -24,7 +24,7 @@
   </div>
   <div style="font-size:12.5px; color:#78716c; line-height:1.5; margin-bottom:18px; flex-shrink:0">The four stages fixed last round sit in the middle. Everything around them is still untouched, and that is where the conversation leaks.</div>
 
-  <div style="flex-grow:1; display:grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap:12px">
+  <div style="flex-grow:1; display:grid; grid-template-columns: repeat(7, minmax(0, 1fr)); align-items:start; gap:12px">
     <sc-for list="{{ stages }}" as="stage" hint-placeholder-count="7">
       <div style="display:flex; flex-direction:column; background:#ffffff; border:1px solid {{ stage.border }}; border-radius:12px; padding:14px 13px; gap:9px">
         <div style="display:flex; align-items:center; justify-content:space-between">
@@ -40,7 +40,7 @@
 </div>
 </x-dc>
 
-<script data-dc-script data-props='{"$preview":{"width":1400,"height":440}}'>
+<script data-dc-script data-props='{"$preview":{"width":1400,"height":262}}'>
 const STAGES = [
   { num: '01', name: 'Arrive', note: 'The home card still spins its beam forever. The composer no longer does.', open: true },
   { num: '02', name: 'First ask', note: 'Chips, textarea, Enter and Shift+Enter.', open: false },
