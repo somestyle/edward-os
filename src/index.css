@@ -436,3 +436,8 @@ html, body {
   from { opacity: 0; transform: translate(-50%, 8px) scale(0.94); }
   to { opacity: 1; transform: translate(-50%, 0) scale(1); }
 }
+
+/* Suggested prompts scroll as one row on a phone rather than stacking into
+   three; they wrap normally from md up. */
+.chat-rail { scrollbar-width: none; -ms-overflow-style: none; }
+.chat-rail::-webkit-scrollbar { display: none; }

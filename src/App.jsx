@@ -5,7 +5,7 @@ import {
   Home, Briefcase, Award, Zap,
   Layout, GraduationCap, Layers,
   BookOpen, Mail, Linkedin, ExternalLink, Lock,
-  FileText, Mic2, Newspaper, Download, X, RotateCcw, ArrowDown
+  FileText, Mic2, Newspaper, Download, X, RotateCcw, ArrowDown, ArrowRight
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import WidgetLauncher from './components/widgets/WidgetLauncher';
@@ -122,24 +122,36 @@ function StreamingText({ source, onAdvance, onComplete }) {
   return <MarkdownRenderer>{stabilizeMarkdown(source.text.slice(0, revealed))}</MarkdownRenderer>;
 }
 
-// --- Markdown renderer for chat (bold, links, etc.) ---
+// --- Markdown renderer for chat ---
+// The system prompt asks the twin for bold, bullet lists and Markdown links, so
+// every one of those needs a mapping here: the CSS reset has already stripped
+// list markers, list indentation and paragraph margins, and anything left
+// unmapped renders as undifferentiated body text.
+const MD_COMPONENTS = {
+  a: ({ href, children }) => (
+    <a href={href} target="_blank" rel="noreferrer" className="underline text-inherit font-medium hover:opacity-80">
+      {children}
+    </a>
+  ),
+  strong: ({ children }) => <strong className="font-bold text-stone-900 dark:text-white">{children}</strong>,
+  em: ({ children }) => <em className="italic">{children}</em>,
+  p: ({ children }) => <span className="block mb-3 last:mb-0">{children}</span>,
+  ul: ({ children }) => <ul className="block list-disc pl-5 mb-3 last:mb-0 space-y-1">{children}</ul>,
+  ol: ({ children }) => <ol className="block list-decimal pl-5 mb-3 last:mb-0 space-y-1">{children}</ol>,
+  li: ({ children }) => <li className="pl-0.5 marker:text-stone-400 dark:marker:text-stone-500">{children}</li>,
+  code: ({ children }) => (
+    <code className="rounded bg-stone-100 dark:bg-stone-700/60 px-1 py-0.5 text-[0.92em] font-mono">{children}</code>
+  ),
+  h1: ({ children }) => <span className="block font-bold text-stone-900 dark:text-white mb-2 last:mb-0">{children}</span>,
+};
+MD_COMPONENTS.h2 = MD_COMPONENTS.h1;
+MD_COMPONENTS.h3 = MD_COMPONENTS.h1;
+
 function MarkdownRenderer({ children, className = '' }) {
   if (typeof children !== 'string') return <span className={className}>{children}</span>;
   return (
     <span className={className}>
-      <ReactMarkdown
-        components={{
-          a: ({ href, children }) => (
-            <a href={href} target="_blank" rel="noreferrer" className="underline text-inherit font-medium hover:opacity-80">
-              {children}
-            </a>
-          ),
-          strong: ({ children }) => <strong className="font-bold">{children}</strong>,
-          p: ({ children }) => <span className="block">{children}</span>,
-        }}
-      >
-        {children}
-      </ReactMarkdown>
+      <ReactMarkdown components={MD_COMPONENTS}>{children}</ReactMarkdown>
     </span>
   );
 }
@@ -609,8 +621,10 @@ const HomeView = ({ onNavigate }) => {
 
       {/* Ask my AI twin - below section title */}
       <div className="group cursor-pointer mb-6" onClick={() => onNavigate('chat')}>
-        <div className="relative rounded-2xl overflow-hidden p-[2px]">
-          <div className="absolute inset-[-100%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_90deg,transparent_0_340deg,#3B82F6_360deg)] opacity-100" />
+        {/* The beam means "working" now that the composer only sweeps while it is.
+            At rest this is a plain border; it sweeps on hover. */}
+        <div className="relative rounded-2xl overflow-hidden p-[2px] bg-stone-200 dark:bg-stone-700">
+          <div className="hidden group-hover:block absolute inset-[-100%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_90deg,transparent_0_340deg,#3B82F6_360deg)]" />
           <div className="relative bg-white dark:bg-stone-900 rounded-[14px] p-5 shadow-sm flex items-center gap-5 h-full">
             <div className="bg-gradient-to-tr from-blue-500 to-sky-500 text-white p-3 rounded-xl group-hover:scale-110 transition-transform shadow-lg shadow-blue-500/20">
               <Sparkles size={22} />
@@ -1246,7 +1260,7 @@ const WAIT_PHASES = [
   { at: 1700, label: 'Drafting' },
 ];
 
-const ChatView = () => {
+const ChatView = ({ onNavigate }) => {
   const [messages, setMessages] = useState(loadChatFromSession);
   const [input, setInput] = useState("");
   const [live, setLive] = useState(null);      // active StreamSource, or null
@@ -1261,6 +1275,8 @@ const ChatView = () => {
   const spacerRef = useRef(null);
   const followRef = useRef(true);
   const phaseTimersRef = useRef([]);
+  const liveRef = useRef(null);
+  const messagesRef = useRef(messages);
 
   const isBusy = live !== null;
 
@@ -1268,9 +1284,30 @@ const ChatView = () => {
     sessionStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
   }, [messages]);
 
+  // Mirrored for the unmount handler, which cannot read state through a closure.
+  useLayoutEffect(() => {
+    liveRef.current = live;
+    messagesRef.current = messages;
+  });
+
+  // Switching tabs unmounts this view. Whatever has streamed so far only exists
+  // inside the live turn, so it has to be written down here or it is lost — and
+  // the request has to be dropped, or it keeps burning quota into nothing.
   useEffect(() => {
     inputRef.current?.focus();
-    return () => phaseTimersRef.current.forEach(clearTimeout);
+    return () => {
+      phaseTimersRef.current.forEach(clearTimeout);
+      abortControllerRef.current?.abort();
+      abortControllerRef.current = null;
+      const partial = liveRef.current?.text?.trim();
+      if (!partial) return;
+      try {
+        sessionStorage.setItem(
+          CHAT_STORAGE_KEY,
+          JSON.stringify([...messagesRef.current, { role: 'system', text: partial }])
+        );
+      } catch { /* private mode: the turn is lost either way */ }
+    };
   }, []);
 
   // --- Scrolling -------------------------------------------------------------
@@ -1377,7 +1414,14 @@ const ChatView = () => {
       });
 
       if (response.status === 429) {
-        return fail("I've been chatting a little too much today and reached my limit. Check out the rest of the site to learn more about my experience and background in the meantime.");
+        stopPhases();
+        setLive(null);
+        setMessages((prev) => [...prev, {
+          role: 'system',
+          kind: 'limit',
+          text: "I've hit my limit for today. The work itself is still here, though.",
+        }]);
+        return;
       }
       if (!response.ok) {
         return fail("I'm having trouble connecting to my AI services right now. While I'm offline, you can reach the real me at [ed@edwardchu.xyz](mailto:ed@edwardchu.xyz).");
@@ -1509,6 +1553,33 @@ const ChatView = () => {
   const tail = lastUserIndex === -1 ? [] : messages.slice(lastUserIndex);
 
   const bubble = (msg, key) => {
+    // Out of replies is the one moment the twin cannot answer, so it is the one
+    // moment it most needs to hand off rather than apologise.
+    if (msg.kind === 'limit') {
+      return (
+        <div key={key} className="flex justify-start">
+          <div className="max-w-[85%] md:max-w-[75%] px-4 py-3 rounded-2xl rounded-bl-none text-sm leading-relaxed bg-stone-100 dark:bg-stone-800/60 text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-700">
+            {msg.text}
+            <div className="mt-3 flex flex-wrap gap-2">
+              {[
+                { label: 'Browse the work', tab: 'projects' },
+                { label: 'Get in touch', tab: 'contact' },
+              ].map((exit) => (
+                <button
+                  key={exit.tab}
+                  type="button"
+                  onClick={() => onNavigate?.(exit.tab)}
+                  className="flex items-center gap-1.5 rounded-lg border border-blue-100 dark:border-blue-500/30 bg-white dark:bg-stone-900 px-2.5 py-1.5 text-xs font-semibold text-blue-600 dark:text-blue-400 transition-colors hover:bg-blue-50 dark:hover:bg-blue-500/10"
+                >
+                  {exit.label}
+                  <ArrowRight size={12} />
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
     if (msg.kind === 'error') {
       return (
         <div key={key} className="flex justify-start">
@@ -1572,6 +1643,9 @@ const ChatView = () => {
         onTouchMove={release}
         onKeyDown={handleScrollKeys}
         tabIndex={-1}
+        role="log"
+        aria-live="polite"
+        aria-relevant="additions"
         className="chat-scroller flex-1 overflow-y-auto pr-2 pb-4 relative z-10 outline-none"
       >
         <div className="space-y-4 pt-4">
@@ -1583,7 +1657,7 @@ const ChatView = () => {
             {tail.map((msg, i) => bubble(msg, lastUserIndex + i))}
             {isBusy && (
               <div className="flex justify-start">
-                <div className="chat-stream max-w-[85%] md:max-w-[75%] p-4 rounded-2xl rounded-bl-none text-sm leading-relaxed shadow-sm bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-200 border border-stone-100 dark:border-stone-700">
+                <div aria-hidden="true" className="chat-stream max-w-[85%] md:max-w-[75%] p-4 rounded-2xl rounded-bl-none text-sm leading-relaxed shadow-sm bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-200 border border-stone-100 dark:border-stone-700">
                   {phase && (
                     <div className="flex items-center gap-2 mb-2.5 text-xs font-semibold text-blue-600 dark:text-blue-400">
                       <Sparkles size={12} className="chat-phase-icon" />
@@ -1611,6 +1685,8 @@ const ChatView = () => {
         </div>
       </div>
 
+      <span role="status" className="sr-only">{isBusy ? (phase || 'Answering') : ''}</span>
+
       {/* Input */}
       <div className="pt-4 bg-[var(--bg-app)] transition-colors duration-300 z-20 pb-32 md:pb-20 relative">
         {detached && isBusy && (
@@ -1625,13 +1701,13 @@ const ChatView = () => {
         )}
 
         {showPrompts && (
-          <div className="flex flex-wrap gap-2 pb-3">
+          <div className="chat-rail flex gap-2 pb-3 -mx-6 px-6 overflow-x-auto md:mx-0 md:px-0 md:flex-wrap md:overflow-visible">
             {SUGGESTED_PROMPTS.map((prompt) => (
               <button
                 key={prompt}
                 type="button"
                 onClick={() => pickPrompt(prompt)}
-                className="rounded-full border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 px-3.5 py-2 text-xs font-medium text-stone-600 dark:text-stone-300 transition-all hover:-translate-y-px hover:border-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800"
+                className="shrink-0 rounded-full border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 px-3.5 py-2 text-xs font-medium text-stone-600 dark:text-stone-300 transition-all hover:-translate-y-px hover:border-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800"
               >
                 {prompt}
               </button>
@@ -1663,7 +1739,7 @@ const ChatView = () => {
                 onKeyDown={handleComposerKey}
                 onFocus={() => setFocused(true)}
                 onBlur={() => setFocused(false)}
-                placeholder="Ask about a project, a decision, a tradeoff…"
+                placeholder="Ask about my work"
                 autoFocus
                 className="flex-1 resize-none bg-transparent border-none py-2.5 max-h-[132px] text-base md:text-sm leading-relaxed focus:ring-0 outline-none text-stone-900 dark:text-white placeholder-stone-400"
               />
@@ -1685,7 +1761,7 @@ const ChatView = () => {
             </div>
           </div>
           <div
-            className={`h-4 mt-1.5 px-1 flex justify-between text-[11px] text-stone-400 dark:text-stone-500 transition-opacity duration-200 ${
+            className={`h-4 mt-1.5 px-1 hidden md:flex justify-between text-[11px] text-stone-400 dark:text-stone-500 transition-opacity duration-200 ${
               isBusy || focused ? 'opacity-100' : 'opacity-0'
             }`}
           >
@@ -2206,7 +2282,7 @@ export default function App() {
               {activeTab === 'home' && <HomeView onNavigate={setActiveTab} />}
               {activeTab === 'career' && <CareerView scrollState={scrollState} />}
               {activeTab === 'projects' && <ProjectsView scrollState={scrollState} />}
-              {activeTab === 'chat' && <ChatView />}
+              {activeTab === 'chat' && <ChatView onNavigate={setActiveTab} />}
               {activeTab === 'contact' && <ContactView scrollState={scrollState} />}
               {activeTab === 'changelog' && <ReleaseNotesView scrollState={scrollState} />}
               {activeTab === 'privacy' && <PrivacyView scrollState={scrollState} onNavigate={setActiveTab} />}
