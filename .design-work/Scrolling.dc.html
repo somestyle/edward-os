@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background:#fafaf9; color:#1c1917; -webkit-font-smoothing:antialiased; }
+  a { color:#2177d5; } a:hover { color:#1b5fa8; }
+  #dc-scroller { scrollbar-gutter: stable; scroll-behavior: auto; -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 22px, #000 calc(100% - 26px), transparent 100%); mask-image: linear-gradient(to bottom, transparent 0, #000 22px, #000 calc(100% - 26px), transparent 100%); }
+  #dc-scroller::-webkit-scrollbar { width:6px }
+  #dc-scroller::-webkit-scrollbar-track { background: transparent }
+  #dc-scroller::-webkit-scrollbar-thumb { background:#e7e5e4; border-radius:10px }
+  #dc-scroller::-webkit-scrollbar-thumb:hover { background:#a8a29e }
+  @keyframes dc-caret { 0%,100% { opacity:1 } 50% { opacity:.25 } }
+  .caret { display:inline-block; width:2px; height:0.95em; background:#3b82f6; border-radius:1px; vertical-align:-1px; margin-left:2px; animation: dc-caret 1.15s ease-in-out infinite; }
+  @keyframes dc-pill { from { opacity:0; transform: translate(-50%, 8px) scale(.94) } to { opacity:1; transform: translate(-50%, 0) scale(1) } }
+  .pill { animation: dc-pill .26s cubic-bezier(.16,1,.3,1) both; transition: background .16s ease; }
+  .pill:hover { background:#292524 }
+  .ask { transition: background .16s ease, transform .12s ease; }
+  .ask:hover { background:#1d4ed8 } .ask:active { transform: scale(.97) }
+  @media (prefers-reduced-motion: reduce) { .caret,.pill { animation: none } }
+</style>
+</helmet>
+
+<div style="display:flex; flex-direction:column; height:760px; box-sizing:border-box; padding:20px 22px 22px; gap:12px; position:relative">
+
+  <div style="display:flex; align-items:center; justify-content:space-between; flex-shrink:0">
+    <div style="font-size:17px; font-weight:700; letter-spacing:-0.02em">The scroll</div>
+    <div style="display:flex; align-items:center; gap:7px; padding:5px 10px; border-radius:9999px; background:#ffffff; border:1px solid #ece9e6">
+      <span style="width:6px; height:6px; border-radius:9999px; background: {{ badge.dot }}"></span>
+      <span style="font-size:11px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:#78716c">{{ badge.label }}</span>
+    </div>
+  </div>
+
+  <div id="dc-scroller" onScroll="{{ onScroll }}" onWheel="{{ onWheel }}" onTouchMove="{{ onTouch }}" style="flex-grow:1; overflow-y:auto; min-height:0; padding-right:4px">
+    <div style="display:flex; flex-direction:column; gap:12px; padding:6px 0">
+
+      <div style="display:flex; justify-content:flex-end">
+        <div style="max-width:80%; padding:13px 15px; border-radius:16px; border-bottom-right-radius:4px; background:#2563eb; color:#ffffff; font-size:13.5px; line-height:1.55">Who is Edward?</div>
+      </div>
+      <div style="display:flex; justify-content:flex-start">
+        <div style="max-width:88%; padding:13px 15px; border-radius:16px; border-bottom-left-radius:4px; background:#ffffff; border:1px solid #f5f5f4; box-shadow:0 1px 2px rgba(28,25,23,.05); font-size:13.5px; line-height:1.62; color:#44403c">A product designer working on AI agents and complex SaaS — healthcare, fintech, AI platforms.</div>
+      </div>
+
+      <div id="dc-turn" style="display:flex; flex-direction:column; gap:12px">
+        <sc-if value="{{ asked }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex; justify-content:flex-end">
+            <div style="max-width:80%; padding:13px 15px; border-radius:16px; border-bottom-right-radius:4px; background:#2563eb; color:#ffffff; font-size:13.5px; line-height:1.55">How do you approach designing an agent?</div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ asked }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex; justify-content:flex-start">
+            <div style="max-width:92%; padding:14px 15px; border-radius:16px; border-bottom-left-radius:4px; background:#ffffff; border:1px solid #f5f5f4; box-shadow:0 1px 2px rgba(28,25,23,.05); font-size:13.5px; line-height:1.62; color:#44403c; min-height:20px">{{ answer }}<sc-if value="{{ streaming }}" hint-placeholder-val="{{ true }}"><span class="caret"></span></sc-if></div>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="flex-shrink:0; height: {{ spacerH }}"></div>
+    </div>
+  </div>
+
+  <sc-if value="{{ detached }}" hint-placeholder-val="{{ false }}">
+    <button class="pill" onClick="{{ jump }}" style="position:absolute; left:50%; bottom:96px; z-index:5; font:inherit; font-size:12.5px; font-weight:600; color:#ffffff; background:#1c1917; border:none; border-radius:9999px; padding:9px 15px 9px 13px; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 8px 22px -8px rgba(28,25,23,.5)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"></path><path d="m19 12-7 7-7-7"></path></svg>
+      Jump to latest
+    </button>
+  </sc-if>
+
+  <div style="flex-shrink:0; display:flex; flex-direction:column; gap:8px">
+    <button class="ask" onClick="{{ ask }}" style="font:inherit; font-size:13px; font-weight:600; color:#ffffff; background:#2563eb; border:none; border-radius:11px; padding:12px; cursor:pointer">{{ askLabel }}</button>
+    <div style="font-size:11.5px; color:#a8a29e; line-height:1.45; text-align:center">Scroll up while it writes — following releases on your first upward gesture, not on a position guess.</div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":600,"height":760}}'>
+const ANSWER = 'I start from the failure modes, not the happy path. An agent is only trustworthy if a user can see what it is about to do, interrupt it, and understand why it did what it did — so those three affordances get designed before any of the conversational surface does. Then I map the product to a set of callable actions and design the moments where intent is ambiguous, because that is where every agent actually breaks. The last layer is voice: how it hedges, how it admits a gap, how it hands off to a human. Most of the perceived quality of an agent lives in those seams rather than in the model behind it.';
+const RATE = 3.4; // chars per 40ms tick ~= 85 chars/sec
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { asked: false, chars: 0, detached: false, spacer: 0, running: false };
+  }
+  componentDidMount() { this.measure(); }
+  componentDidUpdate() { this.measure(); }
+  componentWillUnmount() { clearInterval(this.iv); }
+  el() { return document.getElementById('dc-scroller'); }
+  measure() {
+    const el = this.el();
+    const g = document.getElementById('dc-turn');
+    if (!el || !g) return;
+    const want = this.state.asked ? Math.max(0, el.clientHeight - g.offsetHeight - 18) : 0;
+    if (Math.abs(want - this.state.spacer) > 1) this.setState({ spacer: want });
+    else if (this.state.running && !this.state.detached) this.follow();
+  }
+  follow() {
+    const el = this.el();
+    const g = document.getElementById('dc-turn');
+    if (!el || !g) return;
+    const pinned = g.offsetTop - 6;
+    const bottom = el.scrollHeight - el.clientHeight;
+    el.scrollTop = Math.min(pinned, bottom);
+  }
+  ask() {
+    clearInterval(this.iv);
+    this.setState({ asked: true, chars: 0, detached: false, running: true });
+    this.iv = setInterval(() => {
+      const chars = this.state.chars + RATE;
+      if (chars >= ANSWER.length) { clearInterval(this.iv); this.setState({ chars: ANSWER.length, running: false }); return; }
+      this.setState({ chars });
+    }, 40);
+  }
+  renderVals() {
+    const { asked, chars, detached, spacer, running } = this.state;
+    return {
+      asked,
+      answer: ANSWER.slice(0, Math.round(chars)),
+      streaming: running,
+      detached,
+      spacerH: spacer + 'px',
+      askLabel: running ? 'Writing…' : (asked ? 'Ask again' : 'Ask a long question'),
+      badge: running
+        ? (detached ? { label: 'Released', dot: '#f59e0b' } : { label: 'Following', dot: '#3b82f6' })
+        : { label: 'Idle', dot: '#d6d3d1' },
+      ask: () => this.ask(),
+      jump: () => { this.setState({ detached: false }); const el = this.el(); if (el) el.scrollTop = el.scrollHeight; },
+      onWheel: (e) => { if (e.deltaY < -1 && this.state.running && !this.state.detached) this.setState({ detached: true }); },
+      onTouch: () => { if (this.state.running && !this.state.detached) this.setState({ detached: true }); },
+      onScroll: (e) => {
+        const el = e.target;
+        if (!this.state.detached) return;
+        if (el.scrollHeight - el.scrollTop - el.clientHeight < 36) this.setState({ detached: false });
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -26,3 +26,6 @@ dist-ssr
 .env.*
 .vercel
 .env*.local
+
+# Design canvas payload (~2MB generated file, re-seeded from the .dc.html sources)
+.design-work/ai-chat-interaction.html

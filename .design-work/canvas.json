@@ -1,0 +1,39 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "title": "1 · Input", "x": 0, "y": 0, "w": 600, "h": 760 },
+    { "file": "Waiting.dc.html", "title": "2 · Loading", "x": 700, "y": 0, "w": 600, "h": 760 },
+    { "file": "Streaming.dc.html", "title": "3 · Streaming", "x": 1400, "y": 0, "w": 600, "h": 760 },
+    { "file": "Scrolling.dc.html", "title": "4 · Scrolling", "x": 2100, "y": 0, "w": 600, "h": 760 }
+  ],
+  "annotations": [
+    {
+      "id": "n-input",
+      "x": 0,
+      "y": -262,
+      "w": 600,
+      "text": "INPUT — what to change\n\n1. The conic beam runs forever today (animate-[spin_3s_linear_infinite] is unconditional). Permanent motion has no meaning left to spend. Here it only sweeps while the model is working; at rest the composer is a 1px stone border, on focus a soft blue halo.\n\n2. <input> becomes <textarea> that grows 1→5 lines. Enter sends, Shift+Enter breaks. Long questions are currently invisible past 64px of width.\n\n3. Send morphs into Stop rather than greying out. abortControllerRef already exists in ChatView — only clearChat ever calls it, so a bad answer cannot be interrupted. Esc works too.\n\n4. The intro copy names Adopt AI, SamaCare and Kea but gives you nothing to press. Three chips carry the first turn."
+    },
+    {
+      "id": "n-loading",
+      "x": 700,
+      "y": -262,
+      "w": 600,
+      "text": "LOADING — what to change\n\nPress Replay to watch both.\n\n1. Today the dots bubble unmounts and a differently-sized reply bubble mounts in its place — the list visibly jumps at the handoff. Proposed: one bubble mounts on send and never unmounts; the skeleton dissolves into text inside it.\n\n2. 2.6s of undifferentiated waiting reads as lag. This twin is retrieval-grounded, so the wait has real substance to report: Thinking → Reading case studies → Drafting. Same duration, different felt length.\n\n3. Not shown, worth doing: the 429 and 500 replies are pushed as role:'system' and render identically to an answer, in the twin's own voice. They need their own quieter treatment and a Retry."
+    },
+    {
+      "id": "n-streaming",
+      "x": 1400,
+      "y": -262,
+      "w": 600,
+      "text": "STREAMING — what to change\n\n1. Two different reveal models ship side by side: live SSE paints raw chunks, the non-stream fallback runs a 45ms/word typewriter (~1,300 wpm). Whichever path the request takes changes how the product feels. Pick one cadence and drive both through it.\n\n2. Chunks paint on arrival, so the reply stalls then lurches. Buffer arrivals and drain on rAF at a steady rate — network jitter stops being visible. Honest tradeoff: it finishes a few hundred ms later than the burst version.\n\n3. Every chunk re-parses the whole message through ReactMarkdown, and setMessages(prev.map(...)) re-renders the entire list per token. Isolate the streaming node; parse only the settled prefix.\n\n4. ** flashes on screen before its pair arrives. Resolve bold optimistically at the opening delimiter so syntax never reaches the reader. A caret marks the leading edge."
+    },
+    {
+      "id": "n-scrolling",
+      "x": 2100,
+      "y": -262,
+      "w": 600,
+      "text": "SCROLLING — what to change\n\nPress Ask, then scroll up while it writes.\n\n1. The h-[50vh] spacer is fixed, so a short answer leaves half a screen of dead space below it. Measure the turn and give it exactly the remainder — the spacer shrinks to zero as the answer grows.\n\n2. Two phases, not one. While the answer still fits, the question stays pinned to the top and text grows into stable space with zero scroll movement. Only once it overflows does the view start following the leading edge.\n\n3. There is no follow-scroll at all today, and no way back. Following releases on the first upward gesture — intent, not a scroll-position guess, so it never fights you — and Jump to latest brings you back.\n\n4. messagesContainerRef is declared and never used; it is the hook all of this hangs off. Plus mask-image edge fades so text dissolves under the header instead of hard-cutting, and scrollbar-gutter: stable so the column stops shifting."
+    }
+  ],
+  "launch": { "view": "canvas" }
+}
