@@ -620,7 +620,15 @@ const HomeView = ({ onNavigate }) => {
       </div>
 
       {/* Ask my AI twin - below section title */}
-      <div className="group cursor-pointer mb-6" onClick={() => onNavigate('chat')}>
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() => onNavigate('chat')}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onNavigate('chat'); }
+        }}
+        className="group cursor-pointer mb-6 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-app)]"
+      >
         {/* The beam means "working" now that the composer only sweeps while it is.
             At rest this is a plain border; it sweeps on hover. */}
         <div className="relative rounded-2xl overflow-hidden p-[2px] bg-stone-200 dark:bg-stone-700">
@@ -1323,7 +1331,12 @@ const ChatView = ({ onNavigate }) => {
     // an empty turn must not hold space open or be scrolled to.
     const turn = turnRef.current?.offsetHeight ? turnRef.current : null;
     if (!scroller || !spacer) return;
-    const want = turn ? Math.max(0, scroller.clientHeight - turn.offsetHeight - 24) : 0;
+    // Hold open only as much room as the turn can actually use. The twin answers
+    // in 2-4 sentences, so most turns fit easily — those sit near the composer
+    // like any other chat instead of stranding a viewport of empty space below
+    // them. A turn tall enough to need the room still gets pinned to the top.
+    const room = turn ? Math.max(0, scroller.clientHeight - turn.offsetHeight - 24) : 0;
+    const want = Math.min(room, Math.max(48, scroller.clientHeight * 0.12));
     spacer.style.height = `${want}px`;
     if (followRef.current && turn) {
       scroller.scrollTop = Math.min(turn.offsetTop - 8, scroller.scrollHeight - scroller.clientHeight);
@@ -1701,13 +1714,13 @@ const ChatView = ({ onNavigate }) => {
         )}
 
         {showPrompts && (
-          <div className="chat-rail flex gap-2 pb-3 -mx-6 px-6 overflow-x-auto md:mx-0 md:px-0 md:flex-wrap md:overflow-visible">
+          <div className="chat-rail flex gap-2 pb-3 -mx-6 px-6 overflow-x-auto md:mx-0 md:px-0 md:flex-wrap md:overflow-visible [@media(max-height:600px)]:hidden">
             {SUGGESTED_PROMPTS.map((prompt) => (
               <button
                 key={prompt}
                 type="button"
                 onClick={() => pickPrompt(prompt)}
-                className="shrink-0 rounded-full border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 px-3.5 py-2 text-xs font-medium text-stone-600 dark:text-stone-300 transition-all hover:-translate-y-px hover:border-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800"
+                className="shrink-0 inline-flex items-center min-h-11 pointer-fine:min-h-0 rounded-full border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 px-4 pointer-fine:px-3.5 py-2 text-xs font-medium text-stone-600 dark:text-stone-300 transition-all hover:-translate-y-px hover:border-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800"
               >
                 {prompt}
               </button>
@@ -1748,7 +1761,7 @@ const ChatView = ({ onNavigate }) => {
                 onClick={isBusy ? stopTurn : undefined}
                 disabled={!isBusy && !input.trim()}
                 aria-label={isBusy ? 'Stop generating' : 'Send message'}
-                className={`shrink-0 grid place-items-center w-10 h-10 rounded-xl transition-all active:scale-95 ${
+                className={`shrink-0 grid place-items-center w-11 h-11 pointer-fine:w-10 pointer-fine:h-10 rounded-xl transition-all active:scale-95 ${
                   isBusy
                     ? 'bg-stone-900 dark:bg-white text-white dark:text-stone-900'
                     : input.trim()
@@ -1761,7 +1774,7 @@ const ChatView = ({ onNavigate }) => {
             </div>
           </div>
           <div
-            className={`h-4 mt-1.5 px-1 hidden md:flex justify-between text-[11px] text-stone-400 dark:text-stone-500 transition-opacity duration-200 ${
+            className={`h-4 mt-1.5 px-1 hidden md:flex [@media(max-height:600px)]:!hidden justify-between text-[11px] text-stone-400 dark:text-stone-500 transition-opacity duration-200 ${
               isBusy || focused ? 'opacity-100' : 'opacity-0'
             }`}
           >
@@ -2278,7 +2291,7 @@ export default function App() {
              className="absolute top-0 left-0 w-full h-[400px] z-0 [mask-image:linear-gradient(to_bottom,black,transparent)]"
            />
 
-           <div className={`w-full max-w-3xl mx-auto p-6 md:p-12 relative z-10 ${activeTab === 'chat' ? 'h-full' : ''}`}>
+           <div className={`w-full max-w-3xl mx-auto p-6 md:p-12 [@media(max-height:600px)]:py-4 relative z-10 ${activeTab === 'chat' ? 'h-full' : ''}`}>
               {activeTab === 'home' && <HomeView onNavigate={setActiveTab} />}
               {activeTab === 'career' && <CareerView scrollState={scrollState} />}
               {activeTab === 'projects' && <ProjectsView scrollState={scrollState} />}
