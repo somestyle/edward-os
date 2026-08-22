@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback, lazy, Suspense } from 'react';
 import { createPortal } from 'react-dom';
 import { 
   Send, Sparkles, ChevronRight, ChevronDown, User, 
   Home, Briefcase, Award, Zap,
   Layout, GraduationCap, Layers,
   BookOpen, Mail, Linkedin, ExternalLink, Lock,
-  FileText, Mic2, Newspaper, Download, X
+  FileText, Mic2, Newspaper, Download, X, RotateCcw, ArrowDown
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import WidgetLauncher from './components/widgets/WidgetLauncher';
@@ -33,64 +33,93 @@ function getChatSessionId() {
   }
 }
 
-// --- Typewriter streaming hook: reveals text word-by-word ---
-function useTypewriter(fullText, { speedMs = 45, enabled = true } = {}) {
-  const [displayedLength, setDisplayedLength] = useState(0);
-  const fullLength = fullText?.length ?? 0;
+// --- Steady-cadence reveal ---------------------------------------------------
+// Chunk arrival and paint are deliberately decoupled. The network writes into a
+// StreamSource as fast as it likes; a rAF loop drains it at a fixed character
+// rate. A lumpy SSE feed and a single-shot JSON reply therefore reveal at
+// exactly the same cadence, and network jitter never reaches the screen.
+const REVEAL_CHARS_PER_SEC = 82;
 
-  useEffect(() => {
-    if (!enabled || fullLength === 0) {
-      setDisplayedLength(0);
-      return;
-    }
-    // Reduced motion: skip the animation and show the full reply at once
-    setDisplayedLength(prefersReducedMotion() ? fullLength : 0);
-  }, [enabled, fullText, fullLength]);
-
-  useEffect(() => {
-    if (!enabled || fullLength === 0) return;
-    if (displayedLength >= fullLength) return;
-    const t = setTimeout(() => {
-      setDisplayedLength((n) => {
-        if (n >= fullLength) return n;
-        const nextSpace = fullText.indexOf(' ', n + 1);
-        return nextSpace === -1 ? fullLength : Math.min(nextSpace + 1, fullLength);
-      });
-    }, speedMs);
-    return () => clearTimeout(t);
-  }, [enabled, fullText, fullLength, displayedLength, speedMs]);
-
-  const displayed = fullText?.slice(0, displayedLength) ?? '';
-  const isComplete = fullLength > 0 && displayedLength >= fullLength;
-  const skip = useCallback(() => setDisplayedLength(fullLength), [fullLength]);
-  return [displayed, isComplete, skip];
+function createStreamSource() {
+  let text = '';
+  let done = false;
+  const subscribers = new Set();
+  const notify = () => subscribers.forEach((fn) => fn());
+  return {
+    push(chunk) { text += chunk; notify(); },
+    finish() { done = true; notify(); },
+    get text() { return text; },
+    get done() { return done; },
+    subscribe(fn) { subscribers.add(fn); return () => subscribers.delete(fn); },
+  };
 }
 
-// --- Typewriter component: reveals text word-by-word and calls onComplete when done ---
-function TypewriterText({ content, onComplete, speedMs = 45 }) {
-  const [displayed, isComplete, skip] = useTypewriter(content, { speedMs, enabled: !!content });
-  const onCompleteRef = useRef(onComplete);
-  const hasCalledRef = useRef(false);
-  onCompleteRef.current = onComplete;
+// Markdown arrives a character at a time, so the source is briefly invalid:
+// `**bold` has no closing pair yet, `[label](htt` has no closing paren. Rendering
+// that raw is what flashes syntax at the reader. Resolve it optimistically —
+// close what is open, hide what cannot be closed yet.
+function stabilizeMarkdown(src) {
+  let s = src;
+  const openLink = /\[[^\]]*$/.exec(s) || /\[[^\]]*\]\([^)]*$/.exec(s);
+  if (openLink) s = s.slice(0, openLink.index);
+  if (/(^|[^*])\*$/.test(s)) s = s.slice(0, -1); // first half of an arriving **
+  if ((s.match(/\*\*/g) || []).length % 2 === 1) s += '**';
+  return s;
+}
+
+// Renders a StreamSource at the steady rate. Owns its own frame loop and state,
+// so a token advancing re-renders this node alone rather than the message list.
+// onAdvance fires each painted frame — the scroller uses it to stay in step.
+function StreamingText({ source, onAdvance, onComplete }) {
+  const [revealed, setRevealed] = useState(0);
+  const advanceRef = useRef(onAdvance);
+  const completeRef = useRef(onComplete);
+
+  // Assigned before paint so the frame loop below always calls the current pair.
+  useLayoutEffect(() => {
+    advanceRef.current = onAdvance;
+    completeRef.current = onComplete;
+  });
+
   useEffect(() => {
-    if (!content || content.length === 0) {
-      if (!hasCalledRef.current && onCompleteRef.current) {
-        hasCalledRef.current = true;
-        onCompleteRef.current();
+    let settled = false;
+    let frame = null;
+    const settle = () => {
+      if (settled) return;
+      settled = true;
+      completeRef.current?.(source.text);
+    };
+
+    if (prefersReducedMotion()) {
+      // No drain: whatever has landed is shown at once.
+      const showAll = () => {
+        setRevealed(source.text.length);
+        advanceRef.current?.();
+        if (source.done) settle();
+      };
+      showAll();
+      return source.subscribe(showAll);
+    }
+
+    let shown = 0;
+    let last = performance.now();
+    const tick = (now) => {
+      const dt = Math.min(now - last, 120); // a backgrounded tab must not lurch
+      last = now;
+      const target = source.text.length;
+      if (shown < target) {
+        shown = Math.min(target, shown + (dt / 1000) * REVEAL_CHARS_PER_SEC);
+        setRevealed(Math.floor(shown));
+        advanceRef.current?.();
       }
-      return;
-    }
-    if (isComplete && !hasCalledRef.current && onCompleteRef.current) {
-      hasCalledRef.current = true;
-      onCompleteRef.current();
-    }
-  }, [content, isComplete]);
-  if (!content || content.length === 0) return null;
-  return (
-    <span onClick={isComplete ? undefined : skip} className={isComplete ? '' : 'cursor-pointer'} title={isComplete ? undefined : 'Click to show full reply'}>
-      <MarkdownRenderer>{displayed}</MarkdownRenderer>
-    </span>
-  );
+      if (source.done && shown >= target) return settle();
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => { if (frame) cancelAnimationFrame(frame); };
+  }, [source]);
+
+  return <MarkdownRenderer>{stabilizeMarkdown(source.text.slice(0, revealed))}</MarkdownRenderer>;
 }
 
 // --- Markdown renderer for chat (bold, links, etc.) ---
@@ -1204,93 +1233,162 @@ function loadChatFromSession() {
   }
 }
 
+const SUGGESTED_PROMPTS = [
+  "How does Adopt AI's agent work?",
+  'Walk me through SamaCare',
+  'Designing 0→1 in healthcare',
+];
+
+// The wait is retrieval-grounded, so it has something true to report while it
+// runs. Same duration either way; this is about what 2.5s feels like.
+const WAIT_PHASES = [
+  { at: 700, label: 'Reading case studies' },
+  { at: 1700, label: 'Drafting' },
+];
+
 const ChatView = () => {
   const [messages, setMessages] = useState(loadChatFromSession);
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [streamingForIndex, setStreamingForIndex] = useState(null);
-  const [isLiveStream, setIsLiveStream] = useState(false);
+  const [live, setLive] = useState(null);      // active StreamSource, or null
+  const [phase, setPhase] = useState(null);    // wait label, until the first token
+  const [detached, setDetached] = useState(false);
+  const [focused, setFocused] = useState(false);
+
   const inputRef = useRef(null);
   const abortControllerRef = useRef(null);
-  const lastUserMessageRef = useRef(null);
-  const messagesContainerRef = useRef(null);
+  const scrollerRef = useRef(null);
+  const turnRef = useRef(null);
+  const spacerRef = useRef(null);
+  const followRef = useRef(true);
+  const phaseTimersRef = useRef([]);
+
+  const isBusy = live !== null;
 
   useEffect(() => {
     sessionStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
   }, [messages]);
 
-  const handleTypewriterComplete = useCallback(() => {
-    setLoading(false);
-    setStreamingForIndex(null);
-    requestAnimationFrame(() => {
-      inputRef.current?.focus();
-    });
-  }, []);
-
-  // Snap the user's question to the top when they send it
-  useEffect(() => {
-    if (loading && lastUserMessageRef.current) {
-      // Snap the user's question to the top
-      lastUserMessageRef.current.scrollIntoView({
-        behavior: prefersReducedMotion() ? 'auto' : 'smooth',
-        block: 'start'
-      });
-    }
-  }, [loading, messages.length]);
-
   useEffect(() => {
     inputRef.current?.focus();
+    return () => phaseTimersRef.current.forEach(clearTimeout);
   }, []);
 
-  const handleSend = async (e) => {
-    e.preventDefault();
-    if (!input.trim()) return;
+  // --- Scrolling -------------------------------------------------------------
+  // Two phases, driven straight from the DOM so a token landing costs no render.
+  // While the turn still fits, the question stays pinned to the top and the
+  // answer grows into space the spacer already holds open — the view does not
+  // move at all while you read. Once the turn outgrows the viewport the spacer
+  // is gone and the same clamp starts following the leading edge instead.
+  const syncLayout = useCallback(() => {
+    const scroller = scrollerRef.current;
+    const spacer = spacerRef.current;
+    // The wrapper is always mounted; before the first question it is empty, and
+    // an empty turn must not hold space open or be scrolled to.
+    const turn = turnRef.current?.offsetHeight ? turnRef.current : null;
+    if (!scroller || !spacer) return;
+    const want = turn ? Math.max(0, scroller.clientHeight - turn.offsetHeight - 24) : 0;
+    spacer.style.height = `${want}px`;
+    if (followRef.current && turn) {
+      scroller.scrollTop = Math.min(turn.offsetTop - 8, scroller.scrollHeight - scroller.clientHeight);
+    }
+  }, []);
 
-    const userMsg = input;
-    setInput("");
-    setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
-    setLoading(true);
+  useLayoutEffect(syncLayout, [messages, live, phase, syncLayout]);
 
-    // Index where the model reply will land: existing messages + the user message above
-    const replyIndex = messages.length + 1;
+  useEffect(() => {
+    const onResize = () => syncLayout();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [syncLayout]);
 
-    let unlockInFinally = true;
+  // Following releases on an upward gesture, not on a scroll-position guess —
+  // position alone cannot tell our own scrolling apart from the reader's.
+  const release = useCallback(() => {
+    if (!followRef.current) return;
+    followRef.current = false;
+    setDetached(true);
+  }, []);
+
+  const handleWheel = useCallback((e) => { if (e.deltaY < -1) release(); }, [release]);
+
+  const handleScrollKeys = useCallback((e) => {
+    if (['ArrowUp', 'PageUp', 'Home'].includes(e.key)) release();
+  }, [release]);
+
+  const handleScroll = useCallback((e) => {
+    if (followRef.current) return;
+    const el = e.currentTarget;
+    if (el.scrollHeight - el.scrollTop - el.clientHeight < 40) {
+      followRef.current = true;
+      setDetached(false);
+    }
+  }, []);
+
+  const jumpToLatest = useCallback(() => {
+    followRef.current = true;
+    setDetached(false);
+    const scroller = scrollerRef.current;
+    if (scroller) {
+      scroller.scrollTo({
+        top: scroller.scrollHeight,
+        behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+      });
+    }
+  }, []);
+
+  // --- The turn --------------------------------------------------------------
+  const startPhases = () => {
+    phaseTimersRef.current.forEach(clearTimeout);
+    setPhase('Thinking');
+    phaseTimersRef.current = WAIT_PHASES.map(({ at, label }) =>
+      setTimeout(() => setPhase(label), at)
+    );
+  };
+
+  const stopPhases = () => {
+    phaseTimersRef.current.forEach(clearTimeout);
+    phaseTimersRef.current = [];
+    setPhase(null);
+  };
+
+  const askQuestion = async (question, history) => {
+    const source = createStreamSource();
+    setLive(source);
+    startPhases();
+    followRef.current = true;
+    setDetached(false);
+
+    const fail = (text) => {
+      stopPhases();
+      setLive(null);
+      setMessages((prev) => [...prev, { role: 'system', kind: 'error', text }]);
+    };
+
     abortControllerRef.current = new AbortController();
-    const signal = abortControllerRef.current.signal;
     try {
-      const history = messages.map((msg) => ({
-        role: msg.role === 'user' ? 'user' : 'model',
-        parts: [{ text: msg.text }],
-      }));
-      history.push({ role: 'user', parts: [{ text: userMsg }] });
-
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: history,
+          contents: [...history, { role: 'user', parts: [{ text: question }] }],
           sessionId: getChatSessionId(),
         }),
-        signal,
+        signal: abortControllerRef.current.signal,
       });
+
       if (response.status === 429) {
-        setMessages(prev => [...prev, { role: 'system', text: "I've been chatting a little too much today and reached my limit. Check out the rest of the site to learn more about my experience and background in the meantime." }]);
-        return;
+        return fail("I've been chatting a little too much today and reached my limit. Check out the rest of the site to learn more about my experience and background in the meantime.");
       }
-      if (response.status === 500) {
-        setMessages(prev => [...prev, { role: 'system', text: "I'm having trouble connecting to my AI services right now. While I'm offline, you can reach the real me at [ed@edwardchu.xyz](mailto:ed@edwardchu.xyz)." }]);
-        return;
+      if (!response.ok) {
+        return fail("I'm having trouble connecting to my AI services right now. While I'm offline, you can reach the real me at [ed@edwardchu.xyz](mailto:ed@edwardchu.xyz).");
       }
 
       const contentType = response.headers.get('content-type') || '';
       if (contentType.includes('text/event-stream') && response.body) {
-        // Live SSE stream from the Gemini proxy: render tokens as they arrive
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let buffer = '';
-        let fullText = '';
-        let started = false;
-        while (true) {
+        for (;;) {
           const { done, value } = await reader.read();
           if (done) break;
           buffer += decoder.decode(value, { stream: true });
@@ -1300,79 +1398,155 @@ const ChatView = () => {
             if (!line.startsWith('data:')) continue;
             const payload = line.slice(5).trim();
             if (!payload || payload === '[DONE]') continue;
-            let chunkText = '';
+            let chunk = '';
             try {
-              chunkText = JSON.parse(payload).candidates?.[0]?.content?.parts?.[0]?.text || '';
-            } catch { /* incomplete JSON across chunks; skip */ }
-            if (!chunkText) continue;
-            fullText += chunkText;
-            const snapshot = fullText;
-            if (!started) {
-              started = true;
-              setIsLiveStream(true);
-              setStreamingForIndex(replyIndex);
-              setMessages(prev => [...prev, { role: 'system', text: snapshot }]);
-            } else {
-              setMessages(prev => prev.map((m, idx) => idx === replyIndex ? { ...m, text: snapshot } : m));
-            }
+              chunk = JSON.parse(payload).candidates?.[0]?.content?.parts?.[0]?.text || '';
+            } catch { /* incomplete JSON across chunks; the next read completes it */ }
+            if (!chunk) continue;
+            if (!source.text) stopPhases();
+            source.push(chunk);
           }
         }
-        if (!started) {
-          setMessages(prev => [...prev, { role: 'system', text: "I'm processing that... try asking differently?" }]);
-        }
-        setStreamingForIndex(null);
-        setIsLiveStream(false);
       } else {
-        // Non-streaming fallback: full JSON reply revealed with the typewriter
+        // Non-streaming fallback: the whole reply lands at once and is revealed
+        // through the same drain, so the cadence does not depend on the path.
         const data = await response.json();
-        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "I'm processing that... try asking differently?";
-        setMessages(prev => {
-          const next = [...prev, { role: 'system', text: reply }];
-          setStreamingForIndex(next.length - 1);
-          return next;
-        });
-        unlockInFinally = false;
+        stopPhases();
+        source.push(data.candidates?.[0]?.content?.parts?.[0]?.text || "I'm processing that... try asking differently?");
       }
+
+      if (!source.text) source.push("I'm processing that... try asking differently?");
+      stopPhases();
+      source.finish();
     } catch (err) {
-      if (err?.name !== 'AbortError') {
-        setMessages(prev => [...prev, { role: 'system', text: "Connection error. Please try again." }]);
-      }
-      setStreamingForIndex(null);
-      setIsLiveStream(false);
+      if (err?.name === 'AbortError') return; // stopTurn has already settled up
+      fail('Connection error. Please try again.');
     } finally {
       abortControllerRef.current = null;
-      if (unlockInFinally) {
-        setLoading(false);
-        inputRef.current?.focus();
-      }
     }
   };
 
-  const isStreaming = streamingForIndex !== null;
-  const isBusy = loading || isStreaming;
-  const hasStarted = messages.length > 1;
+  const handleSend = (e) => {
+    e?.preventDefault();
+    const question = input.trim();
+    if (!question || isBusy) return;
+    const history = messages
+      .filter((m) => !m.kind)
+      .map((m) => ({ role: m.role === 'user' ? 'user' : 'model', parts: [{ text: m.text }] }));
+    setInput("");
+    if (inputRef.current) inputRef.current.style.height = 'auto';
+    setMessages((prev) => [...prev, { role: 'user', text: question }]);
+    askQuestion(question, history);
+  };
+
+  // Stopping keeps whatever has already been written — a half answer is still
+  // an answer, and throwing it away is a second punishment for interrupting.
+  const stopTurn = () => {
+    abortControllerRef.current?.abort();
+    abortControllerRef.current = null;
+    stopPhases();
+    const partial = live?.text?.trim();
+    setLive(null);
+    if (partial) setMessages((prev) => [...prev, { role: 'system', text: partial }]);
+    inputRef.current?.focus();
+  };
+
+  const settleTurn = useCallback((text) => {
+    setLive(null);
+    stopPhases();
+    if (text) setMessages((prev) => [...prev, { role: 'system', text }]);
+    requestAnimationFrame(() => inputRef.current?.focus());
+  }, []);
+
+  const retryLast = () => {
+    const lastUser = [...messages].reverse().find((m) => m.role === 'user');
+    if (!lastUser || isBusy) return;
+    const trimmed = messages.slice(0, messages.findLastIndex((m) => m.kind === 'error'));
+    const history = trimmed
+      .filter((m) => !m.kind && m !== lastUser)
+      .map((m) => ({ role: m.role === 'user' ? 'user' : 'model', parts: [{ text: m.text }] }));
+    setMessages(trimmed);
+    askQuestion(lastUser.text, history.slice(0, -1));
+  };
+
+  const pickPrompt = (prompt) => {
+    setInput(prompt);
+    inputRef.current?.focus();
+  };
 
   const clearChat = () => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-    setLoading(false);
-    setStreamingForIndex(null);
-    setIsLiveStream(false);
+    abortControllerRef.current?.abort();
+    abortControllerRef.current = null;
+    stopPhases();
+    setLive(null);
     setMessages([DEFAULT_INTRO]);
     sessionStorage.removeItem(CHAT_STORAGE_KEY);
+    setInput("");
+    if (inputRef.current) inputRef.current.style.height = 'auto';
     inputRef.current?.focus();
+  };
+
+  const handleComposerKey = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+      e.preventDefault();
+      handleSend();
+    }
+    if (e.key === 'Escape' && isBusy) {
+      e.preventDefault();
+      stopTurn();
+    }
+  };
+
+  const autoGrow = (el) => {
+    el.style.height = 'auto';
+    el.style.height = `${Math.min(el.scrollHeight, 132)}px`;
+  };
+
+  const hasStarted = messages.length > 1;
+  const showPrompts = messages.length <= 1 && !isBusy;
+  const lastUserIndex = messages.findLastIndex((m) => m.role === 'user');
+  const head = lastUserIndex === -1 ? messages : messages.slice(0, lastUserIndex);
+  const tail = lastUserIndex === -1 ? [] : messages.slice(lastUserIndex);
+
+  const bubble = (msg, key) => {
+    if (msg.kind === 'error') {
+      return (
+        <div key={key} className="flex justify-start">
+          <div className="max-w-[85%] md:max-w-[75%] px-4 py-3 rounded-2xl rounded-bl-none text-sm leading-relaxed bg-stone-100 dark:bg-stone-800/60 text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-700">
+            <MarkdownRenderer>{msg.text}</MarkdownRenderer>
+            <button
+              type="button"
+              onClick={retryLast}
+              className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-stone-700 dark:text-stone-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            >
+              <RotateCcw size={13} />
+              Try again
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div key={key} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+        <div className={`max-w-[85%] md:max-w-[75%] p-4 rounded-2xl text-sm leading-relaxed shadow-sm ${
+          msg.role === 'user'
+            ? 'bg-blue-600 text-white rounded-br-none'
+            : 'bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-200 border border-stone-100 dark:border-stone-700 rounded-bl-none'
+        }`}>
+          {msg.role === 'user' ? msg.text : <MarkdownRenderer>{msg.text}</MarkdownRenderer>}
+        </div>
+      </div>
+    );
   };
 
   return (
     <div className="flex flex-col h-full animate-in fade-in duration-500 relative">
-      
-      {/* 3. Header: Consistent Typography, Hide on Start */}
+
       {!hasStarted && (
         <div className="shrink-0 -mx-6 px-6 md:-mx-12 md:px-12 py-4 z-30">
-           <h2 className="text-3xl font-bold text-stone-900 dark:text-white tracking-tight">
-              Edward's AI
-            </h2>
+          <h2 className="text-3xl font-bold text-stone-900 dark:text-white tracking-tight">
+            Edward's AI
+          </h2>
         </div>
       )}
       {hasStarted && (
@@ -1383,89 +1557,140 @@ const ChatView = () => {
           <button
             type="button"
             onClick={clearChat}
-            className="text-sm font-medium text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="text-sm font-medium text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200"
           >
             Clear chat
           </button>
         </div>
       )}
 
-      {/* Messages Area */}
-      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto pr-2 pb-4 relative z-10">
+      {/* Messages */}
+      <div
+        ref={scrollerRef}
+        onScroll={handleScroll}
+        onWheel={handleWheel}
+        onTouchMove={release}
+        onKeyDown={handleScrollKeys}
+        tabIndex={-1}
+        className="chat-scroller flex-1 overflow-y-auto pr-2 pb-4 relative z-10 outline-none"
+      >
         <div className="space-y-4 pt-4">
-          {messages.map((msg, i) => {
-            // Find the last user message in the entire list
-            const lastUserMessageIndex = messages.map((m, idx) => m.role === 'user' ? idx : -1).filter(idx => idx !== -1).pop();
-            const isLastUserMessage = msg.role === 'user' && i === lastUserMessageIndex;
-            return (
-            <div 
-              key={i} 
-              ref={isLastUserMessage ? lastUserMessageRef : null}
-              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} ${msg.role === 'user' ? 'scroll-mt-32' : ''}`}
-            >
-              <div className={`max-w-[85%] md:max-w-[75%] p-4 rounded-2xl text-sm leading-relaxed shadow-sm ${
-                msg.role === 'user'
-                  ? 'bg-blue-600 text-white rounded-br-none'
-                  : 'bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-200 border border-stone-100 dark:border-stone-700 rounded-bl-none'
-              }`}>
-                {msg.role === 'user' ? (
-                  msg.text
-                ) : i === streamingForIndex ? (
-                  isLiveStream ? (
-                    <MarkdownRenderer>{msg.text}</MarkdownRenderer>
+          {head.map((msg, i) => bubble(msg, i))}
+
+          {/* The live turn: question, then one answer bubble that mounts on send
+              and never unmounts — the skeleton dissolves into text inside it. */}
+          <div ref={turnRef} className="space-y-4">
+            {tail.map((msg, i) => bubble(msg, lastUserIndex + i))}
+            {isBusy && (
+              <div className="flex justify-start">
+                <div className="chat-stream max-w-[85%] md:max-w-[75%] p-4 rounded-2xl rounded-bl-none text-sm leading-relaxed shadow-sm bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-200 border border-stone-100 dark:border-stone-700">
+                  {phase && (
+                    <div className="flex items-center gap-2 mb-2.5 text-xs font-semibold text-blue-600 dark:text-blue-400">
+                      <Sparkles size={12} className="chat-phase-icon" />
+                      <span key={phase} className="chat-phase-label">{phase}</span>
+                    </div>
+                  )}
+                  {live.text ? (
+                    <StreamingText source={live} onAdvance={syncLayout} onComplete={settleTurn} />
                   ) : (
-                    <TypewriterText
-                      content={msg.text}
-                      onComplete={handleTypewriterComplete}
-                      speedMs={45}
-                    />
-                  )
-                ) : (
-                  <MarkdownRenderer>{msg.text}</MarkdownRenderer>
-                )}
+                    <div className="flex flex-col gap-2 py-0.5" aria-label="Preparing a reply">
+                      <span className="chat-skeleton-bar w-full" />
+                      <span className="chat-skeleton-bar w-[92%] [animation-delay:-0.35s]" />
+                      <span className="chat-skeleton-bar w-[58%] [animation-delay:-0.7s]" />
+                    </div>
+                  )}
+                  {live.text && <span className="chat-caret" aria-hidden="true" />}
+                </div>
               </div>
-            </div>
-            );
-          })}
-          {loading && streamingForIndex === null && (
-            <div className="flex justify-start">
-              <div className="bg-white dark:bg-stone-800 border border-stone-100 dark:border-stone-700 p-4 rounded-2xl rounded-bl-none shadow-sm flex gap-2">
-                <div className="w-2 h-2 bg-stone-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                <div className="w-2 h-2 bg-stone-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                <div className="w-2 h-2 bg-stone-400 rounded-full animate-bounce"></div>
-              </div>
-            </div>
-          )}
-          {/* Scroll spacer to allow last message to scroll to top */}
-          <div className="shrink-0 h-[50vh]"></div>
+            )}
+          </div>
+
+          {/* Sized to exactly the remainder of the viewport, so a short answer
+              leaves no dead space and a long one needs none. */}
+          <div ref={spacerRef} className="shrink-0" style={{ height: 0 }} />
         </div>
       </div>
 
-      {/* Input Area */}
+      {/* Input */}
       <div className="pt-4 bg-[var(--bg-app)] transition-colors duration-300 z-20 pb-32 md:pb-20 relative">
-        <form onSubmit={handleSend} className="relative">
-          {/* Laser Beam Container */}
-          <div className="relative rounded-2xl overflow-hidden p-[2px]">
-            {/* Animated Rotating Gradient */}
-            <div className="absolute inset-[-100%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_90deg,transparent_0_340deg,#3B82F6_360deg)] opacity-100" />
-            
-            {/* Inner Content Card (Input Wrapper) - Use inset ring for focus state instead of outline */}
-            <div className="relative bg-white dark:bg-stone-900 rounded-[14px] flex items-center transition-all duration-200 focus-within:ring-1 focus-within:ring-inset focus-within:ring-stone-200 dark:focus-within:ring-stone-700">
-              <input 
-                ref={inputRef}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask AI anything..."
-                autoFocus
-                className="w-full bg-transparent border-none pl-5 pr-14 h-16 text-base md:text-sm focus:ring-0 outline-none text-stone-900 dark:text-white placeholder-stone-400"
-              />
-              <button 
-                disabled={!input.trim() || isBusy}
-                className="absolute right-3 top-1/2 -translate-y-1/2 bg-gradient-to-tr from-blue-500 to-sky-500 text-white p-3 rounded-xl disabled:opacity-50 disabled:from-stone-400 disabled:to-stone-500 hover:from-blue-600 hover:to-sky-600 transition-all shadow-lg shadow-blue-500/20"
+        {detached && isBusy && (
+          <button
+            type="button"
+            onClick={jumpToLatest}
+            className="chat-jump-pill absolute -top-2 left-1/2 z-30 flex items-center gap-1.5 rounded-full bg-stone-900 dark:bg-white px-3.5 py-2 text-xs font-semibold text-white dark:text-stone-900 shadow-lg shadow-stone-900/20"
+          >
+            <ArrowDown size={13} />
+            Jump to latest
+          </button>
+        )}
+
+        {showPrompts && (
+          <div className="flex flex-wrap gap-2 pb-3">
+            {SUGGESTED_PROMPTS.map((prompt) => (
+              <button
+                key={prompt}
+                type="button"
+                onClick={() => pickPrompt(prompt)}
+                className="rounded-full border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 px-3.5 py-2 text-xs font-medium text-stone-600 dark:text-stone-300 transition-all hover:-translate-y-px hover:border-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800"
               >
-                <Send size={18} />
+                {prompt}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <form onSubmit={handleSend} className="relative">
+          <div
+            className={`relative rounded-2xl overflow-hidden p-[2px] transition-shadow duration-200 ${
+              isBusy
+                ? 'bg-white dark:bg-stone-900 shadow-[0_0_0_1px_rgba(59,130,246,0.16)]'
+                : focused
+                  ? 'bg-stone-200 dark:bg-stone-700 shadow-[0_0_0_4px_rgba(59,130,246,0.10)]'
+                  : 'bg-stone-200 dark:bg-stone-700'
+            }`}
+          >
+            {/* The beam means "working". It only sweeps while that is true. */}
+            {isBusy && (
+              <div className="absolute inset-[-100%] animate-[spin_2.2s_linear_infinite] bg-[conic-gradient(from_90deg,transparent_0_318deg,#3B82F6_358deg,transparent_360deg)]" />
+            )}
+
+            <div className="relative bg-white dark:bg-stone-900 rounded-[14px] flex items-end gap-2 py-2.5 pl-5 pr-2.5">
+              <textarea
+                ref={inputRef}
+                rows={1}
+                value={input}
+                onChange={(e) => { setInput(e.target.value); autoGrow(e.target); }}
+                onKeyDown={handleComposerKey}
+                onFocus={() => setFocused(true)}
+                onBlur={() => setFocused(false)}
+                placeholder="Ask about a project, a decision, a tradeoff…"
+                autoFocus
+                className="flex-1 resize-none bg-transparent border-none py-2.5 max-h-[132px] text-base md:text-sm leading-relaxed focus:ring-0 outline-none text-stone-900 dark:text-white placeholder-stone-400"
+              />
+              <button
+                type={isBusy ? 'button' : 'submit'}
+                onClick={isBusy ? stopTurn : undefined}
+                disabled={!isBusy && !input.trim()}
+                aria-label={isBusy ? 'Stop generating' : 'Send message'}
+                className={`shrink-0 grid place-items-center w-10 h-10 rounded-xl transition-all active:scale-95 ${
+                  isBusy
+                    ? 'bg-stone-900 dark:bg-white text-white dark:text-stone-900'
+                    : input.trim()
+                      ? 'bg-gradient-to-tr from-blue-500 to-sky-500 text-white shadow-lg shadow-blue-500/20 hover:from-blue-600 hover:to-sky-600'
+                      : 'bg-stone-100 dark:bg-stone-800 text-stone-400 dark:text-stone-600'
+                }`}
+              >
+                {isBusy ? <span className="block w-2.5 h-2.5 rounded-[3px] bg-current" /> : <Send size={18} />}
               </button>
             </div>
+          </div>
+          <div
+            className={`h-4 mt-1.5 px-1 flex justify-between text-[11px] text-stone-400 dark:text-stone-500 transition-opacity duration-200 ${
+              isBusy || focused ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            <span>{isBusy ? 'Esc to stop' : 'Enter to send'}</span>
+            <span>{isBusy ? '' : 'Shift + Enter for a new line'}</span>
           </div>
         </form>
       </div>

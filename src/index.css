@@ -359,3 +359,80 @@ html, body {
     animation: none;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Chat interaction — the reveal, the wait, and the scroll.
+   Paired with ChatView in App.jsx; the JS-driven half checks the same
+   prefers-reduced-motion query.
+   --------------------------------------------------------------------------- */
+
+/* Text dissolves under the header and the composer instead of hard-cutting,
+   and the gutter is reserved so the column stops shifting when the thread
+   grows past one screen. */
+.chat-scroller {
+  scrollbar-gutter: stable;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 20px, #000 calc(100% - 24px), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 20px, #000 calc(100% - 24px), transparent 100%);
+}
+
+/* Marks the leading edge while text is arriving. MarkdownRenderer maps <p> to a
+   block span, so the last one goes inline for as long as the caret is there. */
+.chat-caret {
+  display: inline-block;
+  width: 2px;
+  height: 0.95em;
+  margin-left: 2px;
+  vertical-align: -1px;
+  border-radius: 1px;
+  background: var(--accent);
+  animation: chat-caret 1.15s ease-in-out infinite;
+}
+@keyframes chat-caret {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+.chat-stream > span > span:last-child {
+  display: inline;
+}
+
+/* The wait, before the first token. These are placeholders for text that is
+   about to arrive in the same bubble — never a spinner in a different one. */
+.chat-skeleton-bar {
+  display: block;
+  height: 9px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #efedeb 0%, #efedeb 38%, #e0ddda 50%, #efedeb 62%, #efedeb 100%);
+  background-size: 250% 100%;
+  animation: chat-skeleton 1.6s linear infinite;
+}
+.dark .chat-skeleton-bar {
+  background-image: linear-gradient(90deg, #3a3532 0%, #3a3532 38%, #4a4441 50%, #3a3532 62%, #3a3532 100%);
+}
+@keyframes chat-skeleton {
+  0% { background-position: 220% 0; }
+  100% { background-position: -120% 0; }
+}
+
+.chat-phase-label {
+  animation: chat-phase 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes chat-phase {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+.chat-phase-icon {
+  animation: chat-phase-icon 2.4s linear infinite;
+}
+@keyframes chat-phase-icon {
+  to { transform: rotate(360deg); }
+}
+
+/* Appears only once following has been released. */
+.chat-jump-pill {
+  transform: translateX(-50%);
+  animation: chat-jump-pill 0.26s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes chat-jump-pill {
+  from { opacity: 0; transform: translate(-50%, 8px) scale(0.94); }
+  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
