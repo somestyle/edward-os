@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background:#fafaf9; color:#1c1917; -webkit-font-smoothing:antialiased; }
+  a { color:#2177d5; } a:hover { color:#1b5fa8; }
+  .rail { overflow-x:auto; scrollbar-width:none; -ms-overflow-style:none; }
+  .rail::-webkit-scrollbar { display:none; }
+</style>
+</helmet>
+
+<div style="display:flex; flex-direction:column; height:844px; box-sizing:border-box; padding:26px 18px 0; gap:14px">
+
+  <div style="flex-shrink:0; display:flex; align-items:center; justify-content:space-between">
+    <div style="font-size:19px; font-weight:700; letter-spacing:-0.02em">Edward's AI</div>
+    <div style="font-size:13px; font-weight:500; color:#78716c">Clear chat</div>
+  </div>
+
+  <div style="flex-grow:1; display:flex; flex-direction:column; justify-content:flex-end; gap:11px; min-height:0; overflow:hidden">
+    <div style="display:flex; justify-content:flex-end">
+      <div style="max-width:84%; padding:13px 15px; border-radius:16px; border-bottom-right-radius:4px; background:#2563eb; color:#ffffff; font-size:14px; line-height:1.5">What did you own at SamaCare?</div>
+    </div>
+    <div style="display:flex; justify-content:flex-start">
+      <div style="max-width:90%; padding:15px; border-radius:16px; border-bottom-left-radius:4px; background:#ffffff; border:1px solid #f5f5f4; box-shadow:0 1px 2px rgba(28,25,23,.05); font-size:14px; line-height:1.6; color:#44403c">
+        <p style="margin:0 0 10px">I led three things at <strong style="font-weight:700; color:#1c1917">SamaCare</strong>:</p>
+        <ul style="margin:0 0 10px; padding-left:18px; list-style:disc; display:flex; flex-direction:column; gap:5px">
+          <li style="padding-left:2px">Prior-auth intake, end to end</li>
+          <li style="padding-left:2px">The reviewer queue and its audit trail</li>
+          <li style="padding-left:2px">A Chrome extension that cut friction</li>
+        </ul>
+        <p style="margin:0">Happy to go deeper on any of them.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="rail" style="flex-shrink:0; display:flex; gap:8px; padding-bottom:2px">
+    <sc-for list="{{ chips }}" as="chip" hint-placeholder-count="3">
+      <button style="flex-shrink:0; font:inherit; font-size:13px; font-weight:500; color:#57534e; background:#ffffff; border:1px solid #e7e5e4; border-radius:9999px; padding:11px 15px; min-height:44px; line-height:1.2; cursor:pointer">{{ chip }}</button>
+    </sc-for>
+  </div>
+
+  <div style="flex-shrink:0; position:relative; border-radius:16px; padding:1.5px; background:#e7e5e4">
+    <div style="position:relative; background:#ffffff; border-radius:14.5px; display:flex; align-items:center; gap:8px; padding:8px 8px 8px 17px">
+      <span style="flex-grow:1; font-size:16px; color:#a8a29e; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">Ask about my work</span>
+      <span style="flex-shrink:0; width:44px; height:44px; border-radius:12px; background:#f5f5f4; display:flex; align-items:center; justify-content:center">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#c4bfba" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"></path><path d="M22 2 15 22l-4-9-9-4Z"></path></svg>
+      </span>
+    </div>
+  </div>
+
+  <div style="flex-shrink:0; height:78px; display:flex; align-items:flex-start; justify-content:center; padding-top:12px">
+    <div style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.85); border:1px solid rgba(255,255,255,.6); border-radius:9999px; padding:9px 15px; box-shadow:0 8px 32px rgba(0,0,0,.14)">
+      <sc-for list="{{ dock }}" as="d" hint-placeholder-count="6">
+        <span style="width:30px; height:30px; border-radius:9999px; background: {{ d.bg }}; display:flex; align-items:center; justify-content:center">
+          <span style="width:13px; height:13px; border-radius:3px; background: {{ d.fg }}"></span>
+        </span>
+      </sc-for>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      chips: ['Adopt AI’s agent', 'SamaCare', 'Designing 0→1', 'How I work with eng'],
+      dock: [0, 1, 2, 3, 4, 5].map((i) => ({
+        bg: i === 1 ? '#f5f5f4' : 'transparent',
+        fg: i === 1 ? '#1c1917' : '#c4bfba',
+      })),
+    };
+  }
+}
+</script>
+</body>
+</html>
