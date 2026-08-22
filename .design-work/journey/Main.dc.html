@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background:#fafaf9; color:#1c1917; -webkit-font-smoothing:antialiased; }
+  a { color:#2177d5; } a:hover { color:#1b5fa8; }
+  .act { transition: background .16s ease, border-color .16s ease, color .16s ease, transform .14s ease; }
+  .act:hover { background:#f5f5f4; border-color:#d6d3d1; }
+  .act:active { transform: scale(.97); }
+  .route:hover { background:#eff6ff; border-color:#bfdbfe; }
+</style>
+</helmet>
+
+<div style="display:flex; flex-direction:column; height:786px; box-sizing:border-box; padding:22px 24px; gap:14px">
+
+  <div style="flex-shrink:0">
+    <div style="font-size:17px; font-weight:700; letter-spacing:-0.02em">Reading the answer</div>
+    <div style="font-size:12.5px; color:#78716c; line-height:1.5; margin-top:4px">The twin is told to answer in bullets. Nothing renders them.</div>
+  </div>
+
+  <div style="flex-grow:1; display:flex; flex-direction:column; gap:16px; min-height:0">
+
+    <div style="display:flex; flex-direction:column; gap:9px">
+      <div style="display:flex; align-items:center; gap:8px">
+        <span style="font-size:10.5px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#a8a29e">Today</span>
+        <span style="flex-grow:1; height:1px; background:#ece9e6"></span>
+      </div>
+      <div style="display:flex; justify-content:flex-start">
+        <div style="max-width:88%; padding:16px; border-radius:16px; border-bottom-left-radius:4px; background:#ffffff; border:1px solid #f5f5f4; box-shadow:0 1px 2px rgba(28,25,23,.05); font-size:13.5px; line-height:1.62; color:#44403c">
+          <span style="display:block">I led three things at <strong style="font-weight:700; color:#1c1917">SamaCare</strong>:</span>
+          <span style="display:block">Prior-auth intake, end to end</span>
+          <span style="display:block">The reviewer queue and its audit trail</span>
+          <span style="display:block">A Chrome extension that cut operational friction</span>
+          <span style="display:block">Happy to go deeper on any of them.</span>
+        </div>
+      </div>
+      <div style="font-size:12px; color:#78716c; line-height:1.5">A real screenshot of the shipped renderer. It maps only <span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11.5px; background:#f5f5f4; padding:1px 4px; border-radius:4px">a</span>, <span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11.5px; background:#f5f5f4; padding:1px 4px; border-radius:4px">strong</span> and <span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11.5px; background:#f5f5f4; padding:1px 4px; border-radius:4px">p</span>, and the CSS reset has already stripped list markers and paragraph margins. Five sentences of equal weight.</div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:9px">
+      <div style="display:flex; align-items:center; gap:8px">
+        <span style="font-size:10.5px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#3b82f6">Proposed</span>
+        <span style="flex-grow:1; height:1px; background:#dbeafe"></span>
+      </div>
+      <div style="display:flex; justify-content:flex-start">
+        <div style="max-width:92%; padding:16px; border-radius:16px; border-bottom-left-radius:4px; background:#ffffff; border:1px solid #f5f5f4; box-shadow:0 1px 2px rgba(28,25,23,.05); font-size:13.5px; line-height:1.62; color:#44403c">
+          <p style="margin:0 0 10px">I led three things at <strong style="font-weight:700; color:#1c1917">SamaCare</strong>:</p>
+          <ul style="margin:0 0 10px; padding-left:18px; list-style:disc; display:flex; flex-direction:column; gap:5px">
+            <li style="padding-left:2px">Prior-auth intake, end to end</li>
+            <li style="padding-left:2px">The reviewer queue and its audit trail</li>
+            <li style="padding-left:2px">A Chrome extension that cut operational friction</li>
+          </ul>
+          <p style="margin:0">Happy to go deeper on any of them.</p>
+
+          <div style="height:1px; background:#f0eeec; margin:14px -16px 0"></div>
+
+          <div style="display:flex; align-items:center; gap:8px; padding-top:12px">
+            <button class="act" onClick="{{ copy }}" style="font:inherit; display:flex; align-items:center; gap:6px; font-size:11.5px; font-weight:600; color: {{ copyTone }}; background:#ffffff; border:1px solid #ece9e6; border-radius:8px; padding:6px 10px; cursor:pointer">
+              <sc-if value="{{ copied }}" hint-placeholder-val="{{ false }}">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"></path></svg>
+              </sc-if>
+              <sc-if value="{{ notCopied }}" hint-placeholder-val="{{ true }}">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#78716c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg>
+              </sc-if>
+              {{ copyLabel }}
+            </button>
+            <a class="act route" href="#" style="text-decoration:none; display:flex; align-items:center; gap:6px; font-size:11.5px; font-weight:600; color:#2563eb; background:#ffffff; border:1px solid #dbeafe; border-radius:8px; padding:6px 10px">
+              Open the SamaCare case study
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-wrap:wrap; gap:7px; padding-left:2px">
+        <sc-for list="{{ followups }}" as="f" hint-placeholder-count="2">
+          <button class="act" onClick="{{ f.pick }}" style="font:inherit; font-size:11.5px; font-weight:500; color:#57534e; background:#ffffff; border:1px solid #e7e5e4; border-radius:9999px; padding:7px 12px; cursor:pointer; line-height:1.2">{{ f.label }}</button>
+        </sc-for>
+      </div>
+      <sc-if value="{{ picked }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; justify-content:flex-end">
+          <div style="max-width:80%; padding:12px 14px; border-radius:16px; border-bottom-right-radius:4px; background:#2563eb; color:#ffffff; font-size:13px; line-height:1.55">{{ pickedText }}</div>
+        </div>
+      </sc-if>
+
+      <div style="font-size:12px; color:#78716c; line-height:1.5">Structure carries the meaning back, and the answer stops being a dead end: the case studies it names are already screens in this app, so the reply routes to them. Follow-ups are the twin's own suggestions, not a menu the reader has to invent.</div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":620,"height":786}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { copied: false, picked: null };
+  }
+  componentWillUnmount() { clearTimeout(this.t); }
+  renderVals() {
+    const { copied, picked } = this.state;
+    return {
+      copied,
+      notCopied: !copied,
+      copyLabel: copied ? 'Copied' : 'Copy',
+      copyTone: copied ? '#16a34a' : '#57534e',
+      copy: () => {
+        clearTimeout(this.t);
+        this.setState({ copied: true });
+        this.t = setTimeout(() => this.setState({ copied: false }), 1600);
+      },
+      picked: picked !== null,
+      pickedText: picked,
+      followups: [
+        { label: 'What was hardest about the reviewer queue?' },
+        { label: 'Why a Chrome extension?' },
+      ].map((f) => ({ ...f, pick: () => this.setState({ picked: f.label }) })),
+    };
+  }
+}
+</script>
+</body>
+</html>

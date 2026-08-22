@@ -26,3 +26,7 @@ dist-ssr
 .env.*
 .vercel
 .env*.local
+
+# Seeded design canvases (~2MB generated files, re-seeded from the .dc.html sources
+# in .design-work/<canvas>/ — the sources themselves are tracked)
+.design-work/*.html

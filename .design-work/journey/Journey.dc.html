@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background:#fafaf9; color:#1c1917; -webkit-font-smoothing:antialiased; }
+  a { color:#2177d5; } a:hover { color:#1b5fa8; }
+</style>
+</helmet>
+
+<div style="display:flex; flex-direction:column; height:262px; box-sizing:border-box; padding:24px 26px">
+
+  <div style="display:flex; align-items:baseline; justify-content:space-between; flex-shrink:0; margin-bottom:4px">
+    <div style="font-size:18px; font-weight:700; letter-spacing:-0.02em">One conversation, end to end</div>
+    <div style="display:flex; gap:16px; align-items:center">
+      <span style="display:flex; align-items:center; gap:6px; font-size:11px; font-weight:600; color:#78716c"><span style="width:7px; height:7px; border-radius:9999px; background:#22c55e"></span>Handled</span>
+      <span style="display:flex; align-items:center; gap:6px; font-size:11px; font-weight:600; color:#78716c"><span style="width:7px; height:7px; border-radius:9999px; background:#f43f5e"></span>Open</span>
+    </div>
+  </div>
+  <div style="font-size:12.5px; color:#78716c; line-height:1.5; margin-bottom:18px; flex-shrink:0">The four stages fixed last round sit in the middle. Everything around them is still untouched, and that is where the conversation leaks.</div>
+
+  <div style="flex-grow:1; display:grid; grid-template-columns: repeat(7, minmax(0, 1fr)); align-items:start; gap:12px">
+    <sc-for list="{{ stages }}" as="stage" hint-placeholder-count="7">
+      <div style="display:flex; flex-direction:column; background:#ffffff; border:1px solid {{ stage.border }}; border-radius:12px; padding:14px 13px; gap:9px">
+        <div style="display:flex; align-items:center; justify-content:space-between">
+          <span style="font-size:10.5px; font-weight:700; color:#c4bfba; font-variant-numeric:tabular-nums">{{ stage.num }}</span>
+          <span style="width:7px; height:7px; border-radius:9999px; background: {{ stage.dot }}"></span>
+        </div>
+        <div style="font-size:13px; font-weight:700; letter-spacing:-0.01em; line-height:1.25; color:#1c1917">{{ stage.name }}</div>
+        <div style="font-size:11.5px; line-height:1.45; color: {{ stage.tone }}">{{ stage.note }}</div>
+      </div>
+    </sc-for>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":1400,"height":262}}'>
+const STAGES = [
+  { num: '01', name: 'Arrive', note: 'The home card still spins its beam forever. The composer no longer does.', open: true },
+  { num: '02', name: 'First ask', note: 'Chips, textarea, Enter and Shift+Enter.', open: false },
+  { num: '03', name: 'Wait', note: 'One bubble, named phases, stop.', open: false },
+  { num: '04', name: 'Read', note: 'Bullet lists and paragraphs flatten into one grey block.', open: true },
+  { num: '05', name: 'Act on it', note: 'No copy, and no route to the case studies the answer names.', open: true },
+  { num: '06', name: 'Leave', note: 'Switching tabs discards the answer and leaves the request running.', open: true },
+  { num: '07', name: 'End', note: 'Rate limit dead-ends; a cut stream reads as a finished reply.', open: true },
+];
+
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      stages: STAGES.map((s) => ({
+        ...s,
+        dot: s.open ? '#f43f5e' : '#22c55e',
+        border: s.open ? '#fbdde3' : '#ece9e6',
+        tone: s.open ? '#9f1239' : '#a8a29e',
+      })),
+    };
+  }
+}
+</script>
+</body>
+</html>
