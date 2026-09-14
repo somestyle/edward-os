@@ -167,15 +167,16 @@ const cvData = {
       company: "Caret Legal",
       role: "Director of Product Design (AI Initiative)",
       period: "Mar 2026 – May 2026",
-      summary: "Recruited to lead the AI initiative for a legal practice management platform, setting the interaction foundations an assistant could act on before layering intelligence on top.",
+      summary: "Led the AI initiative and a full platform modernization for a legal practice management platform, designing across document management, search, billing, and reconciliation.",
       highlights: [
-        "Directed the AI initiative end to end, sequencing it as quick search, then smart search, then an LLM assistant, rather than attaching a chat box to an unstructured product",
-        "Rebuilt the platform's navigation and information hierarchy so practitioners and an LLM resolve the same structure, consolidating menu items accumulated over years of growth",
-        "Shipped a Cmd-K quick search with inline create shortcuts and a keyboard-first path for power users who live in the product all day",
-        "Designed advanced document search and a peek view pattern across accounting and billing, so records can be inspected without losing your place in a matter",
-        "Rebuilt the recurring payments table with a clearer hierarchy and customizable columns, and unified quick creation into a single side panel pattern across the product"
+        "Directed the AI initiative across the product, designing assistive features into document management, search, and billing rather than confining them to a single surface",
+        "Sequenced the assistant roadmap as quick search, then smart search, then an LLM assistant, so each stage shipped value on its own while building toward the next",
+        "Led a full UI modernization, replacing patterns that had drifted apart over years of growth with one consistent system for creating, inspecting, and navigating records",
+        "Rebuilt navigation and information hierarchy so practitioners and an LLM resolve the same structure, making the product legible to an assistant as well as to the people using it",
+        "Reworked billing and reconciliation, including a rebuilt recurring payments table with clearer hierarchy and customizable columns, and a peek view for inspecting records without losing your place in a matter",
+        "Shipped Cmd-K quick search with inline create shortcuts, advanced document search, and a keyboard-first path for practitioners who live in the product all day"
       ],
-      tags: ["AI Strategy", "Legal Tech", "Information Architecture", "Command Bar", "Platform Design"]
+      tags: ["AI Features", "Legal Tech", "Platform Modernization", "Information Architecture", "Billing & Reconciliation"]
     },
     {
       company: "Adopt AI",
