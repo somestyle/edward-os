@@ -7,6 +7,8 @@ interface ThemeWidgetProps {
   darkMode: boolean;
   onDarkModeChange: (v: boolean) => void;
   onChangelogClick?: () => void;
+  /** Latest changelog version, shown on the changelog link. */
+  version?: string;
   onClose?: () => void;
 }
 
@@ -16,6 +18,7 @@ export default function ThemeWidget({
   darkMode,
   onDarkModeChange,
   onChangelogClick,
+  version,
   onClose,
 }: ThemeWidgetProps) {
   const isRetro = style === 'retro';
@@ -94,7 +97,7 @@ export default function ThemeWidget({
               onClick={onChangelogClick}
               className="text-xs text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300 transition-colors"
             >
-              v1.3 (Changelog)
+              {version ? `v${version} ` : ''}(Changelog)
             </button>
           </div>
         )}

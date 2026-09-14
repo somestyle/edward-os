@@ -2400,6 +2400,7 @@ export default function App() {
             darkMode={darkMode}
             onDarkModeChange={handleDarkModeChange}
             onChangelogClick={() => setActiveTab('changelog')}
+            version={CHANGELOG_ENTRIES[0].version}
           />
         </div>
       </div>

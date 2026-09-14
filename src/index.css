@@ -468,6 +468,10 @@ html, body {
 .tp-stage canvas { display: block; }
 .tp-top { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: calc(14px + env(safe-area-inset-top)) 16px 0 20px; pointer-events: none; }
 .tp-top > * { pointer-events: auto; }
+.tp-topright { display: flex; align-items: center; gap: 14px; }
+.tp-close { appearance: none; border: 0; background: transparent; color: var(--tp-ink-soft); width: 40px; height: 40px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; opacity: .75; transition: opacity .15s ease, background .15s ease, color .15s ease; }
+.tp-close:hover { opacity: 1; color: var(--tp-ink); background: var(--tp-hover); }
+.tp-close:focus-visible { opacity: 1; outline: 2px solid var(--tp-accent); outline-offset: -2px; }
 .tp-title { font-family: ui-rounded, "Hiragino Maru Gothic ProN", "Arial Rounded MT Bold", ui-sans-serif, system-ui, sans-serif; font-weight: 700; font-size: 18px; letter-spacing: -0.01em; }
 .tp-hud { position: absolute; left: 0; right: 0; bottom: calc(22px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; align-items: center; gap: 12px; pointer-events: none; padding-inline: 16px; }
 .tp-hud > * { pointer-events: auto; }

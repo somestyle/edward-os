@@ -20,6 +20,8 @@ export interface WidgetLauncherThemeProps {
   darkMode: boolean;
   onDarkModeChange: (v: boolean) => void;
   onChangelogClick?: () => void;
+  /** Latest changelog version, shown in the Theme widget. */
+  version?: string;
 }
 
 const APPS: { id: AppId; label: string; icon: React.ElementType }[] = [
@@ -38,6 +40,7 @@ export default function WidgetLauncher({
   darkMode,
   onDarkModeChange,
   onChangelogClick,
+  version,
 }: WidgetLauncherProps) {
   const [panelOpen, setPanelOpen] = useState(false);
   const [modalApp, setModalApp] = useState<AppId>(null);
@@ -125,6 +128,7 @@ export default function WidgetLauncher({
               darkMode={darkMode}
               onDarkModeChange={onDarkModeChange}
               onChangelogClick={handleChangelogClick}
+              version={version}
               onClose={() => setModalApp(null)}
             />
           </div>

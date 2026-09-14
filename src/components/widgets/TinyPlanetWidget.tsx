@@ -67,12 +67,14 @@ export default function TinyPlanetWidget({ darkMode = false, onClose }: TinyPlan
 
       <div className="tp-top">
         <div className="tp-title">Ed's Tiny Planet</div>
-        <div className="tp-group">
-          <button type="button" className="tp-btn tp-theme" aria-pressed={night} aria-label={night ? 'Switch to day' : 'Switch to night'} onClick={() => setNight((n) => !n)}>
-            {night ? <Moon size={16} strokeWidth={2.2} /> : <Sun size={16} strokeWidth={2.2} />}
-          </button>
-          <button type="button" className="tp-btn" aria-label="Close" onClick={onClose}>
-            <X size={18} strokeWidth={2.2} />
+        <div className="tp-topright">
+          <div className="tp-group">
+            <button type="button" className="tp-btn tp-theme" aria-pressed={night} aria-label={night ? 'Switch to day' : 'Switch to night'} onClick={() => setNight((n) => !n)}>
+              {night ? <Moon size={16} strokeWidth={2.2} /> : <Sun size={16} strokeWidth={2.2} />}
+            </button>
+          </div>
+          <button type="button" className="tp-close" aria-label="Close" onClick={onClose}>
+            <X size={18} strokeWidth={2} />
           </button>
         </div>
       </div>
