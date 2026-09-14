@@ -8,7 +8,7 @@ import {
   FileText, Mic2, Newspaper, Download, X, RotateCcw, ArrowDown, ArrowRight
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
-import WidgetLauncher from './components/widgets/WidgetLauncher';
+import WidgetLauncher, { OPEN_WIDGET_EVENT } from './components/widgets/WidgetLauncher';
 
 const AdoptAICaseStudy = lazy(() => import('./components/AdoptAICaseStudy'));
 const AdoptAIPlatform = lazy(() => import('./components/AdoptAIPlatform'));
@@ -128,11 +128,27 @@ function StreamingText({ source, onAdvance, onComplete }) {
 // list markers, list indentation and paragraph margins, and anything left
 // unmapped renders as undifferentiated body text.
 const MD_COMPONENTS = {
-  a: ({ href, children }) => (
-    <a href={href} target="_blank" rel="noreferrer" className="underline text-inherit font-medium hover:opacity-80">
-      {children}
-    </a>
-  ),
+  a: ({ href, children }) => {
+    // The twin can hand off to a widget: a `#widget:<id>` link opens it in place
+    // instead of leaving the site.
+    const widget = href?.startsWith('#widget:') ? href.slice('#widget:'.length) : null;
+    if (widget) {
+      return (
+        <button
+          type="button"
+          onClick={() => window.dispatchEvent(new CustomEvent(OPEN_WIDGET_EVENT, { detail: { id: widget } }))}
+          className="underline text-inherit font-medium hover:opacity-80"
+        >
+          {children}
+        </button>
+      );
+    }
+    return (
+      <a href={href} target="_blank" rel="noreferrer" className="underline text-inherit font-medium hover:opacity-80">
+        {children}
+      </a>
+    );
+  },
   strong: ({ children }) => <strong className="font-bold text-stone-900 dark:text-white">{children}</strong>,
   em: ({ children }) => <em className="italic">{children}</em>,
   p: ({ children }) => <span className="block mb-3 last:mb-0">{children}</span>,
@@ -1993,6 +2009,28 @@ const ContactView = ({ scrollState }) => {
 
 // --- RELEASE NOTES / CHANGELOG (hidden view, no dock icon) ---
 const CHANGELOG_ENTRIES = [
+  {
+    version: '1.5',
+    date: 'Mid Sept 2026',
+    title: 'Tiny Planet',
+    items: [
+      'Widgets: Added Tiny Planet, a 3D world you can roll through to walk my career one landmark at a time, with an auto tour, zoom, and day and night.',
+      'AI Twin: The twin can now offer the Tiny Planet when you talk about my career, and open it for you from the chat.',
+      'Career: Added the Caret Legal role (Director of Product Design, AI Initiative).',
+    ],
+  },
+  {
+    version: '1.4',
+    date: 'Early Sept 2026',
+    title: 'Chat Refinement',
+    items: [
+      'AI Twin: Reworked the chat from first keystroke to final word. A calmer composer, replies that arrive as they are written, a clear wait state, and a stop button.',
+      'AI Twin: Scrolling now keeps its place while a reply streams, with a jump to latest pill when you scroll up.',
+      'AI Twin: Added suggested prompts to start from, clearer error and limit messages, and richer Markdown in replies.',
+      'Responsive: Tuned the chat for phones and desktops, including keyboard and short-screen layouts.',
+      'Accessibility: Keyboard access and focus states across the chat and the homepage AI card.',
+    ],
+  },
   {
     version: '1.3',
     date: 'Early March 2026',

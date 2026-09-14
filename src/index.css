@@ -441,3 +441,61 @@ html, body {
    three; they wrap normally from md up. */
 .chat-rail { scrollbar-width: none; -ms-overflow-style: none; }
 .chat-rail::-webkit-scrollbar { display: none; }
+
+/* ---------------------------------------------------------------------------
+   Tiny Planet widget (full-screen overlay; the canvas is owned by
+   tinyPlanetScene.js, these rules style the HUD around it)
+   --------------------------------------------------------------------------- */
+.tiny-planet {
+  --tp-ink: #1c1917; --tp-ink-soft: #78716c;
+  --tp-card: rgba(255, 255, 255, 0.86); --tp-card-border: rgba(28, 25, 23, 0.06);
+  --tp-accent: #3b82f6; --tp-hover: rgba(28, 25, 23, 0.06);
+  position: fixed; inset: 0; z-index: 100; overflow: hidden;
+  color: var(--tp-ink); background: #7fbbea;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  border-radius: 0 !important;
+}
+.tiny-planet.night {
+  --tp-ink: #f4f1ee; --tp-ink-soft: #a8a29e;
+  --tp-card: rgba(28, 25, 23, 0.82); --tp-card-border: rgba(255, 255, 255, 0.08);
+  --tp-hover: rgba(255, 255, 255, 0.08);
+  background: #0a1030;
+}
+.tp-stage { position: absolute; inset: 0; touch-action: none; cursor: grab; outline: none; }
+.tp-stage:active { cursor: grabbing; }
+.tp-stage:focus-visible { box-shadow: inset 0 0 0 3px var(--tp-accent); }
+.tp-stage canvas { display: block; }
+.tp-top { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: calc(14px + env(safe-area-inset-top)) 16px 0 20px; pointer-events: none; }
+.tp-top > * { pointer-events: auto; }
+.tp-title { font-family: ui-rounded, "Hiragino Maru Gothic ProN", "Arial Rounded MT Bold", ui-sans-serif, system-ui, sans-serif; font-weight: 700; font-size: 18px; letter-spacing: -0.01em; }
+.tp-hud { position: absolute; left: 0; right: 0; bottom: calc(22px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; align-items: center; gap: 12px; pointer-events: none; padding-inline: 16px; }
+.tp-hud > * { pointer-events: auto; }
+.tp-card {
+  width: min(440px, 100%); box-sizing: border-box; padding: 14px 18px 12px; border-radius: 16px;
+  background: var(--tp-card); border: 1px solid var(--tp-card-border);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 12px 32px -14px rgba(28, 25, 23, 0.35);
+  display: grid; grid-template-columns: 1fr auto; gap: 2px 14px; align-items: end;
+}
+.tp-eyebrow { grid-column: 1 / -1; display: flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--tp-ink-soft); }
+.tp-eyebrow i { width: 7px; height: 7px; border-radius: 999px; background: var(--tp-accent); display: inline-block; }
+.tp-role { font-family: ui-rounded, "Hiragino Maru Gothic ProN", "Arial Rounded MT Bold", ui-sans-serif, system-ui, sans-serif; font-weight: 700; font-size: 17px; line-height: 1.25; text-wrap: balance; }
+.tp-company { font-size: 13px; color: var(--tp-ink-soft); margin-top: 2px; }
+.tp-period { font-size: 12px; font-weight: 600; color: var(--tp-ink-soft); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tp-hint { grid-column: 1 / -1; font-size: 11px; color: var(--tp-ink-soft); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--tp-card-border); display: flex; justify-content: space-between; }
+.tp-swap { transition: opacity .18s ease; }
+.tp-swap.out { opacity: 0; }
+.tp-dots { display: flex; gap: 5px; pointer-events: none; }
+.tp-dots i { width: 5px; height: 5px; border-radius: 999px; background: var(--tp-ink-soft); opacity: .28; transition: opacity .2s, transform .2s, background .2s; }
+.tp-dots i.on { opacity: 1; background: var(--tp-accent); transform: scale(1.4); }
+.tp-controls { display: flex; align-items: center; gap: 8px; }
+.tp-group { display: flex; align-items: center; gap: 2px; padding: 3px; border-radius: 999px; background: var(--tp-card); border: 1px solid var(--tp-card-border); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 8px 24px -12px rgba(28, 25, 23, 0.3); }
+.tp-btn { appearance: none; border: 0; background: transparent; color: var(--tp-ink); min-width: 44px; height: 44px; padding: 0 12px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: background .15s ease, color .15s ease, transform .1s ease; }
+.tp-btn:hover { background: var(--tp-hover); }
+.tp-btn:active { transform: scale(.96); }
+.tp-btn:focus-visible { outline: 2px solid var(--tp-accent); outline-offset: -2px; }
+.tp-btn[aria-pressed="true"] { background: var(--tp-accent); color: #fff; }
+.tp-btn.tp-theme[aria-pressed="true"] { background: rgba(255, 255, 255, 0.1); color: var(--tp-ink); }
+@media (max-width: 480px) { .tp-card { grid-template-columns: 1fr; } .tp-period { white-space: normal; } .tp-controls { flex-wrap: wrap; justify-content: center; } }
+@media (prefers-reduced-motion: reduce) { .tp-swap { transition: none; } }

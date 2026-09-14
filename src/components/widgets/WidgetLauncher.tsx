@@ -1,12 +1,18 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { createPortal } from 'react-dom';
-import { LayoutGrid, Timer, Grid3X3, Quote, Paintbrush, X } from 'lucide-react';
+import { LayoutGrid, Timer, Grid3X3, Quote, Paintbrush, Earth, X } from 'lucide-react';
 import PomodoroWidget from './PomodoroWidget';
 import SudokuWidget from './SudokuWidget';
 import QuotesWidget from './QuotesWidget';
 import ThemeWidget from './ThemeWidget';
 
-type AppId = 'pomodoro' | 'sudoku' | 'quotes' | 'theme' | null;
+// Three.js only loads when someone opens the planet.
+const TinyPlanetWidget = lazy(() => import('./TinyPlanetWidget'));
+
+/** Name of the window event that opens a widget from elsewhere on the site (the AI twin's chat link, for one). */
+export const OPEN_WIDGET_EVENT = 'edward-os:open-widget';
+
+type AppId = 'pomodoro' | 'sudoku' | 'quotes' | 'planet' | 'theme' | null;
 
 export interface WidgetLauncherThemeProps {
   themeStyle: string;
@@ -20,6 +26,7 @@ const APPS: { id: AppId; label: string; icon: React.ElementType }[] = [
   { id: 'pomodoro', label: 'Pomodoro', icon: Timer },
   { id: 'sudoku', label: 'Sudoku', icon: Grid3X3 },
   { id: 'quotes', label: 'Quotes', icon: Quote },
+  { id: 'planet', label: 'Tiny Planet', icon: Earth },
   { id: 'theme', label: 'Themes', icon: Paintbrush },
 ];
 
@@ -53,6 +60,15 @@ export default function WidgetLauncher({
     if (id) setModalApp(id);
     setPanelOpen(false);
   };
+
+  useEffect(() => {
+    const onOpen = (e: Event) => {
+      const id = (e as CustomEvent<{ id?: string }>).detail?.id;
+      if (APPS.some((a) => a.id === id)) openApp(id as AppId);
+    };
+    window.addEventListener(OPEN_WIDGET_EVENT, onOpen);
+    return () => window.removeEventListener(OPEN_WIDGET_EVENT, onOpen);
+  }, []);
 
   const handleChangelogClick = () => {
     setModalApp(null);
@@ -129,9 +145,20 @@ export default function WidgetLauncher({
         </button>
       </div>
 
+      {/* Tiny Planet takes the whole viewport; it carries its own close button and Escape handling */}
+      {modalApp === 'planet' &&
+        typeof document !== 'undefined' &&
+        createPortal(
+          <Suspense fallback={<div className="fixed inset-0 z-[100] bg-[#7fbbea] dark:bg-[#0a1030] animate-in fade-in duration-200" aria-busy="true" />}>
+            <TinyPlanetWidget darkMode={!!darkMode} onClose={() => setModalApp(null)} />
+          </Suspense>,
+          document.body
+        )}
+
       {/* Modal - only for Pomodoro, Sudoku, Quotes (theme opens as panel above dock) */}
       {modalApp &&
         modalApp !== 'theme' &&
+        modalApp !== 'planet' &&
         typeof document !== 'undefined' &&
         createPortal(
           <div
