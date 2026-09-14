@@ -164,6 +164,20 @@ const cvData = {
   about: "I design complex, high-stakes products where automation, control, and trust must coexist. My work focuses on reducing system friction, clarifying decision paths, and turning ambiguous technical constraints into usable, scalable experiences.",
   experience: [
     {
+      company: "Caret Legal",
+      role: "Director of Product Design (AI Initiative)",
+      period: "Mar 2026 – May 2026",
+      summary: "Recruited to lead the AI initiative for a legal practice management platform, setting the interaction foundations an assistant could act on before layering intelligence on top.",
+      highlights: [
+        "Directed the AI initiative end to end, sequencing it as quick search, then smart search, then an LLM assistant, rather than attaching a chat box to an unstructured product",
+        "Rebuilt the platform's navigation and information hierarchy so practitioners and an LLM resolve the same structure, consolidating menu items accumulated over years of growth",
+        "Shipped a Cmd-K quick search with inline create shortcuts and a keyboard-first path for power users who live in the product all day",
+        "Designed advanced document search and a peek view pattern across accounting and billing, so records can be inspected without losing your place in a matter",
+        "Rebuilt the recurring payments table with a clearer hierarchy and customizable columns, and unified quick creation into a single side panel pattern across the product"
+      ],
+      tags: ["AI Strategy", "Legal Tech", "Information Architecture", "Command Bar", "Platform Design"]
+    },
+    {
       company: "Adopt AI",
       role: "Design Advisor (Founding Staff Product Designer)",
       period: "Oct 2024 – Present",
@@ -701,7 +715,7 @@ const HomeView = ({ onNavigate }) => {
   );
 };
 
-const BRIEF_ROLE_COUNT = 4; // Adopt AI, SamaCare, Kea AI, Tier1
+const BRIEF_ROLE_COUNT = 5; // Caret Legal, Adopt AI, SamaCare, Kea AI, Tier1
 
 // Brief mode leads with the four roles that carry the most weight, which is why
 // cvData keeps Tier1 (and its acquisition) ahead of the shorter Flybits stint.
