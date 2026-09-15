@@ -182,7 +182,7 @@ const cvData = {
     {
       company: "Elation Health",
       role: "Staff Product Designer",
-      period: "2026 – Present",
+      period: "May 2026 – Present",
       summary: "Leading design on AI and clinician workflows for a clinical-first EHR platform used by primary care practices.",
       highlights: [
         "Leading design for AI features that fit into the clinical day rather than sitting beside it, so assistance shows up inside the workflows clinicians already run",

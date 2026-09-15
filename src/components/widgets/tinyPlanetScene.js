@@ -18,7 +18,7 @@ export const STOPS = [
   { company: 'SamaCare', role: 'Staff Product Designer', period: 'Aug 2022 – Sept 2024', year: '2022', kind: 'clinic', win: 'rocket' },
   { company: 'Adopt AI', role: 'Design Advisor (Founding Staff Product Designer)', period: 'Oct 2024 – Apr 2026', year: '2024', kind: 'lighthouse', win: 'bulb' },
   { company: 'Caret Legal', role: 'Director of Product Design', period: 'Mar – May 2026', year: '2026', kind: 'court' },
-  { company: 'Elation Health', role: 'Staff Product Designer', period: '2026 – Present', year: '2026', kind: 'chart' },
+  { company: 'Elation Health', role: 'Staff Product Designer', period: 'May 2026 – Present', year: '2026', kind: 'chart' },
 ];
 
 /**
