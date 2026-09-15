@@ -180,6 +180,18 @@ const cvData = {
   about: "I design complex, high-stakes products where automation, control, and trust must coexist. My work focuses on reducing system friction, clarifying decision paths, and turning ambiguous technical constraints into usable, scalable experiences.",
   experience: [
     {
+      company: "Elation Health",
+      role: "Staff Product Designer",
+      period: "2026 – Present",
+      summary: "Leading design on AI and clinician workflows for a clinical-first EHR platform used by primary care practices.",
+      highlights: [
+        "Leading design for AI features that fit into the clinical day rather than sitting beside it, so assistance shows up inside the workflows clinicians already run",
+        "Owning clinician-facing workflow design across the platform, with a focus on clarity, safety, and the time each interaction costs a busy practice",
+        "Working with product, engineering, and clinical partners to turn AI capability into patterns clinicians can trust and adopt"
+      ],
+      tags: ["AI Features", "Clinician Workflows", "Health Tech", "EHR", "SaaS"]
+    },
+    {
       company: "Caret Legal",
       role: "Director of Product Design (AI Initiative)",
       period: "Mar 2026 – May 2026",
@@ -197,7 +209,7 @@ const cvData = {
     {
       company: "Adopt AI",
       role: "Design Advisor (Founding Staff Product Designer)",
-      period: "Oct 2024 – Present",
+      period: "Oct 2024 – Apr 2026",
       summary: "Led end-to-end experience for the AI Copilot platform spanning agent workflows, tooling, and system UX.",
       highlights: [
         "Led 0–1 design of an agentic copilot across both customer console and end-user experiences",
@@ -509,7 +521,7 @@ const HomeView = ({ onNavigate }) => {
         
         <div className="mb-6">
           <p className="text-lg md:text-xl text-stone-800 dark:text-stone-200 leading-relaxed font-medium">
-            I’m a <span className="font-semibold shimmer-text">Staff Product Designer</span> working on agentic workflows, and an <span className="font-semibold shimmer-text">Advisor</span> helping startups build delightful product and AI experiences.
+            I’m a <span className="font-semibold shimmer-text">Staff Product Designer</span> at Elation Health, leading design on AI and clinician workflows, and an <span className="font-semibold shimmer-text">Advisor</span> helping startups build delightful product and AI experiences.
           </p>
         </div>
         
@@ -529,7 +541,7 @@ const HomeView = ({ onNavigate }) => {
       <h2 className="text-sm font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider mb-4">What I'm up to recently</h2>
       <p className="text-stone-500 dark:text-stone-400 text-sm mb-2">👨🏻‍💻 Designing with AI, Designing for AI and Designing the AI</p>
       <p className="text-stone-500 dark:text-stone-400 text-sm mb-6 text-pretty">
-        Building with AI daily. Advising early-stage teams on agentic products, product discovery, and prototyping. Also helping small businesses automate everyday workflows.
+        Leading design on AI and clinician workflows at Elation Health. Building with AI daily. Advising early-stage teams on agentic products, product discovery, and prototyping. Also helping small businesses automate everyday workflows.
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 text-sm text-stone-600 dark:text-stone-300">
         {/* Left: Listening */}
@@ -732,7 +744,7 @@ const HomeView = ({ onNavigate }) => {
   );
 };
 
-const BRIEF_ROLE_COUNT = 5; // Caret Legal, Adopt AI, SamaCare, Kea AI, Tier1
+const BRIEF_ROLE_COUNT = 6; // Elation Health, Caret Legal, Adopt AI, SamaCare, Kea AI, Tier1
 
 // Brief mode leads with the four roles that carry the most weight, which is why
 // cvData keeps Tier1 (and its acquisition) ahead of the shorter Flybits stint.
@@ -743,8 +755,10 @@ const MONTH_INDEX = {
 };
 
 function roleStartValue(period) {
-  const [month, year] = period.split('–')[0].trim().split(/\s+/);
-  return Number(year) * 12 + (MONTH_INDEX[month] ?? 0);
+  // "Mar 2026 – May 2026" or, for a role without a listed month, "2026 – Present"
+  const parts = period.split('–')[0].trim().split(/\s+/);
+  const [month, year] = parts.length === 1 ? [null, parts[0]] : parts;
+  return Number(year) * 12 + (month ? MONTH_INDEX[month] ?? 0 : 11);
 }
 
 const rolesByStartDate = [...cvData.experience].sort(
@@ -2016,7 +2030,7 @@ const CHANGELOG_ENTRIES = [
     items: [
       'Widgets: Added Tiny Planet, a 3D world you can roll through to walk my career one landmark at a time, with an auto tour, zoom, and day and night.',
       'AI Twin: The twin can now offer the Tiny Planet when you talk about my career, and open it for you from the chat.',
-      'Career: Added the Caret Legal role (Director of Product Design, AI Initiative).',
+      'Career: Added my current role at Elation Health, closed out the Adopt AI dates, and added the Caret Legal role.',
     ],
   },
   {
