@@ -2029,7 +2029,8 @@ const CHANGELOG_ENTRIES = [
     title: 'Tiny Planet',
     items: [
       'Widgets: Added Tiny Planet, a 3D world you can roll through to walk my career one landmark at a time, with an auto tour, zoom, and day and night.',
-      'AI Twin: The twin can now offer the Tiny Planet when you talk about my career, and open it for you from the chat.',
+      'Widgets: Added Sky Islands, an airship you fly over a sea of clouds to find one floating island per role, each dressed for the job.',
+      'AI Twin: The twin can now offer the Tiny Planet or the Sky Islands when you talk about my career, and open them for you from the chat.',
       'Career: Added my current role at Elation Health, closed out the Adopt AI dates, and added the Caret Legal role.',
     ],
   },

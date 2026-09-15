@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { createPortal } from 'react-dom';
-import { LayoutGrid, Timer, Grid3X3, Quote, Paintbrush, Earth, X } from 'lucide-react';
+import { LayoutGrid, Timer, Grid3X3, Quote, Paintbrush, Earth, CloudSun, X } from 'lucide-react';
 import PomodoroWidget from './PomodoroWidget';
 import SudokuWidget from './SudokuWidget';
 import QuotesWidget from './QuotesWidget';
@@ -8,11 +8,12 @@ import ThemeWidget from './ThemeWidget';
 
 // Three.js only loads when someone opens the planet.
 const TinyPlanetWidget = lazy(() => import('./TinyPlanetWidget'));
+const SkyIslandsWidget = lazy(() => import('./SkyIslandsWidget'));
 
 /** Name of the window event that opens a widget from elsewhere on the site (the AI twin's chat link, for one). */
 export const OPEN_WIDGET_EVENT = 'edward-os:open-widget';
 
-type AppId = 'pomodoro' | 'sudoku' | 'quotes' | 'planet' | 'theme' | null;
+type AppId = 'pomodoro' | 'sudoku' | 'quotes' | 'planet' | 'sky' | 'theme' | null;
 
 export interface WidgetLauncherThemeProps {
   themeStyle: string;
@@ -29,6 +30,7 @@ const APPS: { id: AppId; label: string; icon: React.ElementType }[] = [
   { id: 'sudoku', label: 'Sudoku', icon: Grid3X3 },
   { id: 'quotes', label: 'Quotes', icon: Quote },
   { id: 'planet', label: 'Tiny Planet', icon: Earth },
+  { id: 'sky', label: 'Sky Islands', icon: CloudSun },
   { id: 'theme', label: 'Themes', icon: Paintbrush },
 ];
 
@@ -159,10 +161,21 @@ export default function WidgetLauncher({
           document.body
         )}
 
+      {/* Sky Islands: the airship flight, also full screen */}
+      {modalApp === 'sky' &&
+        typeof document !== 'undefined' &&
+        createPortal(
+          <Suspense fallback={<div className="fixed inset-0 z-[100] bg-[#8ec2ec] animate-in fade-in duration-200" aria-busy="true" />}>
+            <SkyIslandsWidget onClose={() => setModalApp(null)} />
+          </Suspense>,
+          document.body
+        )}
+
       {/* Modal - only for Pomodoro, Sudoku, Quotes (theme opens as panel above dock) */}
       {modalApp &&
         modalApp !== 'theme' &&
         modalApp !== 'planet' &&
+        modalApp !== 'sky' &&
         typeof document !== 'undefined' &&
         createPortal(
           <div
