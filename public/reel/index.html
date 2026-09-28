@@ -1,0 +1,1041 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edward Chu Motion Reel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;600&family=Lora:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0c0a09;
+    --paper: #fafaf9;
+    --blue: #2563eb;
+    --blue-500: #3b82f6;
+    --sky: #0ea5e9;
+    --violet: #6d28d9;
+    --stone-400: #a8a29e;
+    --stone-500: #78716c;
+    --page: #0c0a09;
+    --chrome: #e7e5e4;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) { --page: #e7e5e4; --chrome: #1c1917; }
+  }
+  :root[data-theme="dark"] { --page: #0c0a09; --chrome: #e7e5e4; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body { background: var(--page); color: var(--chrome); font-family: Inter, system-ui, sans-serif; overflow: hidden; display: grid; place-items: center; }
+  body.render { background: #000; display: block; }
+
+  #viewport { position: relative; width: 100vw; height: 100dvh; display: grid; place-items: center; }
+  body.render #viewport { width: 1920px; height: 1080px; display: block; }
+  #frame { position: relative; overflow: hidden; border-radius: 14px; box-shadow: 0 30px 80px rgba(0,0,0,.35); }
+  body.render #frame { border-radius: 0; box-shadow: none; }
+  #stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; overflow: hidden; background: var(--ink); }
+
+  .scene { position: absolute; inset: 0; display: none; overflow: hidden; }
+  .abs { position: absolute; }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; }
+  .serif { font-family: Lora, Georgia, serif; font-weight: 700; letter-spacing: -.025em; }
+  .serif em { font-style: italic; }
+  .line { display: block; overflow: hidden; padding-bottom: .12em; margin-bottom: -.12em; }
+  .line > span { display: inline-block; will-change: transform; }
+  .chip { display: inline-flex; align-items: center; gap: 10px; height: 40px; padding: 0 18px; border-radius: 999px; font-size: 14px; font-weight: 600; }
+  .dotc { width: 8px; height: 8px; border-radius: 50%; }
+
+  /* HUD */
+  #hud { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: difference; color: #fff; z-index: 50; }
+  #hud .mono { font-size: 15px; }
+  .crop { position: absolute; width: 26px; height: 26px; border-color: #fff; border-style: solid; opacity: .5; }
+
+  /* composer */
+  #pillWrap { position: absolute; overflow: hidden; background: #44403c; will-change: transform; }
+  #beam { position: absolute; left: 50%; top: 50%; width: 2400px; height: 2400px; margin: -1200px 0 0 -1200px;
+          background: conic-gradient(from 90deg, transparent 0 290deg, rgba(59,130,246,.0) 300deg, #3b82f6 346deg, #bfdbfe 357deg, transparent 360deg); }
+  #pillInner { position: absolute; inset: 2px; background: #1c1917; display: flex; align-items: center; padding: 0 16px 0 40px; gap: 16px; overflow: hidden; }
+  #pillText { flex: 1; font-size: 30px; color: #f5f5f4; white-space: nowrap; overflow: hidden; }
+  #pillText .ph { color: #78716c; }
+  .caret { display: inline-block; width: 3px; height: 1.05em; background: #3b82f6; vertical-align: -0.16em; margin-left: 2px; border-radius: 2px; }
+  #sendBtn { width: 60px; height: 60px; border-radius: 18px; flex: none; display: grid; place-items: center; position: relative; }
+  #sendBtn svg { position: absolute; }
+
+  /* chat */
+  .bubbleQ { position: absolute; right: 860px; top: 150px; background: #292524; color: #fafaf9; font-size: 27px; padding: 18px 28px; border-radius: 26px 26px 8px 26px; white-space: nowrap; }
+  #aBubble { position: absolute; left: 170px; top: 260px; width: 900px; }
+  #aAvatar { position: absolute; left: 0; top: 0; width: 58px; height: 58px; border-radius: 50%; background: #fafaf9; overflow: hidden; }
+  #aAvatar img { width: 100%; height: 100%; transform: scale(1.5) translateY(4%); }
+  #phase { position: absolute; left: 84px; top: 12px; height: 34px; width: 600px; overflow: hidden; }
+  .phaseItem { position: absolute; left: 0; top: 0; display: flex; align-items: center; gap: 12px; font-size: 22px; color: #a8a29e; font-weight: 500; white-space: nowrap; }
+  #skel { position: absolute; left: 84px; top: 70px; width: 780px; }
+  .sk { height: 20px; border-radius: 10px; margin-bottom: 18px; background: linear-gradient(90deg, #292524 0%, #44403c 50%, #292524 100%); background-size: 200% 100%; }
+  #stream { position: absolute; left: 84px; top: 62px; width: 800px; font-size: 34px; line-height: 1.5; color: #d6d3d1; }
+  #stream b { color: #fff; font-weight: 700; }
+
+  /* adopt */
+  .node { position: absolute; width: 262px; height: 118px; background: #fff; border: 1px solid #e7e5e4; border-radius: 20px; box-shadow: 0 10px 30px rgba(28,25,23,.06); padding: 18px 20px; display: flex; gap: 14px; align-items: flex-start; }
+  .node .ic { width: 46px; height: 46px; border-radius: 14px; background: #eff6ff; display: grid; place-items: center; flex: none; color: #2563eb; }
+  .node h4 { font-size: 22px; font-weight: 700; color: #1c1917; margin-top: 2px; }
+  .node p { font-size: 14px; color: #78716c; margin-top: 6px; white-space: nowrap; }
+  .tick { position: absolute; right: -12px; top: -12px; width: 34px; height: 34px; border-radius: 50%; background: #16a34a; display: grid; place-items: center; box-shadow: 0 4px 12px rgba(22,163,74,.35); }
+
+  /* samacare */
+  #browser { position: absolute; left: 160px; top: 430px; width: 1080px; height: 580px; background: #fff; border-radius: 20px; box-shadow: 0 30px 80px rgba(76,29,149,.18), 0 0 0 1px #e9d5ff; overflow: hidden; }
+  .bbar { height: 52px; background: #faf9fb; border-bottom: 1px solid #f0eaf7; display: flex; align-items: center; gap: 10px; padding: 0 20px; }
+  .bbar i { width: 13px; height: 13px; border-radius: 50%; background: #e7e5e4; display: block; }
+  .url { margin-left: 18px; height: 30px; flex: 0 0 440px; border-radius: 8px; background: #f3f0f7; font-size: 14px; color: #78716c; display: flex; align-items: center; padding: 0 14px; }
+  .field { position: absolute; left: 40px; width: 600px; }
+  .field label { display: block; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: #a8a29e; font-weight: 600; margin-bottom: 7px; }
+  .field .in { height: 46px; border: 1px solid #e7e5e4; border-radius: 10px; font-size: 19px; color: #1c1917; display: flex; align-items: center; padding: 0 14px; position: relative; overflow: hidden; }
+  .field .sweep { position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(139,92,246,.22), transparent); }
+  #scPanel { position: absolute; right: 0; top: 52px; bottom: 0; width: 380px; background: #faf5ff; border-left: 1px solid #e9d5ff; padding: 22px; }
+  .pitem { height: 58px; border-radius: 12px; background: #fff; border: 1px solid #ede9fe; margin-bottom: 10px; display: flex; align-items: center; padding: 0 14px; gap: 12px; font-size: 16px; color: #3b0764; }
+  .pitem small { display: block; font-size: 11px; color: #a78bfa; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; }
+  .token { position: absolute; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: #7c3aed; box-shadow: 0 0 0 6px rgba(124,58,237,.18), 0 0 24px #a78bfa; }
+
+  /* caret */
+  .kbd { position: absolute; width: 132px; height: 132px; border-radius: 26px; background: linear-gradient(180deg, #2c2a28, #1f1d1b); border: 1px solid #45413d; color: #f5f5f4; font-size: 60px; font-weight: 500; display: grid; place-items: center; }
+  #palette { position: absolute; left: 550px; top: 170px; width: 820px; background: #1c1a18; border: 1px solid #3a3734; border-radius: 22px; box-shadow: 0 50px 120px rgba(0,0,0,.6); overflow: hidden; }
+  .pin { height: 80px; display: flex; align-items: center; gap: 18px; padding: 0 28px; font-size: 28px; color: #f5f5f4; border-bottom: 1px solid #2e2b28; }
+  .pk { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #a8a29e; border: 1px solid #3a3734; border-radius: 6px; padding: 4px 8px; }
+  #results { position: relative; padding: 10px; }
+  #hl { position: absolute; left: 10px; right: 10px; border-radius: 12px; background: #2a2724; box-shadow: inset 0 0 0 1px #3b82f6; }
+  .ri { position: relative; overflow: hidden; display: flex; align-items: center; gap: 16px; padding: 0 18px; font-size: 22px; color: #e7e5e4; }
+  .ri .sq { width: 34px; height: 34px; border-radius: 9px; background: #292524; display: grid; place-items: center; color: #93c5fd; flex: none; }
+  .ri .pk { margin-left: auto; }
+  #peek { position: absolute; top: 0; right: 0; width: 540px; height: 1080px; background: #1a1816; border-left: 1px solid #36322f; box-shadow: -40px 0 80px rgba(0,0,0,.45); padding: 110px 44px; }
+  .pf { margin-bottom: 26px; }
+  .pf label { display: block; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: #78716c; font-weight: 600; margin-bottom: 9px; }
+  .pf div { height: 52px; border-radius: 12px; border: 1px solid #36322f; background: #211f1d; font-size: 19px; color: #e7e5e4; display: flex; align-items: center; padding: 0 16px; }
+  .stageChip { position: absolute; top: 0; height: 52px; padding: 0 22px; border-radius: 999px; border: 1px solid #44403c; color: #a8a29e; font-size: 19px; font-weight: 600; display: flex; align-items: center; gap: 10px; white-space: nowrap; }
+
+  /* montage */
+  .card { position: absolute; inset: 0; display: none; }
+  .big { position: absolute; left: 160px; font-size: 176px; line-height: .98; }
+
+  /* dock */
+  #dock { position: absolute; left: 50%; bottom: 70px; height: 104px; padding: 0 22px; border-radius: 34px; display: flex; align-items: flex-end; gap: 14px; padding-bottom: 16px;
+          background: rgba(255,255,255,.55); box-shadow: inset 0 1px 0 rgba(255,255,255,.9), inset 0 0 0 1px rgba(255,255,255,.6), 0 24px 60px rgba(28,25,23,.18); backdrop-filter: blur(20px) saturate(1.6); }
+  .dk { width: 72px; height: 72px; border-radius: 22px; transform-origin: 50% 100%; display: grid; place-items: center; color: #fff; }
+
+  /* player chrome */
+  #controls { position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 14px; padding: 14px 18px; background: linear-gradient(transparent, rgba(0,0,0,.55)); opacity: 0; transition: opacity .25s cubic-bezier(.16,1,.3,1); z-index: 80; }
+  #frame:hover #controls, #controls:focus-within, body.paused #controls { opacity: 1; }
+  #controls button { width: 40px; height: 40px; border-radius: 12px; border: 0; background: rgba(255,255,255,.14); color: #fff; display: grid; place-items: center; cursor: pointer; backdrop-filter: blur(10px); }
+  #controls button:hover { background: rgba(255,255,255,.24); }
+  #scrub { flex: 1; accent-color: #3b82f6; }
+  #tcLabel { font: 500 13px 'JetBrains Mono', monospace; color: #fff; min-width: 64px; text-align: right; }
+  #startOverlay { position: absolute; inset: 0; display: grid; place-items: center; z-index: 90; background: rgba(12,10,9,.35); cursor: pointer; }
+  #startOverlay div { display: flex; align-items: center; gap: 14px; padding: 16px 26px 16px 18px; border-radius: 999px; background: rgba(255,255,255,.92); color: #1c1917; font-weight: 600; font-size: 17px; box-shadow: 0 20px 50px rgba(0,0,0,.35); }
+  #startOverlay span.pb { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(135deg,#3b82f6,#0ea5e9); color: #fff; }
+  body.render #controls, body.render #startOverlay { display: none !important; }
+  @media (prefers-reduced-motion: reduce) { #controls { transition: none; } }
+</style>
+</head>
+<body>
+<div id="viewport">
+<div id="frame">
+<div id="stage">
+
+  <!-- A+B: composer and chat (dark) -->
+  <section id="sAB" class="scene" style="background:#0c0a09">
+    <div id="abGlow" class="abs" style="left:0;top:0;width:1920px;height:1080px;background:radial-gradient(900px 500px at 50% 55%, rgba(37,99,235,.16), transparent 70%)"></div>
+    <div id="aLabel" class="abs mono" style="left:0;width:1920px;top:360px;text-align:center;font-size:16px;color:#78716c">01 · Input — motion only when there is meaning to spend</div>
+
+    <div id="qBubble" class="bubbleQ">Show me how Edward designs motion</div>
+
+    <div id="aBubble">
+      <div id="aAvatar"><img src="assets/avatar.png" alt=""></div>
+      <div id="phase"></div>
+      <div id="skel"><div class="sk" style="width:94%"></div><div class="sk" style="width:80%"></div><div class="sk" style="width:58%"></div></div>
+      <div id="stream"></div>
+    </div>
+
+    <div id="bType" class="abs serif" style="left:1200px;top:300px;font-size:92px;line-height:1.02;color:#fafaf9">
+      <div id="bSet1">
+        <span class="line"><span>Same wait.</span></span>
+        <span class="line"><span>Different</span></span>
+        <span class="line"><span><em style="color:#60a5fa">felt length.</em></span></span>
+      </div>
+      <div id="bSet2" style="position:absolute;left:0;top:0;white-space:nowrap">
+        <span class="line"><span>One cadence.</span></span>
+        <span class="line"><span><em style="color:#60a5fa">Zero</em> jitter.</span></span>
+      </div>
+    </div>
+    <div id="bNote" class="abs mono" style="left:1204px;top:640px;font-size:15px;color:#78716c;line-height:1.8">02 · Loading → Streaming<br>one bubble mounts, never unmounts</div>
+
+    <div id="pillWrap">
+      <div id="beam"></div>
+      <div id="pillInner">
+        <div id="pillText"></div>
+        <div id="sendBtn">
+          <svg id="icArrow" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+          <svg id="icStop" width="22" height="22" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4" fill="#1c1917"/></svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- C: Adopt AI -->
+  <section id="sC" class="scene" style="background:#fafaf9">
+    <div class="abs" style="left:0;top:0;width:1920px;height:1080px;background-image:radial-gradient(#e7e5e4 1.2px, transparent 1.2px);background-size:32px 32px;opacity:.7"></div>
+    <div id="cChip" class="abs chip" style="left:160px;top:120px;background:#eff6ff;color:#1d4ed8"><span class="dotc" style="background:#2563eb"></span>ADOPT AI · FOUNDING STAFF PRODUCT DESIGNER</div>
+    <div class="abs serif" style="left:160px;top:188px;font-size:104px;line-height:1.02;color:#0c0a09">
+      <span class="line"><span class="cw">Building</span> <span class="cw">trust</span> <span class="cw">into</span></span>
+      <span class="line"><span class="cw"><em style="color:#2563eb">agentic AI</em></span></span>
+    </div>
+    <svg id="cWires" class="abs" style="left:0;top:0" width="1920" height="1080"></svg>
+    <div id="nodes"></div>
+    <div id="agentDot" class="abs" style="width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:#2563eb;box-shadow:0 0 0 7px rgba(37,99,235,.18),0 0 30px #60a5fa"></div>
+    <div id="cStat" class="abs" style="left:160px;top:760px;display:flex;align-items:flex-end;gap:36px">
+      <div id="c7" class="serif" style="font-size:190px;line-height:.8;color:#2563eb">7×</div>
+      <div style="padding-bottom:16px">
+        <div style="font-size:28px;font-weight:700;color:#1c1917">Workflow step reuse</div>
+        <div style="font-size:24px;color:#78716c;margin-top:4px">across customers</div>
+      </div>
+      <div id="cPatent" class="mono" style="padding-bottom:18px;margin-left:40px;font-size:15px;line-height:1.8;color:#a8a29e;border-left:1px solid #e7e5e4;padding-left:28px">Patent US12430227<br>API discovery → action workflows</div>
+    </div>
+    <div id="phone" class="abs" style="left:1390px;top:130px;width:400px;height:606px">
+      <img src="assets/copilot.png" alt="" style="width:100%;height:100%;display:block;filter:drop-shadow(0 40px 60px rgba(30,64,175,.22))">
+      <div id="orbRing" class="abs" style="left:200px;top:154px;width:70px;height:70px;margin:-35px 0 0 -35px;border-radius:50%;border:2px solid #8b5cf6"></div>
+    </div>
+  </section>
+
+  <!-- D: SamaCare -->
+  <section id="sD" class="scene" style="background:#f5f3ff">
+    <div id="dChip" class="abs chip" style="left:160px;top:110px;background:#ede9fe;color:#5b21b6"><span class="dotc" style="background:#6d28d9"></span>SAMACARE · FIRST DESIGN HIRE · CHROME EXTENSION</div>
+    <div class="abs serif" style="left:160px;top:175px;font-size:96px;line-height:1.02;color:#0c0a09">
+      <span class="line"><span class="dw">Bring</span> <span class="dw">portal</span> <span class="dw">work</span></span>
+      <span class="line"><span class="dw"><em style="color:#6d28d9">home to SamaCare</em></span></span>
+    </div>
+    <div id="browser">
+      <div class="bbar"><i></i><i></i><i></i><div class="url">payer-portal / prior-authorization / new</div></div>
+      <div style="position:absolute;left:40px;top:80px;font-size:26px;font-weight:700;color:#1c1917">Prior authorization request</div>
+      <div id="fields"></div>
+      <div id="scPanel">
+        <div style="display:flex;align-items:center;gap:10px;font-weight:700;font-size:19px;color:#3b0764">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="#7c3aed"><path d="M12 2l2.2 6.3L20.5 10l-6.3 2.2L12 18.5l-2.2-6.3L3.5 10l6.3-1.7z"/></svg>SamaCare Copilot
+        </div>
+        <div style="font-size:14px;color:#8b5cf6;margin:6px 0 16px">Found 4 fields in the chart</div>
+        <div id="pitems"></div>
+        <div id="submitted" style="margin-top:14px;height:50px;border-radius:12px;background:#6d28d9;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700;font-size:17px">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>Submitted · tracking status
+        </div>
+      </div>
+    </div>
+    <div id="tokens"></div>
+    <div id="dStats" class="abs" style="left:1330px;top:470px;width:460px">
+      <div id="d6" class="serif" style="font-size:150px;line-height:.9;color:#6d28d9">6 mo</div>
+      <div style="font-size:26px;font-weight:700;color:#1c1917;margin-top:14px">Research to launch</div>
+      <div style="height:1px;background:#ddd6fe;margin:40px 0"></div>
+      <div id="d17" class="serif" style="font-size:104px;line-height:.9;color:#1c1917">$17M</div>
+      <div style="font-size:24px;color:#78716c;margin-top:12px">Series B, as the product broadened</div>
+    </div>
+  </section>
+
+  <!-- E: Caret Legal -->
+  <section id="sE" class="scene" style="background:#0f0e0d">
+    <div id="eApp" class="abs" style="inset:0"></div>
+    <div id="eChip" class="abs chip" style="left:300px;top:40px;background:#1e293b;color:#93c5fd;z-index:3"><span class="dotc" style="background:#3b82f6"></span>CARET LEGAL · DIRECTOR OF PRODUCT DESIGN</div>
+    <div id="kCmd" class="kbd">⌘</div>
+    <div id="kK" class="kbd">K</div>
+    <div id="palette">
+      <div class="pin">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#a8a29e" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <span id="q" style="flex:1"></span><span class="pk">esc</span>
+      </div>
+      <div id="results"><div id="hl"></div></div>
+    </div>
+    <div id="peek">
+      <div class="mono" style="font-size:13px;color:#60a5fa;margin-bottom:12px">Peek · quick create</div>
+      <div style="font-size:40px;font-weight:700;color:#fafaf9;margin-bottom:36px">New matter</div>
+      <div class="pf"><label>Client</label><div>Hartley &amp; Sons Ltd.</div></div>
+      <div class="pf"><label>Practice area</label><div>Commercial litigation</div></div>
+      <div class="pf"><label>Responsible attorney</label><div>M. Okafor</div></div>
+      <div class="pf"><label>Billing</label><div>Hourly · trust account linked</div></div>
+      <div style="margin-top:40px;height:56px;border-radius:14px;background:linear-gradient(135deg,#3b82f6,#0ea5e9);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:19px">Create matter <span class="pk" style="color:#e0f2fe;border-color:rgba(255,255,255,.4);margin-left:12px">⌘ ↵</span></div>
+    </div>
+    <div id="eCap" class="abs serif" style="left:300px;top:640px;font-size:84px;line-height:1.04;color:#fafaf9;z-index:3">
+      <span class="line"><span>Foundations an</span></span>
+      <span class="line"><span><em style="color:#60a5fa">assistant can act on.</em></span></span>
+    </div>
+    <div id="eStages" class="abs" style="left:300px;top:930px;width:1100px;height:80px;z-index:3"></div>
+  </section>
+
+  <!-- F: Tiny planet -->
+  <section id="sF" class="scene" style="background:#0b1026">
+    <canvas id="planet" width="1920" height="1080" class="abs" style="left:0;top:0"></canvas>
+    <div id="fCard" class="abs" style="left:240px;top:86px;width:1920px;text-align:center;height:160px;overflow:hidden"></div>
+    <div id="fCap" class="abs" style="left:160px;top:840px">
+      <div class="serif" style="font-size:74px;color:#fff;line-height:1"><span class="line"><span>Career, as a <em style="color:#a5b4fc">tiny planet.</em></span></span></div>
+      <div class="mono" style="font-size:15px;color:#818cf8;margin-top:16px">three.js widget · auto tour · one landmark per role</div>
+    </div>
+  </section>
+
+  <!-- G: montage -->
+  <section id="sG" class="scene">
+    <div id="g1" class="card" style="background:#fafaf9">
+      <div class="big serif" style="top:300px;color:#0c0a09"><span class="line"><span>Motion needs</span></span><span class="line"><span><em style="color:#2563eb">meaning.</em></span></span></div>
+      <div class="abs mono" style="left:166px;top:720px;font-size:17px;color:#78716c">The composer beam only sweeps while the model works</div>
+      <svg id="curve" class="abs" style="left:1320px;top:250px" width="460" height="520" viewBox="0 0 460 520">
+        <path d="M30 470 H440 M30 470 V20" stroke="#d6d3d1" stroke-width="2" fill="none"/>
+        <path id="curvePath" d="" stroke="#2563eb" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <circle id="curveDot" r="15" fill="#2563eb"/>
+        <text x="30" y="510" style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:16px" fill="#78716c">cubic-bezier(0.16, 1, 0.3, 1)</text>
+      </svg>
+    </div>
+    <div id="g2" class="card" style="background:#2563eb">
+      <div id="g2t" class="big serif" style="top:300px;color:#fff"><span class="line"><span>Intent,</span></span><span class="line"><span><em style="color:#bfdbfe">not guesses.</em></span></span></div>
+      <div class="abs mono" style="left:166px;top:720px;font-size:17px;color:#bfdbfe">Follow-scroll lets go on the first upward gesture</div>
+      <div id="jump" class="abs" style="left:1400px;top:560px;height:64px;padding:0 28px;border-radius:999px;background:#fff;color:#1d4ed8;display:flex;align-items:center;gap:12px;font-weight:700;font-size:22px;box-shadow:0 20px 50px rgba(0,0,0,.25)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>Jump to latest
+      </div>
+      <div id="g2lines" class="abs" style="left:1400px;top:200px;width:360px;height:320px;overflow:hidden"></div>
+    </div>
+    <div id="g3" class="card" style="background:#0c0a09">
+      <div id="g3t" class="big serif" style="top:300px;color:#fafaf9"></div>
+      <div class="abs mono" style="left:166px;top:720px;font-size:17px;color:#78716c">Commit the stream before the view unmounts</div>
+      <div id="toast" class="abs" style="left:1260px;top:600px;width:500px;height:84px;border-radius:20px;background:#292524;border:1px solid #44403c;display:flex;align-items:center;gap:18px;padding:0 22px;color:#e7e5e4;font-size:22px;box-shadow:0 30px 60px rgba(0,0,0,.5)">
+        <svg width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" stroke="#44403c" stroke-width="4" fill="none"/><circle id="ring" cx="20" cy="20" r="16" stroke="#60a5fa" stroke-width="4" fill="none" stroke-linecap="round" transform="rotate(-90 20 20)" stroke-dasharray="100.5" stroke-dashoffset="0"/></svg>
+        <span style="flex:1">Conversation cleared</span><b style="color:#60a5fa">Undo</b>
+      </div>
+    </div>
+    <div id="g4" class="card" style="background:#f5f5f4">
+      <div class="abs chip" style="left:160px;top:200px;background:#e0f2fe;color:#075985"><span class="dotc" style="background:#0ea5e9"></span>NOW · ELATION HEALTH · STAFF PRODUCT DESIGNER</div>
+      <div id="g4t" class="big serif" style="top:290px;color:#0c0a09;font-size:160px"><span class="line"><span>AI inside the</span></span><span class="line"><span><em style="color:#0284c7">clinical day.</em></span></span></div>
+      <div id="dock"></div>
+    </div>
+  </section>
+
+  <!-- H: end card -->
+  <section id="sH" class="scene" style="background:#0c0a09">
+    <div class="abs" style="left:0;top:0;width:1920px;height:1080px;background:radial-gradient(800px 420px at 50% 62%, rgba(37,99,235,.18), transparent 70%)"></div>
+    <div id="hAvatar" class="abs" style="left:900px;top:150px;width:120px;height:120px;border-radius:50%;background:#fafaf9;overflow:hidden"><img src="assets/avatar.png" alt="" style="width:100%;height:100%;transform:scale(1.5) translateY(4%)"></div>
+    <div class="abs serif" style="left:0;width:1920px;top:300px;text-align:center;font-size:168px;color:#fafaf9;line-height:1">
+      <span class="line"><span class="hw">Edward</span> <span class="hw"><em style="color:#60a5fa">Chu</em></span></span>
+    </div>
+    <div id="hSub" class="abs" style="left:0;width:1920px;top:500px;text-align:center;font-size:32px;color:#a8a29e">Staff Product Designer · AI, systems &amp; motion</div>
+    <div id="endPill" class="abs" style="overflow:hidden;background:#44403c">
+      <div id="endBeam" class="abs" style="left:50%;top:50%;width:2000px;height:2000px;margin:-1000px 0 0 -1000px;background:conic-gradient(from 90deg, transparent 0 290deg, #3b82f6 346deg, #bfdbfe 357deg, transparent 360deg)"></div>
+      <div id="endInner" class="abs" style="inset:2px;background:#1c1917;display:flex;align-items:center;justify-content:center;gap:16px;font-size:34px;font-weight:600;color:#fafaf9;white-space:nowrap"><span id="endUrl">edward2.com</span></div>
+    </div>
+    <div id="hList" class="abs mono" style="left:0;width:1920px;top:900px;text-align:center;font-size:16px;color:#78716c">Elation Health · Caret Legal · Adopt AI · SamaCare · Kea AI · Tier1 · Flybits · Toronto Star</div>
+  </section>
+
+  <!-- transitions -->
+  <div id="wipeBlue" class="abs" style="background:#2563eb;z-index:20;display:none"></div>
+  <div id="wipeViolet" class="abs" style="left:0;top:0;width:1920px;height:1080px;background:#6d28d9;z-index:20;display:none"></div>
+  <div id="wipeLav" class="abs" style="left:0;top:0;width:1920px;height:1080px;background:#f5f3ff;z-index:21;display:none"></div>
+  <div id="slats" class="abs" style="inset:0;z-index:20;pointer-events:none"></div>
+  <div id="flash" class="abs" style="inset:0;background:#fafaf9;z-index:22;opacity:0;pointer-events:none"></div>
+  <canvas id="grain" width="480" height="270" class="abs" style="left:0;top:0;width:1920px;height:1080px;z-index:40;opacity:.07;mix-blend-mode:overlay;pointer-events:none;image-rendering:pixelated"></canvas>
+
+  <div id="hud">
+    <div class="abs mono" style="left:56px;top:44px;line-height:1.7">Edward Chu<br><span style="opacity:.55">Motion reel ’26</span></div>
+    <div id="tc" class="abs mono" style="right:56px;top:44px;text-align:right;line-height:1.7"></div>
+    <div id="chapter" class="abs mono" style="left:56px;bottom:40px"></div>
+    <div class="abs" style="left:56px;right:56px;bottom:28px;height:1px;background:rgba(255,255,255,.18)"><div id="prog" style="height:100%;background:#fff;width:0"></div></div>
+    <div class="crop" style="left:24px;top:24px;border-width:1px 0 0 1px"></div>
+    <div class="crop" style="right:24px;top:24px;border-width:1px 1px 0 0"></div>
+    <div class="crop" style="left:24px;bottom:24px;border-width:0 0 1px 1px"></div>
+    <div class="crop" style="right:24px;bottom:24px;border-width:0 1px 1px 0"></div>
+  </div>
+</div>
+
+<div id="controls">
+  <button id="playBtn" aria-label="Play or pause"></button>
+  <button id="restartBtn" aria-label="Restart"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
+  <input id="scrub" type="range" min="0" max="15000" step="1" value="0" aria-label="Scrub">
+  <span id="tcLabel">0.00s</span>
+  <button id="muteBtn" aria-label="Mute"></button>
+</div>
+<div id="startOverlay"><div><span class="pb"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M7 4.5v15l12.5-7.5z"/></svg></span>Play the reel with sound</div></div>
+</div>
+</div>
+
+<script>
+(() => {
+'use strict';
+const DUR = 15;
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, p) => a + (b - a) * p;
+const P = (t, a, b) => clamp((t - a) / (b - a));
+
+// cubic-bezier solver
+function bez(x1, y1, x2, y2) {
+  const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx;
+  const cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+  const sx = (u) => ((ax * u + bx) * u + cx) * u;
+  const sy = (u) => ((ay * u + by) * u + cy) * u;
+  const dx = (u) => (3 * ax * u + 2 * bx) * u + cx;
+  return (x) => {
+    if (x <= 0) return 0; if (x >= 1) return 1;
+    let u = x;
+    for (let i = 0; i < 8; i++) { const e = sx(u) - x; const d = dx(u); if (Math.abs(e) < 1e-6 || Math.abs(d) < 1e-6) break; u -= e / d; }
+    return sy(clamp(u));
+  };
+}
+const eo = bez(0.16, 1, 0.3, 1);      // the site's signature ease
+const eio = bez(0.65, 0, 0.35, 1);
+const ein = bez(0.7, 0, 0.84, 0);
+const E = (t, a, b, f = eo) => f(P(t, a, b));
+// damped spring, dt in seconds
+function spr(dt, w = 16, z = 0.42) {
+  if (dt <= 0) return 0;
+  const wd = w * Math.sqrt(1 - z * z);
+  return 1 - Math.exp(-z * w * dt) * (Math.cos(wd * dt) + (z * w / wd) * Math.sin(wd * dt));
+}
+function tf(el, o) {
+  let s = '';
+  if (o.persp) s += `perspective(${o.persp}px) `;
+  s += `translate(${(o.x || 0).toFixed(2)}px,${(o.y || 0).toFixed(2)}px)`;
+  if (o.rx) s += ` rotateX(${o.rx}deg)`;
+  if (o.ry) s += ` rotateY(${o.ry}deg)`;
+  if (o.r) s += ` rotate(${o.r}deg)`;
+  if (o.sk) s += ` skewX(${o.sk}deg)`;
+  const sx = o.sx ?? o.s ?? 1, sy = o.sy ?? o.s ?? 1;
+  if (sx !== 1 || sy !== 1) s += ` scale(${sx.toFixed(4)},${sy.toFixed(4)})`;
+  el.style.transform = s;
+  if (o.o !== undefined) el.style.opacity = clamp(o.o).toFixed(3);
+  if (o.blur !== undefined) el.style.filter = o.blur > 0.05 ? `blur(${o.blur.toFixed(2)}px)` : 'none';
+}
+const show = (el, on) => { el.style.display = on ? 'block' : 'none'; };
+const scene = (id, t, a, b) => { const on = t >= a && t < b; $(id).style.display = on ? 'block' : 'none'; return on; };
+// mask-reveal every .line > span inside root
+function lines(root, t, t0, stagger = 0.07, dur = 0.5, outAt = null) {
+  root.querySelectorAll('.line > span').forEach((s, i) => {
+    let p = E(t, t0 + i * stagger, t0 + i * stagger + dur);
+    let y = (1 - p) * 110;
+    if (outAt !== null) { const q = E(t, outAt + i * 0.04, outAt + i * 0.04 + 0.3, ein); y -= q * 110; }
+    tf(s, { y: y * (s.offsetHeight / 100 || 1) });
+  });
+}
+
+// ---------- build dynamic DOM ----------
+const icons = {
+  chat: '<path d="M4 5h16v11H8l-4 4z"/>',
+  nav: '<path d="M4 12h13M13 6l6 6-6 6"/>',
+  form: '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8M8 13h8M8 17h5"/>',
+  send: '<path d="M5 12.5l4.5 4.5L19 7"/>',
+  doc: '<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/>',
+  clock: '<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>',
+  folder: '<path d="M3 7h6l2 2h10v10H3z"/>',
+  card: '<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/>',
+  scale: '<path d="M12 4v16M5 20h14M6 8h12M6 8l-3 6h6zM18 8l-3 6h6z"/>',
+  home: '<path d="M4 11l8-7 8 7v9H4z"/>',
+  spark: '<path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/>',
+  brief: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V4h6v3"/>',
+  grid: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',
+  book: '<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/>',
+  pen: '<path d="M4 20l4-1 11-11-3-3L5 16z"/>',
+  spin: '<path d="M12 3a9 9 0 1 0 9 9"/>',
+};
+const svg = (k, size = 24, stroke = 'currentColor', w = 2.2) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${icons[k]}</svg>`;
+
+// phases
+const PHASES = [['spin', 'Thinking'], ['book', 'Reading case studies'], ['pen', 'Drafting']];
+$('phase').innerHTML = PHASES.map(([k, l]) => `<div class="phaseItem"><span class="pic" style="display:grid;place-items:center">${svg(k, 24, '#60a5fa')}</span>${l}</div>`).join('');
+const phaseEls = [...$('phase').children];
+
+// stream text
+const STREAM = [
+  ['I design motion that ', 0], ['carries meaning', 1], ['. One bubble mounts and never unmounts. One steady cadence, so ', 0], ['network jitter never shows', 1], ['.', 0],
+];
+const STREAM_LEN = STREAM.reduce((n, s) => n + s[0].length, 0);
+
+// adopt nodes
+const NODES = [['chat', 'Ask', '“Add Acme as a lead”'], ['nav', 'Navigate', 'CRM › Leads › New'], ['form', 'Fill form', '6 fields mapped'], ['send', 'Submit', 'Record created']];
+const NX = (i) => 160 + i * 300, NY = 505;
+$('nodes').innerHTML = NODES.map(([k, h, p], i) => `<div class="node" style="left:${NX(i)}px;top:${NY}px"><div class="ic">${svg(k, 24)}</div><div><h4>${h}</h4><p>${p}</p></div><div class="tick">${svg('send', 20, '#fff', 3)}</div></div>`).join('');
+const nodeEls = [...$('nodes').children];
+$('cWires').innerHTML = [0, 1, 2].map((i) => `<path class="wire" d="M${NX(i) + 250} ${NY + 59} C ${NX(i) + 268} ${NY + 59}, ${NX(i + 1) - 18} ${NY + 59}, ${NX(i + 1)} ${NY + 59}" stroke="#93c5fd" stroke-width="4" fill="none" stroke-dasharray="60" stroke-linecap="round"/>`).join('');
+const wires = [...$('cWires').children];
+
+// samacare fields
+const FIELDS = [['Patient', 'Jane Doe · 03/12/1984'], ['Member ID', 'MBR-2291-0457'], ['Procedure (CPT)', 'J9035 · Bevacizumab'], ['Diagnosis (ICD-10)', 'C18.9']];
+$('fields').innerHTML = FIELDS.map(([l], i) => `<div class="field" style="top:${140 + i * 100}px"><label>${l}</label><div class="in"><div class="sweep"></div><span class="val"></span></div></div>`).join('');
+const fieldEls = [...$('fields').children];
+$('pitems').innerHTML = FIELDS.map(([l, v]) => `<div class="pitem"><div style="flex:1"><small>${l}</small>${v}</div>${svg('nav', 18, '#7c3aed')}</div>`).join('');
+const pitemEls = [...$('pitems').children];
+$('tokens').innerHTML = FIELDS.map(() => '<div class="token"></div>').join('');
+const tokenEls = [...$('tokens').children];
+
+// caret legal app backdrop
+(() => {
+  let h = '<div class="abs" style="left:0;top:0;width:240px;height:1080px;background:#141312;border-right:1px solid #262422"></div>';
+  h += '<div class="abs" style="left:28px;top:44px;width:120px;height:26px;border-radius:8px;background:#2a2724"></div>';
+  ['home', 'brief', 'doc', 'clock', 'card', 'user', 'grid'].forEach((k, i) => {
+    h += `<div class="abs" style="left:22px;top:${120 + i * 58}px;width:196px;height:44px;border-radius:10px;display:flex;align-items:center;gap:12px;padding:0 12px;color:#57534e;${i === 1 ? 'background:#1f1d1b;color:#a8a29e' : ''}">${svg(k, 20)}<span style="height:10px;width:${70 + (i * 23) % 50}px;border-radius:5px;background:currentColor;opacity:.6"></span></div>`;
+  });
+  h += '<div class="abs" style="left:240px;top:0;right:0;height:72px;border-bottom:1px solid #262422"></div>';
+  for (let r = 0; r < 12; r++) {
+    h += `<div class="abs erow" style="left:300px;top:${150 + r * 66}px;width:1560px;height:54px;border-radius:10px;border-bottom:1px solid #1d1b19;display:flex;align-items:center;gap:40px;padding:0 18px">`;
+    [220, 340, 160, 200, 120].forEach((w, c) => { h += `<span style="height:11px;width:${w - ((r * 37 + c * 53) % 70)}px;border-radius:6px;background:${c === 0 ? '#44403c' : '#292524'}"></span>`; });
+    h += '</div>';
+  }
+  $('eApp').innerHTML = h;
+})();
+const RESULTS = [['doc', 'Search documents', '⌘ D', 'search documents'], ['clock', 'New time entry', '⌘ T', 'new time entry'], ['brief', 'New matter', '⌘ M', 'new matter'], ['card', 'Open billing', '⌘ B', 'open billing'], ['scale', 'Reconcile trust account', '⌘ R', 'reconcile trust account']];
+$('results').insertAdjacentHTML('beforeend', RESULTS.map(([k, l, s]) => `<div class="ri"><span class="sq">${svg(k, 20)}</span>${l}<span class="pk">${s}</span></div>`).join(''));
+const riEls = [...$('results').querySelectorAll('.ri')];
+const STAGES = ['Quick search', 'Smart search', 'LLM assistant'];
+$('eStages').innerHTML = STAGES.map((s, i) => `<div class="stageChip" style="left:${i * 330}px"><span class="dotc" style="background:currentColor"></span>${s}</div>`).join('') +
+  '<div class="abs" style="left:0;top:72px;width:900px;height:2px;background:#292524"><div id="stageBar" style="height:100%;width:0;background:linear-gradient(90deg,#3b82f6,#0ea5e9)"></div></div>';
+const stageEls = [...$('eStages').querySelectorAll('.stageChip')];
+
+// slats
+$('slats').innerHTML = Array.from({ length: 9 }, (_, i) => `<div class="abs slat" style="left:0;top:${i * 120}px;width:1920px;height:121px;background:#0f0e0d;display:none"></div>`).join('');
+const slatEls = [...$('slats').children];
+
+// montage 3: per-character
+(() => {
+  const L = [['Nothing', ''], ['silently', 'em'], [' lost.', '']];
+  let h = '<span class="line"><span>';
+  for (const ch of 'Nothing') h += `<i class="ch" style="display:inline-block;font-style:normal">${ch}</i>`;
+  h += '</span></span><span class="line"><span>';
+  for (const ch of 'silently') h += `<i class="ch" style="display:inline-block;font-style:italic;color:#60a5fa">${ch}</i>`;
+  for (const ch of ' lost.') h += `<i class="ch" style="display:inline-block;font-style:normal">${ch === ' ' ? '&nbsp;' : ch}</i>`;
+  h += '</span></span>';
+  $('g3t').innerHTML = h;
+  void L;
+})();
+const chEls = [...$('g3t').querySelectorAll('.ch')];
+// montage 2 scroll lines
+$('g2lines').innerHTML = Array.from({ length: 14 }, (_, i) => `<div style="height:16px;border-radius:8px;background:rgba(255,255,255,${i % 4 === 3 ? 0 : 0.28});margin-bottom:18px;width:${[92, 78, 86, 0][i % 4] || 60}%"></div>`).join('');
+// curve path
+(() => {
+  const f = eo; let d = '';
+  for (let i = 0; i <= 80; i++) { const x = i / 80; d += (i ? 'L' : 'M') + (30 + x * 410).toFixed(1) + ' ' + (470 - f(x) * 450).toFixed(1) + ' '; }
+  $('curvePath').setAttribute('d', d);
+})();
+const curveLen = () => $('curvePath').getTotalLength();
+// dock
+const DOCK = [['home', '#1c1917'], ['spark', 'linear-gradient(135deg,#3b82f6,#0ea5e9)'], ['brief', '#57534e'], ['user', '#0284c7'], ['doc', '#78716c'], ['grid', '#7c3aed'], ['clock', '#16a34a']];
+$('dock').innerHTML = DOCK.map(([k, bg]) => `<div class="dk" style="background:${bg}">${svg(k, 34, '#fff', 2)}</div>`).join('');
+const dockEls = [...$('dock').children];
+
+// grain
+const gctx = $('grain').getContext('2d');
+const grainFrames = [];
+(() => {
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for (let f = 0; f < 6; f++) {
+    const img = gctx.createImageData(480, 270);
+    for (let i = 0; i < img.data.length; i += 4) { const v = rnd() * 255; img.data[i] = img.data[i + 1] = img.data[i + 2] = v; img.data[i + 3] = 255; }
+    grainFrames.push(img);
+  }
+})();
+
+// planet data
+const avatarImg = new Image(); avatarImg.src = 'assets/avatar.png';
+const STOPS = [
+  ['01', 'Toronto Star', 'StarTouch iPad · App Store Best of Year', '#ef4444', 'press'],
+  ['02', 'Tier1 Financial', 'IC to Design Manager', '#0ea5e9', 'bank'],
+  ['03', 'Flybits', 'Platform UX at enterprise scale', '#8b5cf6', 'tower'],
+  ['04', 'Kea AI', 'Head of Product Design · voice ordering', '#f59e0b', 'shop'],
+  ['05', 'SamaCare', 'First design hire · $17M Series B', '#7c3aed', 'clinic'],
+  ['06', 'Adopt AI', 'Founding Staff Designer · agentic copilot', '#2563eb', 'api'],
+  ['07', 'Caret Legal', 'Director of Product Design · AI initiative', '#64748b', 'court'],
+  ['08', 'Elation Health', 'Staff Product Designer · clinical AI', '#0284c7', 'clinic2'],
+];
+$('fCard').innerHTML = STOPS.map(([n, name, role]) => `<div class="fc abs" style="left:0;top:0;width:1920px"><div class="mono" style="font-size:15px;color:#818cf8">${n} / 08</div><div class="serif" style="font-size:66px;color:#fff;line-height:1.1;margin-top:6px">${name}</div><div style="font-size:22px;color:#c7d2fe;margin-top:4px">${role}</div></div>`).join('');
+const fcEls = [...$('fCard').children];
+let seed = 3; const srnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const STARS = Array.from({ length: 160 }, () => [srnd() * 1920, srnd() * 1080, srnd() * 1.8 + 0.4, srnd() * 6.28, srnd() * 3 + 1]);
+const pctx = $('planet').getContext('2d');
+const PCX = 1200, PCY = 700;
+
+function drawLandmark(c, kind, col, t) {
+  const r = (x, y, w, h, f) => { c.fillStyle = f; c.fillRect(x, y, w, h); };
+  const win = (x0, y0, cols, rows, gap = 13) => { for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) r(x0 + i * gap, y0 + j * gap, 7, 7, 'rgba(254,243,199,.9)'); };
+  switch (kind) {
+    case 'press': r(-36, -70, 72, 70, '#f5f5f4'); r(-40, -78, 80, 10, col); win(-26, -58, 4, 4); c.fillStyle = col; c.font = '700 14px Lora'; c.textAlign = 'center'; break;
+    case 'bank': r(-44, -18, 88, 18, '#e2e8f0'); for (let i = 0; i < 5; i++) r(-38 + i * 18, -62, 8, 44, '#f8fafc'); r(-48, -70, 96, 10, '#e2e8f0'); c.fillStyle = col; c.beginPath(); c.moveTo(-50, -70); c.lineTo(0, -98); c.lineTo(50, -70); c.fill(); break;
+    case 'tower': r(-16, -130, 32, 130, '#ede9fe'); r(-22, -134, 44, 8, col); win(-10, -118, 2, 8); r(-2, -168, 4, 36, '#c4b5fd'); c.fillStyle = (Math.sin(t * 18) > 0) ? '#f472b6' : '#831843'; c.beginPath(); c.arc(0, -170, 5, 0, 7); c.fill(); break;
+    case 'shop': r(-40, -56, 80, 56, '#fffbeb'); for (let i = 0; i < 5; i++) r(-44 + i * 17.6, -66, 17.6, 14, i % 2 ? '#fff' : col); r(-12, -34, 24, 34, '#92400e'); win(20, -44, 1, 2); win(-34, -44, 1, 2); break;
+    case 'clinic': case 'clinic2': r(-42, -64, 84, 64, '#fff'); r(-46, -70, 92, 10, col); r(-6, -54, 12, 30, '#ef4444'); r(-15, -45, 30, 12, '#ef4444'); win(-34, -52, 1, 3, 15); win(27, -52, 1, 3, 15); break;
+    case 'api': r(-30, -90, 60, 90, '#1e293b'); win(-20, -76, 3, 5, 15); r(-34, -112, 68, 22, '#0f172a'); c.fillStyle = `rgba(96,165,250,${0.7 + 0.3 * Math.sin(t * 9)})`; c.font = '800 18px Inter'; c.textAlign = 'center'; c.fillText('API', 0, -95); break;
+    case 'court': r(-46, -12, 92, 12, '#e5e7eb'); for (let i = 0; i < 4; i++) r(-36 + i * 22, -58, 10, 46, '#f9fafb'); r(-50, -66, 100, 8, '#e5e7eb'); c.fillStyle = col; c.beginPath(); c.moveTo(-52, -66); c.lineTo(0, -92); c.lineTo(52, -66); c.fill(); break;
+  }
+  // flag
+  r(38, -120, 3, 50, '#e2e8f0'); c.fillStyle = col; c.beginPath(); c.moveTo(41, -120); c.lineTo(41 + 26 + Math.sin(t * 12) * 3, -112); c.lineTo(41, -103); c.fill();
+}
+
+function planetAngle(t) {
+  // tour: 8 stops from 9.72, 0.2s each (0.12 move, 0.08 dwell)
+  const step = (Math.PI * 2) / 8;
+  const t0 = 9.72, per = 0.205;
+  if (t < t0) return 0.9 * (1 - E(t, 9.4, t0));
+  void per;
+  return -tourPos(t) * step;
+}
+// continuous tour position, shared by the planet and the odometer card
+function tourPos(t) {
+  const t0 = 9.72, per = 0.205;
+  if (t < t0) return 0;
+  const k = Math.floor((t - t0) / per), f = (t - t0) / per - k;
+  return k >= 7 ? 7 : k + eo(clamp(f / 0.62));
+}
+
+function drawPlanet(t) {
+  const c = pctx; const W = 1920, H = 1080;
+  const g = c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#0b1026'); g.addColorStop(1, '#1e1b4b');
+  c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = g; c.fillRect(0, 0, W, H);
+  for (const [x, y, s, ph, fr] of STARS) { c.globalAlpha = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(t * fr + ph)); c.fillStyle = '#e0e7ff'; c.fillRect(x, y, s, s); }
+  c.globalAlpha = 1;
+  const grow = spr(t - 9.3, 11, 0.5);
+  const push = E(t, 11.2, 11.5, ein);
+  const R = 250 * grow;
+  const cx = PCX, cy = PCY;
+  const zoom = 1 + push * 7;
+  c.save();
+  c.translate(cx, cy - R - 60); c.scale(zoom, zoom); c.translate(-cx, -(cy - R - 60));
+  if (R > 1) {
+    // atmosphere
+    const at = c.createRadialGradient(cx, cy, R * 0.9, cx, cy, R * 1.5); at.addColorStop(0, 'rgba(129,140,248,.35)'); at.addColorStop(1, 'rgba(129,140,248,0)');
+    c.fillStyle = at; c.beginPath(); c.arc(cx, cy, R * 1.5, 0, 7); c.fill();
+    // orbit ring (back)
+    c.strokeStyle = 'rgba(165,180,252,.35)'; c.lineWidth = 2; c.setLineDash([6, 10]); c.beginPath(); c.ellipse(cx, cy, R * 1.55, R * 0.35, -0.2, Math.PI, Math.PI * 2); c.stroke(); c.setLineDash([]);
+    const ang = planetAngle(t);
+    // landmarks
+    for (let i = 0; i < 8; i++) {
+      const a = ang + i * (Math.PI * 2 / 8);
+      c.save(); c.translate(cx, cy); c.rotate(a); c.translate(0, -R + 6);
+      const sc = R / 250; c.scale(sc, sc);
+      drawLandmark(c, STOPS[i][4], STOPS[i][3], t + i);
+      c.restore();
+      // trees
+      for (let j = 1; j < 3; j++) {
+        c.save(); c.translate(cx, cy); c.rotate(a + j * 0.26); c.translate(0, -R + 4); c.scale(R / 250, R / 250);
+        c.fillStyle = '#065f46'; c.fillRect(-2, -18, 4, 18); c.fillStyle = j % 2 ? '#34d399' : '#10b981'; c.beginPath(); c.arc(0, -26, 13, 0, 7); c.fill();
+        c.restore();
+      }
+    }
+    // planet body
+    const pg = c.createRadialGradient(cx - R * 0.35, cy - R * 0.45, R * 0.1, cx, cy, R);
+    pg.addColorStop(0, '#6ee7b7'); pg.addColorStop(0.55, '#10b981'); pg.addColorStop(1, '#065f46');
+    c.fillStyle = pg; c.beginPath(); c.arc(cx, cy, R, 0, 7); c.fill();
+    // continents rotate with planet
+    c.save(); c.beginPath(); c.arc(cx, cy, R, 0, 7); c.clip();
+    c.translate(cx, cy); c.rotate(ang);
+    c.fillStyle = 'rgba(52,211,153,.55)';
+    for (let i = 0; i < 7; i++) { const a = i * 0.9, d = R * (0.3 + (i % 3) * 0.18); c.beginPath(); c.ellipse(Math.cos(a) * d, Math.sin(a) * d, R * 0.22, R * 0.12, a, 0, 7); c.fill(); }
+    c.fillStyle = 'rgba(56,189,248,.5)';
+    for (let i = 0; i < 4; i++) { const a = i * 1.7 + 0.4, d = R * 0.55; c.beginPath(); c.ellipse(Math.cos(a) * d, Math.sin(a) * d, R * 0.16, R * 0.09, a, 0, 7); c.fill(); }
+    c.restore();
+    // terminator shade
+    const sh = c.createLinearGradient(cx - R, cy - R, cx + R, cy + R); sh.addColorStop(0.45, 'rgba(15,23,42,0)'); sh.addColorStop(1, 'rgba(15,23,42,.45)');
+    c.fillStyle = sh; c.beginPath(); c.arc(cx, cy, R, 0, 7); c.fill();
+    // orbit ring (front)
+    c.strokeStyle = 'rgba(199,210,254,.55)'; c.lineWidth = 2.5; c.beginPath(); c.ellipse(cx, cy, R * 1.55, R * 0.35, -0.2, 0, Math.PI); c.stroke();
+    // moon on orbit
+    const ma = t * 2.2; c.fillStyle = '#e0e7ff'; c.beginPath(); c.arc(cx + Math.cos(ma) * R * 1.55 * Math.cos(-0.2) - Math.sin(ma) * R * 0.35 * Math.sin(-0.2), cy + Math.cos(ma) * R * 1.55 * Math.sin(-0.2) + Math.sin(ma) * R * 0.35 * Math.cos(-0.2), 9 * grow, 0, 7); c.fill();
+    // walker
+    const moving = t > 9.72 && t < 11.35;
+    const bob = moving ? Math.abs(Math.sin(t * 22)) * 7 : 0;
+    const top = cy - R;
+    c.save(); c.translate(cx, top - bob); c.scale(R / 250, R / 250);
+    c.strokeStyle = '#0c0a09'; c.lineWidth = 6; c.lineCap = 'round';
+    const leg = moving ? Math.sin(t * 22) * 10 : 0;
+    c.beginPath(); c.moveTo(-6, -38); c.lineTo(-6 + leg, -4); c.moveTo(6, -38); c.lineTo(6 - leg, -4); c.stroke();
+    c.fillStyle = '#2563eb'; c.beginPath(); c.roundRect(-18, -80, 36, 46, 12); c.fill();
+    if (avatarImg.complete && avatarImg.naturalWidth) {
+      c.fillStyle = '#fafaf9'; c.beginPath(); c.arc(0, -112, 34, 0, 7); c.fill();
+      c.save(); c.beginPath(); c.arc(0, -112, 34, 0, 7); c.clip(); c.drawImage(avatarImg, -52, -166, 104, 104); c.restore();
+    }
+    c.restore();
+  }
+  // airship (Sky Islands nod)
+  const ap = P(t, 9.55, 11.45);
+  if (ap > 0 && ap < 1) {
+    const ax = lerp(-160, 2080, ap), ay = 300 + Math.sin(ap * 9) * 14;
+    c.save(); c.translate(ax, ay);
+    c.strokeStyle = 'rgba(199,210,254,.35)'; c.setLineDash([4, 10]); c.lineWidth = 2; c.beginPath(); c.moveTo(-60, 0); c.lineTo(-420, 0); c.stroke(); c.setLineDash([]);
+    c.fillStyle = '#fca5a5'; c.beginPath(); c.ellipse(0, 0, 70, 26, 0, 0, 7); c.fill();
+    c.fillStyle = '#f87171'; c.beginPath(); c.ellipse(0, 6, 70, 18, 0, 0, Math.PI); c.fill();
+    c.fillStyle = '#fde68a'; c.fillRect(-18, 26, 36, 14);
+    c.fillStyle = '#fca5a5'; c.beginPath(); c.moveTo(-62, 0); c.lineTo(-86, -18); c.lineTo(-86, 18); c.fill();
+    c.strokeStyle = '#e0e7ff'; c.lineWidth = 3; const pr = Math.sin(t * 60) * 12; c.beginPath(); c.moveTo(-92, -pr); c.lineTo(-92, pr); c.stroke();
+    c.restore();
+  }
+  c.restore();
+  // clouds band
+  c.fillStyle = 'rgba(224,231,255,.08)';
+  for (let i = 0; i < 6; i++) { const x = ((i * 380 + t * 80) % 2300) - 200; c.beginPath(); c.ellipse(x, 1030 - (i % 2) * 30, 220, 50, 0, 0, 7); c.fill(); }
+}
+
+// ---------- render ----------
+const CHAPTERS = [[0, '01 · Composer'], [1.5, '02 · Streaming'], [3.5, '03 · Adopt AI'], [5.5, '04 · SamaCare'], [7.5, '05 · Caret Legal'], [9.5, '06 · Tiny Planet'], [11.5, '07 · Principles'], [13.5, '08 · Edward Chu']];
+let stageScale = 1;
+
+function render(t) {
+  t = clamp(t, 0, DUR - 1e-4);
+  const frame = Math.round(t * 60);
+
+  // HUD
+  const ch = CHAPTERS.filter((c) => t >= c[0]).pop();
+  $('chapter').textContent = ch[1];
+  const ss = Math.floor(t), ff = Math.floor((t - ss) * 30);
+  $('tc').innerHTML = `TC 00:00:${String(ss).padStart(2, '0')}:${String(ff).padStart(2, '0')}<br><span style="opacity:.55">1920×1080 · 60p</span>`;
+  $('prog').style.width = (t / DUR * 100).toFixed(2) + '%';
+  gctx.putImageData(grainFrames[frame % grainFrames.length], 0, 0);
+
+  // ===== A + B =====
+  if (scene('sAB', t, 0, 3.5)) {
+    const pw = $('pillWrap');
+    const dotIn = spr(t - 0.05, 18, 0.45);
+    const stretch = E(t, 0.32, 0.82);
+    const W = lerp(22, 980, stretch), H = lerp(22, 100, E(t, 0.3, 0.7));
+    const slide = E(t, 1.45, 2.0);
+    const cx = 960, cy = lerp(560, 930, slide);
+    const sc = lerp(1, 0.86, slide) * (stretch > 0 ? 1 : dotIn);
+    const press = t > 1.18 && t < 1.34 ? 0.96 : 1;
+    pw.style.width = W + 'px'; pw.style.height = H + 'px'; pw.style.borderRadius = H / 2 + 'px';
+    pw.style.left = (cx - W / 2) + 'px'; pw.style.top = (cy - H / 2) + 'px';
+    tf(pw, { s: sc * press });
+    const working = t >= 1.25;
+    pw.style.background = stretch < 0.02 ? '#3b82f6' : '#44403c';
+    pw.style.boxShadow = stretch < 0.9 ? `0 0 ${40 * dotIn}px rgba(59,130,246,.8)` : (working ? '0 0 0 1px rgba(59,130,246,.2), 0 20px 60px rgba(37,99,235,.25)' : `0 0 0 ${8 * E(t, 0.7, 0.9)}px rgba(59,130,246,.14)`);
+    $('pillInner').style.borderRadius = (H / 2 - 2) + 'px';
+    $('pillInner').style.opacity = E(t, 0.45, 0.75);
+    $('beam').style.opacity = working ? Math.min(1, E(t, 1.25, 1.4)) : 0;
+    $('beam').style.transform = `rotate(${((t - 1.25) * 400) % 360}deg)`;
+    const MSG = 'Show me how Edward designs motion';
+    const n = Math.floor(MSG.length * P(t, 0.72, 1.12));
+    const sent = t >= 1.3;
+    $('pillText').innerHTML = sent ? '<span class="ph">Edward is answering…</span>' : (n === 0 ? '<span class="ph">Ask me anything…</span><span class="caret"></span>' : MSG.slice(0, n) + '<span class="caret"></span>');
+    const morph = E(t, 1.25, 1.45);
+    $('sendBtn').style.background = morph < 0.5 ? 'linear-gradient(135deg,#3b82f6,#0ea5e9)' : '#f5f5f4';
+    tf($('sendBtn'), { s: t > 1.2 && t < 1.3 ? 0.88 : 1 + 0.1 * Math.sin(Math.PI * morph) });
+    tf($('icArrow'), { o: 1 - morph, s: 1 - morph * 0.6, r: morph * 90 });
+    tf($('icStop'), { o: morph, s: 0.4 + morph * 0.6 });
+    tf($('aLabel'), { y: (1 - E(t, 0.55, 1.0)) * 20, o: E(t, 0.55, 1.0) - E(t, 1.3, 1.5) });
+    $('abGlow').style.opacity = 0.5 + 0.5 * E(t, 1.25, 1.6);
+
+    // question bubble FLIPs from composer to the thread
+    const qp = E(t, 1.3, 1.8);
+    tf($('qBubble'), { x: (1 - qp) * -120, y: (1 - qp) * 390, s: lerp(0.9, 1, qp), o: P(t, 1.3, 1.42) });
+    // answer bubble mounts once and never unmounts
+    const ab = E(t, 1.5, 1.85);
+    tf($('aBubble'), { y: (1 - ab) * 30, o: ab });
+    const phaseT = [1.55, 1.95, 2.3];
+    phaseEls.forEach((el, i) => {
+      const inP = E(t, phaseT[i], phaseT[i] + 0.22);
+      const outP = i < 2 ? E(t, phaseT[i + 1], phaseT[i + 1] + 0.18) : E(t, 2.55, 2.75);
+      tf(el, { y: (1 - inP) * 30 - outP * 30, o: inP - outP });
+      const ic = el.querySelector('.pic');
+      ic.style.transform = i === 0 ? `rotate(${t * 540}deg)` : `translateY(${Math.sin(t * 14) * 2}px)`;
+    });
+    const skOut = E(t, 2.5, 2.85);
+    tf($('skel'), { o: (1 - skOut) * E(t, 1.6, 1.8), blur: skOut * 6 });
+    $('skel').querySelectorAll('.sk').forEach((s, i) => { s.style.backgroundPosition = `${-((t * 1.4 + i * 0.15) % 2) * 100 + 100}% 0`; });
+    // steady rAF drain: constant chars per second
+    const shown = Math.floor(STREAM_LEN * P(t, 2.55, 3.22));
+    let left = shown, html = '';
+    for (const [s, b] of STREAM) { if (left <= 0) break; const part = s.slice(0, left); left -= part.length; html += b ? `<b>${part}</b>` : part; }
+    const streaming = t >= 2.55;
+    $('stream').innerHTML = streaming ? html + '<span id="scaret" class="caret" style="height:1.1em;width:4px"></span>' : '';
+
+    // kinetic type, right column
+    lines($('bSet1'), t, 1.8, 0.08, 0.5, 2.62);
+    lines($('bSet2'), t, 2.78, 0.08, 0.5);
+    tf($('bNote'), { o: E(t, 2.0, 2.4), y: (1 - E(t, 2.0, 2.4)) * 16 });
+  }
+
+  // caret -> blue wipe
+  const wb = $('wipeBlue');
+  if (t >= 3.26 && t < 3.78) {
+    show(wb, true);
+    let cx = 900, cy = 420;
+    const sc = document.getElementById('scaret');
+    if (sc && t < 3.5) { const r = sc.getBoundingClientRect(), s = $('stage').getBoundingClientRect(); cx = (r.left - s.left) / stageScale; cy = (r.top - s.top) / stageScale; wb.dataset.cx = cx; wb.dataset.cy = cy; }
+    else { cx = +wb.dataset.cx || cx; cy = +wb.dataset.cy || cy; }
+    const gy = E(t, 3.26, 3.4, ein), gx = E(t, 3.36, 3.5, ein), off = E(t, 3.5, 3.78);
+    const x0 = lerp(cx, 0, gx), w = lerp(4, 1920, gx), y0 = lerp(cy, 0, gy), h = lerp(50, 1080, gy);
+    wb.style.left = x0 + 'px'; wb.style.top = y0 + 'px'; wb.style.width = w + 'px'; wb.style.height = h + 'px';
+    wb.style.borderRadius = (1 - gx) * 3 + 'px';
+    tf(wb, { x: off * 1920 });
+  } else show(wb, false);
+
+  // ===== C: Adopt AI =====
+  if (scene('sC', t, 3.5, 5.62)) {
+    tf($('cChip'), { x: (1 - E(t, 3.6, 4.0)) * -40, o: E(t, 3.6, 3.9) });
+    document.querySelectorAll('#sC .cw').forEach((w, i) => { const p = E(t, 3.6 + i * 0.07, 4.15 + i * 0.07); tf(w, { y: (1 - p) * 120, r: (1 - p) * 4 }); });
+    const ph = spr(t - 3.62, 12, 0.5);
+    tf($('phone'), { persp: 1400, y: (1 - ph) * 700 + Math.sin(t * 2.4) * 8, rx: (1 - ph) * 28, r: lerp(-10, -3, ph), o: P(t, 3.62, 3.75) });
+    const orb = ((t - 3.9) % 0.7) / 0.7;
+    tf($('orbRing'), { s: t < 3.9 ? 0 : 0.8 + orb * 1.4, o: t < 3.9 ? 0 : 1 - orb });
+    nodeEls.forEach((el, i) => {
+      const p = spr(t - (3.95 + i * 0.16), 15, 0.48);
+      tf(el, { y: (1 - p) * 60, s: 0.7 + 0.3 * p, o: P(t, 3.95 + i * 0.16, 4.05 + i * 0.16) });
+      const tk = spr(t - (4.55 + i * 0.13), 20, 0.4);
+      tf(el.querySelector('.tick'), { s: tk, o: tk > 0 ? 1 : 0 });
+      el.style.borderColor = t > 4.55 + i * 0.13 ? '#86efac' : (t > 4.2 + i * 0.12 ? '#93c5fd' : '#e7e5e4');
+    });
+    wires.forEach((w, i) => { w.style.strokeDashoffset = 60 * (1 - E(t, 4.1 + i * 0.16, 4.35 + i * 0.16)); });
+    // agent dot travels the workflow
+    const ap = E(t, 4.2, 5.0, eio);
+    const ax = lerp(NX(0) + 125, NX(3) + 125, ap);
+    tf($('agentDot'), { x: ax, y: NY + 59 + Math.sin(ap * Math.PI * 3) * -18, o: P(t, 4.2, 4.3) - P(t, 5.0, 5.1), s: 1 + 0.3 * Math.sin(t * 20) });
+    const cs = E(t, 4.55, 4.9);
+    tf($('cStat'), { y: (1 - cs) * 40, o: cs });
+    $('c7').textContent = Math.max(1, Math.round(1 + 6 * E(t, 4.6, 5.1, eio))) + '×';
+    tf($('c7'), { s: 1 + 0.08 * Math.sin(Math.PI * P(t, 5.05, 5.25)) });
+    tf($('cPatent'), { o: E(t, 4.8, 5.1) });
+  }
+
+  // violet iris into SamaCare
+  const wv = $('wipeViolet'), wl = $('wipeLav');
+  if (t >= 5.26 && t < 5.8) {
+    show(wv, t < 5.62); show(wl, true);
+    const r1 = 2300 * E(t, 5.26, 5.5, ein), r2 = 2300 * E(t, 5.4, 5.72, eo);
+    wv.style.clipPath = `circle(${r1}px at 250px 850px)`;
+    wl.style.clipPath = `circle(${r2}px at 250px 850px)`;
+    wl.style.opacity = t < 5.62 ? 1 : 1 - E(t, 5.62, 5.8);
+  } else { show(wv, false); show(wl, false); }
+
+  // ===== D: SamaCare =====
+  if (scene('sD', t, 5.5, 7.52)) {
+    tf($('dChip'), { x: (1 - E(t, 5.6, 5.95)) * -40, o: E(t, 5.6, 5.85) });
+    document.querySelectorAll('#sD .dw').forEach((w, i) => { const p = E(t, 5.58 + i * 0.07, 6.1 + i * 0.07); tf(w, { y: (1 - p) * 120, r: (1 - p) * 4 }); });
+    const bp = E(t, 5.62, 6.1);
+    tf($('browser'), { persp: 1600, y: (1 - bp) * 300, rx: (1 - bp) * 14, o: bp });
+    const sp = spr(t - 5.85, 13, 0.45);
+    tf($('scPanel'), { x: (1 - sp) * 400 });
+    pitemEls.forEach((el, i) => { const p = E(t, 5.95 + i * 0.06, 6.3 + i * 0.06); tf(el, { x: (1 - p) * 40, o: p }); });
+    const bRect = { x: 160, y: 430 };
+    fieldEls.forEach((el, i) => {
+      const tfill = 6.25 + i * 0.16;
+      const val = FIELDS[i][1];
+      const n = Math.floor(val.length * P(t, tfill, tfill + 0.14));
+      el.querySelector('.val').textContent = val.slice(0, n);
+      const sw = P(t, tfill - 0.02, tfill + 0.3);
+      el.querySelector('.sweep').style.transform = `translateX(${lerp(-100, 100, sw)}%)`;
+      el.querySelector('.sweep').style.opacity = sw > 0 && sw < 1 ? 1 : 0;
+      el.querySelector('.in').style.borderColor = t > tfill ? '#c4b5fd' : '#e7e5e4';
+      el.querySelector('.in').style.boxShadow = t > tfill && t < tfill + 0.4 ? `0 0 0 ${4 * (1 - P(t, tfill, tfill + 0.4))}px rgba(139,92,246,.25)` : 'none';
+      // token arc from panel item to field
+      const tp = E(t, tfill - 0.18, tfill, eio);
+      const sx = bRect.x + 1080 - 380 + 22, sy = bRect.y + 52 + 22 + 50 + i * 68 + 29;
+      const ex = bRect.x + 40 + 600, ey = bRect.y + 140 + i * 100 + 22 + 25;
+      const tx = lerp(sx, ex, tp), ty = lerp(sy, ey, tp) - Math.sin(tp * Math.PI) * 90;
+      tf(tokenEls[i], { x: tx, y: ty, o: tp > 0 && tp < 1 ? 1 : 0, s: 1 + Math.sin(tp * Math.PI) * 0.5 });
+    });
+    const sb = spr(t - 7.0, 18, 0.4);
+    tf($('submitted'), { s: 0.6 + 0.4 * sb, o: P(t, 7.0, 7.06) });
+    const ds = E(t, 5.9, 6.4);
+    tf($('dStats'), { x: (1 - ds) * 60, o: ds });
+    $('d6').textContent = Math.round(6 * E(t, 6.0, 6.6, eio)) + ' mo';
+    $('d17').textContent = '$' + Math.round(17 * E(t, 6.3, 6.95, eio)) + 'M';
+  }
+
+  // slats into Caret
+  if (t >= 7.26 && t < 7.86) {
+    slatEls.forEach((s, i) => {
+      show(s, true);
+      const a = E(t, 7.26 + i * 0.018, 7.46 + i * 0.018, ein), b = E(t, 7.52 + i * 0.022, 7.78 + i * 0.022);
+      tf(s, { x: (a - 1) * 1920 + b * 1920 });
+    });
+  } else slatEls.forEach((s) => show(s, false));
+
+  // ===== E: Caret Legal =====
+  if (scene('sE', t, 7.5, 9.56)) {
+    const iris = E(t, 9.2, 9.5, eio);
+    const sE = $('sE');
+    sE.style.clipPath = iris > 0 ? `circle(${lerp(1400, 0, iris)}px at ${PCX}px ${PCY}px)` : 'none';
+    tf($('eApp'), { o: 0.9 - E(t, 7.85, 8.1) * 0.35 + E(t, 8.55, 8.8) * 0.3 });
+    // highlight the row the peek belongs to
+    document.querySelectorAll('#eApp .erow').forEach((r, i) => { r.style.background = i === 3 && t > 8.6 ? `rgba(59,130,246,${0.14 * E(t, 8.6, 8.8)})` : 'transparent'; });
+    tf($('eChip'), { o: E(t, 7.6, 7.9), x: (1 - E(t, 7.6, 7.9)) * -30 });
+    // keycaps
+    [[$('kCmd'), 0, 7.72], [$('kK'), 1, 7.82]].forEach(([k, i, tp]) => {
+      const inn = spr(t - (7.54 + i * 0.06), 16, 0.45);
+      const down = t >= tp && t < 7.98 ? 1 : 0;
+      const out = E(t, 7.96, 8.18, ein);
+      k.style.left = (806 + i * 176) + 'px'; k.style.top = '420px';
+      k.style.boxShadow = `0 ${down ? 2 : 10}px 0 #0a0908, 0 ${down ? 6 : 26}px 40px rgba(0,0,0,.5)`;
+      k.style.borderColor = down ? '#3b82f6' : '#45413d';
+      tf(k, { y: (1 - inn) * 80 + down * 8 - out * 160, s: (0.6 + 0.4 * inn) * (1 - out * 0.4), o: P(t, 7.54, 7.62) * (1 - out) });
+    });
+    // palette
+    const pp = spr(t - 7.92, 17, 0.55);
+    const pout = E(t, 8.52, 8.7, ein);
+    tf($('palette'), { y: (1 - pp) * -30 - pout * 20, s: (0.94 + 0.06 * pp) * (1 - pout * 0.04), o: P(t, 7.92, 8.0) * (1 - pout), blur: (1 - clamp(pp)) * 6 + pout * 8 });
+    const QUERY = 'new matter';
+    const qn = Math.floor(QUERY.length * P(t, 8.02, 8.34));
+    $('q').innerHTML = (qn ? QUERY.slice(0, qn) : '<span style="color:#57534e">Search or jump to…</span>') + '<span class="caret"></span>';
+    const typed = QUERY.slice(0, qn);
+    let sel = 0; let yAcc = 0; let selY = 0, selH = 64;
+    riEls.forEach((el, i) => {
+      const match = RESULTS[i][3].includes(typed) || typed.length === 0;
+      // each item animates its own collapse from the moment it stops matching
+      const key = 'm' + i; const prevMatch = el.dataset[key];
+      if (prevMatch === undefined || t < 8.0) el.dataset[key] = '';
+      let hideAt = null;
+      for (let c = 1; c <= QUERY.length; c++) { if (!RESULTS[i][3].includes(QUERY.slice(0, c))) { hideAt = 8.02 + (c / QUERY.length) * 0.32; break; } }
+      const hp = hideAt === null ? 0 : E(t, hideAt, hideAt + 0.2);
+      const h = 64 * (1 - hp);
+      el.style.height = h + 'px'; el.style.opacity = 1 - hp;
+      if (match && sel === 0 && typed.length) { sel = i; selY = yAcc; selH = h; }
+      yAcc += h;
+      void match;
+    });
+    const firstY = 10, targetY = 10 + selY;
+    const hlP = typed.length ? 1 : 0;
+    const hl = $('hl'); hl.style.top = lerp(firstY, targetY, hlP) + 'px'; hl.style.height = (typed.length ? selH : 64) + 'px';
+    hl.style.background = t > 8.48 && t < 8.56 ? '#1e3a8a' : '#2a2724';
+    // peek
+    const pk = spr(t - 8.55, 14, 0.62);
+    tf($('peek'), { x: (1 - pk) * 600 });
+    lines($('eCap'), t, 8.72, 0.08, 0.5);
+    // stage chips
+    const sp = E(t, 8.1, 9.2, eio);
+    $('stageBar').style.width = (sp * 100) + '%';
+    stageEls.forEach((el, i) => {
+      const on = sp >= i * 0.45 + 0.02;
+      el.style.background = on ? '#fafaf9' : 'transparent'; el.style.color = on ? '#0c0a09' : '#78716c'; el.style.borderColor = on ? '#fafaf9' : '#44403c';
+      const pop = spr(t - (8.1 + i * 0.45 * 1.1), 20, 0.4);
+      tf(el, { s: on ? 0.92 + 0.08 * pop : 1, o: E(t, 7.9 + i * 0.05, 8.2 + i * 0.05) });
+    });
+  } else $('sE').style.clipPath = 'none';
+
+  // ===== F: Tiny planet =====
+  if (scene('sF', t, 9.2, 11.5)) {
+    drawPlanet(t);
+    $('sF').style.zIndex = t < 9.52 ? 0 : '';
+    const pos = tourPos(t) - (1 - E(t, 9.5, 9.72)) * 0.9;
+    const gone = E(t, 11.2, 11.36, ein);
+    fcEls.forEach((el, i) => {
+      const d = i - pos;
+      tf(el, { y: d * 150 - gone * 150, o: (1 - Math.min(1, Math.abs(d) * 1.3)) * (1 - gone), blur: Math.min(8, Math.abs(d) * 10) });
+    });
+    lines($('fCap'), t, 9.8, 0.08, 0.55);
+    tf($('fCap').querySelector('.mono'), { o: E(t, 10.0, 10.4) - E(t, 11.2, 11.35) });
+    $('fCap').style.opacity = 1 - E(t, 11.2, 11.35);
+  }
+  // put planet behind the shrinking iris of E
+  $('sF').style.zIndex = '';
+  if (t >= 9.2 && t < 9.56) { $('sE').style.zIndex = 2; } else $('sE').style.zIndex = '';
+  $('flash').style.opacity = t >= 11.35 && t < 11.62 ? (t < 11.5 ? E(t, 11.35, 11.5) : 1 - E(t, 11.5, 11.62)) : 0;
+
+  // ===== G: montage =====
+  if (scene('sG', t, 11.5, 13.52)) {
+    const cards = ['g1', 'g2', 'g3', 'g4'];
+    cards.forEach((id, i) => show($(id), t >= 11.5 + i * 0.5 && t < 12.0 + i * 0.5 + (i === 3 ? 0.02 : 0)));
+    const lt = (i) => t - (11.5 + i * 0.5);
+    // g1 — easing curve
+    if (t < 12.0) {
+      lines($('g1'), t, 11.5, 0.06, 0.4);
+      const L = curveLen(); const cp = E(t, 11.52, 11.85, eio);
+      const cpath = $('curvePath'); cpath.style.strokeDasharray = L; cpath.style.strokeDashoffset = L * (1 - cp);
+      const dp = P(t, 11.62, 11.95); const dx = 30 + dp * 410, dy = 470 - eo(dp) * 450;
+      $('curveDot').setAttribute('cx', dx); $('curveDot').setAttribute('cy', dy);
+      tf($('g1'), { s: 1 + lt(0) * 0.03 });
+    } else if (t < 12.5) {
+      const p = E(t, 12.0, 12.35);
+      tf($('g2t'), { x: (1 - p) * 500, sk: (1 - p) * -14, blur: (1 - p) * 14, o: P(t, 12.0, 12.08) });
+      $('g2lines').style.transform = `translateY(${-E(t, 12.0, 12.2) * 90 + E(t, 12.2, 12.45) * 40}px)`;
+      const j = spr(t - 12.18, 18, 0.42);
+      tf($('jump'), { y: (1 - j) * 60, s: 0.7 + 0.3 * j, o: P(t, 12.18, 12.24) });
+    } else if (t < 13.0) {
+      chEls.forEach((c, i) => { const p = E(t, 12.5 + i * 0.012, 12.5 + i * 0.012 + 0.32); tf(c, { s: lerp(1.9, 1, p), blur: (1 - p) * 16, o: p, y: (1 - p) * -20 }); });
+      const ts = spr(t - 12.6, 14, 0.5);
+      tf($('toast'), { y: (1 - ts) * 120, o: P(t, 12.6, 12.66) });
+      $('ring').style.strokeDashoffset = 100.5 * P(t, 12.65, 13.0);
+    } else {
+      lines($('g4'), t, 13.0, 0.06, 0.38);
+      const dk = spr(t - 13.02, 15, 0.5);
+      const dock = $('dock');
+      dock.style.transform = `translateX(-50%) translateY(${(1 - dk) * 160}px)`;
+      const mx = lerp(-60, 7 * 86 + 60, E(t, 13.1, 13.48, eio));
+      dockEls.forEach((d, i) => { const dx = (i * 86 + 36) - mx; const s = 1 + 0.55 * Math.exp(-(dx * dx) / (2 * 70 * 70)); d.style.transform = `scale(${s.toFixed(3)})`; d.style.marginLeft = d.style.marginRight = ((s - 1) * 14).toFixed(1) + 'px'; });
+    }
+  }
+
+  // ===== H: end card =====
+  if (scene('sH', t, 13.5, 15.01)) {
+    const ep = $('endPill');
+    const dot = spr(t - 13.5, 18, 0.42);
+    const st = E(t, 13.64, 14.02);
+    const W = lerp(24, 520, st), H = lerp(24, 92, E(t, 13.62, 13.9));
+    ep.style.width = W + 'px'; ep.style.height = H + 'px'; ep.style.borderRadius = H / 2 + 'px';
+    ep.style.left = (960 - W / 2) + 'px'; ep.style.top = (660 - H / 2) + 'px';
+    ep.style.background = st < 0.03 ? '#3b82f6' : '#44403c';
+    tf(ep, { s: st > 0 ? 1 : dot });
+    const settle = E(t, 14.5, 14.75);
+    ep.style.boxShadow = st < 0.5 ? `0 0 ${40 * dot}px rgba(59,130,246,.8)` : `0 0 0 ${7 * settle}px rgba(59,130,246,.16), 0 20px 60px rgba(37,99,235,${0.3 * (1 - settle) + 0.1})`;
+    $('endInner').style.borderRadius = (H / 2 - 2) + 'px';
+    $('endInner').style.opacity = E(t, 13.8, 14.0);
+    $('endBeam').style.opacity = E(t, 13.8, 13.9) * (1 - settle);
+    $('endBeam').style.transform = `rotate(${(t - 13.8) * 450}deg)`;
+    tf($('endUrl'), { y: (1 - E(t, 13.86, 14.2)) * 30 });
+    document.querySelectorAll('#sH .hw').forEach((w, i) => { const p = E(t, 13.68 + i * 0.1, 14.25 + i * 0.1); tf(w, { y: (1 - p) * 180, r: (1 - p) * 5 }); });
+    const av = spr(t - 13.62, 14, 0.4);
+    tf($('hAvatar'), { s: av, r: (1 - clamp(av)) * -25 });
+    tf($('hSub'), { y: (1 - E(t, 13.95, 14.35)) * 24, o: E(t, 13.95, 14.3) });
+    const hl = E(t, 14.1, 14.7);
+    $('hList').style.letterSpacing = lerp(0.5, 0.12, hl) + 'em';
+    $('hList').style.opacity = hl;
+  }
+}
+
+// ---------- playback ----------
+const params = new URLSearchParams(location.search);
+const RENDER = params.has('render');
+if (RENDER) document.body.classList.add('render');
+
+function fit() {
+  if (RENDER) { stageScale = 1; $('frame').style.width = '1920px'; $('frame').style.height = '1080px'; return; }
+  const pad = Math.min(48, window.innerWidth * 0.04);
+  const s = Math.min((window.innerWidth - pad * 2) / 1920, (window.innerHeight - pad * 2) / 1080);
+  stageScale = s;
+  $('stage').style.transform = `scale(${s})`;
+  $('frame').style.width = 1920 * s + 'px'; $('frame').style.height = 1080 * s + 'px';
+}
+window.addEventListener('resize', fit); fit();
+
+window.__seek = (t) => render(t);
+window.__ready = async () => { await document.fonts.ready; await Promise.all([...document.images].map((im) => im.complete ? 0 : new Promise((r) => { im.onload = im.onerror = r; }))); if (!avatarImg.complete) await new Promise((r) => { avatarImg.onload = r; }); return true; };
+
+render(0);
+if (RENDER) return;
+
+const audio = new Audio('assets/soundtrack.mp3'); audio.preload = 'auto';
+let playing = false, t0 = 0, offset = 0, muted = false;
+const ICON_PLAY = '<svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M7 4.5v15l12.5-7.5z"/></svg>';
+const ICON_PAUSE = '<svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><rect x="6" y="4.5" width="4" height="15" rx="1"/><rect x="14" y="4.5" width="4" height="15" rx="1"/></svg>';
+const ICON_SOUND = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg>';
+const ICON_MUTE = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>';
+function ui() { $('playBtn').innerHTML = playing ? ICON_PAUSE : ICON_PLAY; $('muteBtn').innerHTML = muted ? ICON_MUTE : ICON_SOUND; document.body.classList.toggle('paused', !playing); }
+function now() { return playing ? offset + (performance.now() - t0) / 1000 : offset; }
+function play() { if (offset >= DUR - 0.02) offset = 0; playing = true; t0 = performance.now(); try { audio.currentTime = offset; audio.muted = muted; audio.play().catch(() => {}); } catch (e) {} ui(); }
+function pause() { offset = now(); playing = false; audio.pause(); ui(); }
+function seek(t) { offset = clamp(t, 0, DUR); t0 = performance.now(); try { audio.currentTime = offset; } catch (e) {} render(offset); }
+function loop() {
+  let t = now();
+  if (playing && t >= DUR) { playing = false; offset = DUR - 0.001; t = offset; audio.pause(); ui(); }
+  if (playing) render(t);
+  $('scrub').value = Math.round(t * 1000);
+  $('tcLabel').textContent = t.toFixed(2) + 's';
+  requestAnimationFrame(loop);
+}
+$('playBtn').onclick = () => (playing ? pause() : play());
+$('restartBtn').onclick = () => { seek(0); play(); };
+$('muteBtn').onclick = () => { muted = !muted; audio.muted = muted; ui(); };
+$('scrub').oninput = (e) => { const was = playing; if (was) pause(); seek(e.target.value / 1000); };
+$('startOverlay').onclick = () => { $('startOverlay').remove(); seek(0); play(); };
+window.addEventListener('keydown', (e) => {
+  if (e.code === 'Space') { e.preventDefault(); $('startOverlay')?.remove(); playing ? pause() : play(); }
+  if (e.code === 'ArrowRight') seek(now() + 1 / 30);
+  if (e.code === 'ArrowLeft') seek(now() - 1 / 30);
+});
+if (params.has('t')) { $('startOverlay')?.remove(); seek(parseFloat(params.get('t'))); }
+ui();
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
