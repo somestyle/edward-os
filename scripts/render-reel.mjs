@@ -12,7 +12,7 @@ const args = process.argv.slice(2);
 const opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const fps = Number(opt('--fps', 60));
 const stills = opt('--stills', null);
-const out = opt('--out', path.join(root, 'public/reel/edward-chu-motion-reel.mp4'));
+const out = opt('--out', path.join(root, 'public/reel/edward-chu-showreel.mp4'));
 const ffmpeg = process.env.FFMPEG || 'ffmpeg';
 const exe = [process.env.CHROMIUM, '/opt/pw-browsers/chromium'].find((p) => p && existsSync(p));
 

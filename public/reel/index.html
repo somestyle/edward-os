@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Edward Chu Motion Reel</title>
+<title>Edward Chu Showreel</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;600&family=Lora:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
@@ -110,6 +110,17 @@
   .pf div { height: 52px; border-radius: 12px; border: 1px solid #36322f; background: #211f1d; font-size: 19px; color: #e7e5e4; display: flex; align-items: center; padding: 0 16px; }
   .stageChip { position: absolute; top: 0; height: 52px; padding: 0 22px; border-radius: 999px; border: 1px solid #44403c; color: #a8a29e; font-size: 19px; font-weight: 600; display: flex; align-items: center; gap: 10px; white-space: nowrap; }
 
+
+  /* kea + earlier work */
+  .kbar { width: 8px; border-radius: 4px; background: #e7e5e4; }
+  .kitem { display: flex; justify-content: space-between; font-size: 20px; overflow: hidden; }
+  .kitem span:first-child b { font-weight: 700; }
+  .wcard { position: absolute; top: 420px; width: 500px; height: 540px; border-radius: 24px; background: #111a2e; border: 1px solid #1e2a44; padding: 30px 32px; }
+  .wart { height: 200px; border-radius: 16px; background: #0d1628; position: relative; overflow: hidden; margin-bottom: 26px; }
+  .wcard h3 { font-size: 30px; font-weight: 700; color: #f8fafc; }
+  .wcard .ws { font-size: 19px; color: #94a3b8; margin-top: 4px; }
+  .wcard .wbig { font-family: Lora, Georgia, serif; font-weight: 700; font-size: 50px; letter-spacing: -.02em; margin-top: 20px; line-height: 1; }
+  .wcard .wbadge { position: absolute; left: 32px; bottom: 30px; height: 38px; padding: 0 16px; border-radius: 999px; border: 1px solid #1e3a5f; color: #bae6fd; font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
   /* montage */
   .card { position: absolute; inset: 0; display: none; }
   .big { position: absolute; left: 160px; font-size: 176px; line-height: .98; }
@@ -141,9 +152,9 @@
   <!-- A+B: composer and chat (dark) -->
   <section id="sAB" class="scene" style="background:#0c0a09">
     <div id="abGlow" class="abs" style="left:0;top:0;width:1920px;height:1080px;background:radial-gradient(900px 500px at 50% 55%, rgba(37,99,235,.16), transparent 70%)"></div>
-    <div id="aLabel" class="abs mono" style="left:0;width:1920px;top:360px;text-align:center;font-size:16px;color:#78716c">01 · Input — motion only when there is meaning to spend</div>
+    <div id="aLabel" class="abs mono" style="left:0;width:1920px;top:360px;text-align:center;font-size:16px;color:#78716c">Edward Chu · Staff Product Designer · 20+ years</div>
 
-    <div id="qBubble" class="bubbleQ">Show me how Edward designs motion</div>
+    <div id="qBubble" class="bubbleQ">Show me Edward’s product work</div>
 
     <div id="aBubble">
       <div id="aAvatar"><img src="assets/avatar.png" alt=""></div>
@@ -154,16 +165,16 @@
 
     <div id="bType" class="abs serif" style="left:1200px;top:300px;font-size:92px;line-height:1.02;color:#fafaf9">
       <div id="bSet1">
-        <span class="line"><span>Same wait.</span></span>
-        <span class="line"><span>Different</span></span>
-        <span class="line"><span><em style="color:#60a5fa">felt length.</em></span></span>
+        <span class="line"><span>Portfolio</span></span>
+        <span class="line"><span>as a</span></span>
+        <span class="line"><span><em style="color:#60a5fa">product.</em></span></span>
       </div>
       <div id="bSet2" style="position:absolute;left:0;top:0;white-space:nowrap">
-        <span class="line"><span>One cadence.</span></span>
-        <span class="line"><span><em style="color:#60a5fa">Zero</em> jitter.</span></span>
+        <span class="line"><span>Designed,</span></span>
+        <span class="line"><span>coded, <em style="color:#60a5fa">shipped.</em></span></span>
       </div>
     </div>
-    <div id="bNote" class="abs mono" style="left:1204px;top:640px;font-size:15px;color:#78716c;line-height:1.8">02 · Loading → Streaming<br>one bubble mounts, never unmounts</div>
+    <div id="bNote" class="abs mono" style="left:1204px;top:640px;font-size:15px;color:#78716c;line-height:1.8">edwardchu.xyz · AI twin<br>designed and built in code</div>
 
     <div id="pillWrap">
       <div id="beam"></div>
@@ -185,6 +196,7 @@
       <span class="line"><span class="cw">Building</span> <span class="cw">trust</span> <span class="cw">into</span></span>
       <span class="line"><span class="cw"><em style="color:#2563eb">agentic AI</em></span></span>
     </div>
+    <div id="cSub" class="abs mono" style="left:164px;top:432px;font-size:16px;color:#78716c">0 → 1 agentic copilot · Action Builder · design system</div>
     <svg id="cWires" class="abs" style="left:0;top:0" width="1920" height="1080"></svg>
     <div id="nodes"></div>
     <div id="agentDot" class="abs" style="width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:#2563eb;box-shadow:0 0 0 7px rgba(37,99,235,.18),0 0 30px #60a5fa"></div>
@@ -209,6 +221,7 @@
       <span class="line"><span class="dw">Bring</span> <span class="dw">portal</span> <span class="dw">work</span></span>
       <span class="line"><span class="dw"><em style="color:#6d28d9">home to SamaCare</em></span></span>
     </div>
+    <div id="dSub" class="abs mono" style="left:164px;top:386px;font-size:16px;color:#7c3aed">Prior auth filled from the chart, submitted without the portal</div>
     <div id="browser">
       <div class="bbar"><i></i><i></i><i></i><div class="url">payer-portal / prior-authorization / new</div></div>
       <div style="position:absolute;left:40px;top:80px;font-size:26px;font-weight:700;color:#1c1917">Prior authorization request</div>
@@ -263,29 +276,72 @@
     <div id="eStages" class="abs" style="left:300px;top:930px;width:1100px;height:80px;z-index:3"></div>
   </section>
 
+  <!-- K: Kea AI -->
+  <section id="sK" class="scene" style="background:#17120d">
+    <div class="abs" style="left:0;top:0;width:1920px;height:1080px;background:radial-gradient(900px 600px at 72% 60%, rgba(245,158,11,.14), transparent 70%)"></div>
+    <div id="kWrap" class="abs" style="inset:0">
+      <div id="kChip" class="abs chip" style="left:160px;top:110px;background:#3a2a12;color:#fcd34d"><span class="dotc" style="background:#f59e0b"></span>KEA AI · FIRST DESIGN HIRE · HEAD OF PRODUCT DESIGN</div>
+      <div id="kHead" class="abs serif" style="left:160px;top:175px;font-size:96px;line-height:1.02;color:#fafaf9">
+        <span class="line"><span>Voice AI that takes</span></span>
+        <span class="line"><span><em style="color:#fbbf24">the dinner rush.</em></span></span>
+      </div>
+      <div id="kCall" class="abs" style="left:160px;top:450px;width:800px;height:420px;border-radius:26px;background:#211a13;border:1px solid #3a2e22;padding:30px 34px">
+        <div style="display:flex;align-items:center;gap:14px;font-size:20px;color:#e7e5e4;font-weight:600">
+          <span id="kLive" style="width:12px;height:12px;border-radius:50%;background:#ef4444"></span>Live call · pickup order
+          <span class="mono" style="margin-left:auto;font-size:14px;color:#a8a29e">Kea voice agent</span>
+        </div>
+        <div id="kWave" style="height:120px;display:flex;align-items:center;gap:6px;margin:26px 0 22px"></div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div id="kSay1" style="align-self:flex-start;max-width:640px;background:#2c241b;color:#f5f5f4;font-size:23px;padding:14px 20px;border-radius:18px 18px 18px 6px;min-height:58px"></div>
+          <div id="kSay2" style="align-self:flex-end;background:#f59e0b;color:#1c1917;font-weight:600;font-size:22px;padding:14px 20px;border-radius:18px 18px 6px 18px">Got it. Anything else with that?</div>
+        </div>
+      </div>
+      <div id="kTicket" class="abs" style="left:1100px;top:430px;width:560px;background:#fffbeb;border-radius:14px;padding:30px 34px;color:#1c1917;box-shadow:0 40px 90px rgba(0,0,0,.5);font-family:'JetBrains Mono',monospace">
+        <div style="display:flex;justify-content:space-between;font-size:15px;color:#92400e;font-weight:600"><span>ORDER #2047</span><span>PICKUP · 6:40 PM</span></div>
+        <div style="font-family:Inter,sans-serif;font-size:30px;font-weight:800;margin:10px 0 18px">Ticket to kitchen</div>
+        <div style="border-top:2px dashed #fcd34d"></div>
+        <div id="kItems"></div>
+        <div style="border-top:2px dashed #fcd34d;margin-top:10px"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;font-size:22px;font-weight:600"><span>TOTAL</span><span id="kTotal">$0.00</span></div>
+        <div id="kSent" style="margin-top:20px;height:54px;border-radius:12px;background:#16a34a;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;font:700 19px Inter,sans-serif">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>Sent to kitchen · confirmed with caller
+        </div>
+      </div>
+      <div id="kNote" class="abs mono" style="left:164px;top:920px;font-size:16px;color:#a8a29e">Voice-forward UX · live restaurant environments · the company’s first design system</div>
+    </div>
+    <div id="kWipe" class="abs" style="left:0;top:0;width:1920px;height:1080px;background:#0b1220"></div>
+  </section>
+
+  <!-- W: earlier work -->
+  <section id="sW" class="scene" style="background:#0b1220">
+    <div id="wChip" class="abs chip" style="left:160px;top:110px;background:#12213b;color:#7dd3fc"><span class="dotc" style="background:#38bdf8"></span>EARLIER WORK · CONSUMER, FINTECH, HEALTH TECH</div>
+    <div id="wHead" class="abs serif" style="left:160px;top:170px;font-size:88px;line-height:1.02;color:#f8fafc">
+      <span class="line"><span>Twenty years of</span></span>
+      <span class="line"><span><em style="color:#7dd3fc">shipping products.</em></span></span>
+    </div>
+    <div id="wCards"></div>
+  </section>
+
   <!-- G: montage -->
   <section id="sG" class="scene">
     <div id="g1" class="card" style="background:#fafaf9">
-      <div class="big serif" style="top:300px;color:#0c0a09"><span class="line"><span>Motion needs</span></span><span class="line"><span><em style="color:#2563eb">meaning.</em></span></span></div>
-      <div class="abs mono" style="left:166px;top:720px;font-size:17px;color:#78716c">The composer beam only sweeps while the model works</div>
+      <div class="big serif" style="top:300px;color:#0c0a09"><span class="line"><span>Problem first,</span></span><span class="line"><span><em style="color:#2563eb">then pixels.</em></span></span></div>
+      <div class="abs mono" style="left:166px;top:720px;font-size:17px;color:#78716c">Frame the problem and name the constraints before any UI</div>
       <svg id="curve" class="abs" style="left:1320px;top:250px" width="460" height="520" viewBox="0 0 460 520">
         <path d="M30 470 H440 M30 470 V20" stroke="#d6d3d1" stroke-width="2" fill="none"/>
         <path id="curvePath" d="" stroke="#2563eb" stroke-width="6" fill="none" stroke-linecap="round"/>
         <circle id="curveDot" r="15" fill="#2563eb"/>
-        <text x="30" y="510" style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:16px" fill="#78716c">cubic-bezier(0.16, 1, 0.3, 1)</text>
+        <text x="30" y="510" style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:16px" fill="#78716c">prototype early · retire risk fast</text>
       </svg>
     </div>
     <div id="g2" class="card" style="background:#2563eb">
-      <div id="g2t" class="big serif" style="top:300px;color:#fff"><span class="line"><span>Intent,</span></span><span class="line"><span><em style="color:#bfdbfe">not guesses.</em></span></span></div>
-      <div class="abs mono" style="left:166px;top:720px;font-size:17px;color:#bfdbfe">Follow-scroll lets go on the first upward gesture</div>
-      <div id="jump" class="abs" style="left:1400px;top:560px;height:64px;padding:0 28px;border-radius:999px;background:#fff;color:#1d4ed8;display:flex;align-items:center;gap:12px;font-weight:700;font-size:22px;box-shadow:0 20px 50px rgba(0,0,0,.25)">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>Jump to latest
-      </div>
-      <div id="g2lines" class="abs" style="left:1400px;top:200px;width:360px;height:320px;overflow:hidden"></div>
+      <div id="g2t" class="big serif" style="top:300px;color:#fff"><span class="line"><span>Design the</span></span><span class="line"><span><em style="color:#bfdbfe">system.</em></span></span></div>
+      <div class="abs mono" style="left:166px;top:720px;font-size:17px;color:#bfdbfe">Patterns a team, and an assistant, can build on</div>
+      <div id="chips" class="abs" style="left:1300px;top:330px"></div>
     </div>
     <div id="g3" class="card" style="background:#0c0a09">
       <div id="g3t" class="big serif" style="top:300px;color:#fafaf9"></div>
-      <div class="abs mono" style="left:166px;top:720px;font-size:17px;color:#78716c">Commit the stream before the view unmounts</div>
+      <div class="abs mono" style="left:166px;top:720px;font-size:17px;color:#78716c">Loading, streaming, errors, undo. Nothing silently lost</div>
       <div id="toast" class="abs" style="left:1260px;top:600px;width:500px;height:84px;border-radius:20px;background:#292524;border:1px solid #44403c;display:flex;align-items:center;gap:18px;padding:0 22px;color:#e7e5e4;font-size:22px;box-shadow:0 30px 60px rgba(0,0,0,.5)">
         <svg width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" stroke="#44403c" stroke-width="4" fill="none"/><circle id="ring" cx="20" cy="20" r="16" stroke="#60a5fa" stroke-width="4" fill="none" stroke-linecap="round" transform="rotate(-90 20 20)" stroke-dasharray="100.5" stroke-dashoffset="0"/></svg>
         <span style="flex:1">Conversation cleared</span><b style="color:#60a5fa">Undo</b>
@@ -305,12 +361,12 @@
     <div class="abs serif" style="left:0;width:1920px;top:300px;text-align:center;font-size:168px;color:#fafaf9;line-height:1">
       <span class="line"><span class="hw">Edward</span> <span class="hw"><em style="color:#60a5fa">Chu</em></span></span>
     </div>
-    <div id="hSub" class="abs" style="left:0;width:1920px;top:500px;text-align:center;font-size:32px;color:#a8a29e">Staff Product Designer · AI, systems &amp; motion</div>
+    <div id="hSub" class="abs" style="left:0;width:1920px;top:500px;text-align:center;font-size:32px;color:#a8a29e">Staff Product Designer · AI-native products &amp; complex systems</div>
     <div id="endPill" class="abs" style="overflow:hidden;background:#44403c">
       <div id="endBeam" class="abs" style="left:50%;top:50%;width:2000px;height:2000px;margin:-1000px 0 0 -1000px;background:conic-gradient(from 90deg, transparent 0 290deg, #3b82f6 346deg, #bfdbfe 357deg, transparent 360deg)"></div>
       <div id="endInner" class="abs" style="inset:2px;background:#1c1917;display:flex;align-items:center;justify-content:center;gap:16px;font-size:34px;font-weight:600;color:#fafaf9;white-space:nowrap"><span id="endUrl">edwardchu.xyz</span></div>
     </div>
-    <div id="hList" class="abs mono" style="left:0;width:1920px;top:900px;text-align:center;font-size:16px;color:#78716c">Elation Health · Caret Legal · Adopt AI · SamaCare · Kea AI · Tier1 · Flybits · Toronto Star</div>
+    <div id="hList" class="abs mono" style="left:0;width:1920px;top:900px;text-align:center;font-size:16px;color:#78716c">Elation Health · Caret Legal · Adopt AI · SamaCare · Kea AI · Elion Health · Tier1 · Flybits · Toronto Star</div>
   </section>
 
   <!-- transitions -->
@@ -321,7 +377,7 @@
   <canvas id="grain" width="480" height="270" class="abs" style="left:0;top:0;width:1920px;height:1080px;z-index:40;opacity:.07;mix-blend-mode:overlay;pointer-events:none;image-rendering:pixelated"></canvas>
 
   <div id="hud">
-    <div class="abs mono" style="left:56px;top:44px;line-height:1.7">Edward Chu<br><span style="opacity:.55">Motion reel ’26</span></div>
+    <div class="abs mono" style="left:56px;top:44px;line-height:1.7">Edward Chu<br><span style="opacity:.55">Selected work ’26</span></div>
     <div id="tc" class="abs mono" style="right:56px;top:44px;text-align:right;line-height:1.7"></div>
     <div id="chapter" class="abs mono" style="left:56px;bottom:40px"></div>
     <div class="abs" style="left:56px;right:56px;bottom:28px;height:1px;background:rgba(255,255,255,.18)"><div id="prog" style="height:100%;background:#fff;width:0"></div></div>
@@ -335,7 +391,7 @@
 <div id="controls">
   <button id="playBtn" aria-label="Play or pause"></button>
   <button id="restartBtn" aria-label="Restart"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
-  <input id="scrub" type="range" min="0" max="31250" step="1" value="0" aria-label="Scrub">
+  <input id="scrub" type="range" min="0" max="60000" step="1" value="0" aria-label="Scrub">
   <span id="tcLabel">0.00s</span>
   <button id="muteBtn" aria-label="Mute"></button>
 </div>
@@ -347,17 +403,21 @@
 (() => {
 'use strict';
 // Scenes are authored on a compact 15 s "internal" clock. SEG maps it onto
-// real playback time: [internal from, internal to, real seconds]. Motion runs
-// near natural speed, reading moments get held, and the 9.5-11.5 range is
-// skipped. Every scene cut lands on a 96 BPM beat (0.625 s).
+// real playback time: [internal from, internal to, real seconds]. Motion is
+// slowed for reading and every scene holds before it cuts. Kea AI and the
+// earlier-work scene run on their own 20-30 range at real speed. Every cut
+// lands on a 96 BPM bar (2.5 s).
 const SEG = [
-  [0, 0.3, 0.55], [0.3, 1.25, 2.0], [1.25, 1.5, 0.575],                                  // composer  -> 3.125
-  [1.5, 2.55, 2.1], [2.55, 3.22, 2.2], [3.22, 3.26, 0.875], [3.26, 3.5, 0.45],            // streaming -> 8.75
-  [3.5, 4.2, 1.2], [4.2, 5.1, 1.75], [5.1, 5.26, 0.975], [5.26, 5.5, 0.45],               // Adopt AI  -> 13.125
-  [5.5, 6.25, 1.2], [6.25, 7.1, 1.75], [7.1, 7.26, 0.975], [7.26, 7.5, 0.45],             // SamaCare  -> 17.5
-  [7.5, 8.0, 1.0], [8.0, 8.55, 1.3], [8.55, 9.2, 1.6], [9.2, 9.25, 0.65], [9.25, 9.5, 0.45], // Caret -> 22.5
-  [11.5, 12.0, 1.25], [12.0, 12.5, 1.25], [12.5, 13.0, 1.25], [13.0, 13.5, 1.25],         // principles -> 27.5
-  [13.5, 14.75, 2.3], [14.75, 15, 1.45],                                                  // end card  -> 31.25
+  [0, 0.3, 0.7], [0.3, 1.25, 2.8], [1.25, 1.5, 1.5],                                       // intro       -> 5
+  [1.5, 2.55, 2.6], [2.55, 3.22, 2.9], [3.22, 3.26, 1.55], [3.26, 3.5, 0.45],               // AI twin     -> 12.5
+  [3.5, 4.2, 1.9], [4.2, 5.1, 2.6], [5.1, 5.26, 2.55], [5.26, 5.5, 0.45],                   // Adopt AI    -> 20
+  [5.5, 6.25, 1.9], [6.25, 7.1, 2.6], [7.1, 7.26, 2.55], [7.26, 7.5, 0.45],                 // SamaCare    -> 27.5
+  [7.5, 8.0, 1.4], [8.0, 8.55, 1.8], [8.55, 9.2, 2.2], [9.2, 9.25, 1.65], [9.25, 9.5, 0.45], // Caret Legal -> 35
+  [20, 25, 5],                                                                               // Kea AI      -> 40
+  [25, 30, 5],                                                                               // earlier work -> 45
+  [11.5, 11.9, 1.3], [11.9, 12.0, 1.2], [12.0, 12.4, 1.3], [12.4, 12.5, 1.2],               // how I work  -> 55
+  [12.5, 12.9, 1.3], [12.9, 13.0, 1.2], [13.0, 13.4, 1.3], [13.4, 13.5, 1.2],
+  [13.5, 14.75, 2.8], [14.75, 15, 2.2],                                                     // end card    -> 60
 ];
 const DUR = SEG.reduce((n, s) => n + s[2], 0);
 function internal(rt) {
@@ -449,7 +509,7 @@ const phaseEls = [...$('phase').children];
 
 // stream text
 const STREAM = [
-  ['I design motion that ', 0], ['carries meaning', 1], ['. One bubble mounts and never unmounts. One steady cadence, so ', 0], ['network jitter never shows', 1], ['.', 0],
+  ['I design ', 0], ['AI products people can trust', 1], [': agentic copilots, clinical workflows, and the systems underneath them. From ', 0], ['0 to 1 through scale', 1], [', prototyped in code.', 0],
 ];
 const STREAM_LEN = STREAM.reduce((n, s) => n + s[0].length, 0);
 
@@ -497,21 +557,43 @@ const stageEls = [...$('eStages').querySelectorAll('.stageChip')];
 $('slats').innerHTML = Array.from({ length: 9 }, (_, i) => `<div class="abs slat" style="left:0;top:${i * 120}px;width:1920px;height:121px;background:#0f0e0d;display:none"></div>`).join('');
 const slatEls = [...$('slats').children];
 
+
+// kea
+const KWAVE = 58;
+$('kWave').innerHTML = Array.from({ length: KWAVE }, () => '<div class="kbar"></div>').join('');
+const kBars = [...$('kWave').children];
+const KITEMS = [['2 × Cheeseburger', 'no onion', 19.98, 21.95], ['1 × Fries', 'large', 4.49, 22.45], ['1 × Lemonade', 'no ice', 3.25, 23.0]];
+$('kItems').innerHTML = KITEMS.map(([n, m, p]) => `<div class="kitem"><span><b>${n}</b><br><small style="color:#a16207;font-size:15px">${m}</small></span><span>$${p.toFixed(2)}</span></div>`).join('');
+const kItemEls = [...$('kItems').children];
+const KSAY = '“Two cheeseburgers, no onion, a large fries and a lemonade, no ice.”';
+// earlier work
+const WCARDS = [
+  { t: 'Toronto Star', s: 'StarTouch iPad app', big: '200K', bigNote: 'downloads in 4 months', c: '#f87171', badge: 'App Store · Best of Year', art: 'tablet' },
+  { t: 'Tier1 Financial · Flybits', s: 'Complex financial platforms', big: 'IC → Manager', bigNote: 'enterprise constraints, platform UX', c: '#7dd3fc', badge: 'Best Mobile Solutions Provider', art: 'chart' },
+  { t: 'Elion Health', s: 'AI health-tech marketplace', big: 'Clarity to decide', bigNote: 'trust, comparison, decision support', c: '#6ee7b7', badge: 'Provider-facing marketplace', art: 'compare' },
+];
+$('wCards').innerHTML = WCARDS.map((w, i) => {
+  let art = '';
+  if (w.art === 'tablet') art = `<div class="wtab abs" style="left:90px;top:26px;width:300px;height:190px;border-radius:18px;background:#f8fafc;border:8px solid #1f2937;overflow:hidden"><div style="height:30px;background:#dc2626;display:flex;align-items:center;padding-left:12px;font:700 14px Lora,serif;color:#fff">the Star</div><div style="display:flex;gap:10px;padding:10px"><div style="width:120px;height:90px;border-radius:6px;background:#cbd5e1"></div><div style="flex:1">${'<div style="height:8px;border-radius:4px;background:#94a3b8;margin-bottom:9px"></div>'.repeat(5)}</div></div></div>`;
+  if (w.art === 'chart') art = `<svg class="abs" style="left:24px;top:20px" width="390" height="160" viewBox="0 0 390 160"><path d="M0 150H390" stroke="#1e2a44" stroke-width="2"/><path class="wline" d="M0 130 C40 120 60 128 90 104 S150 96 180 80 S240 70 270 50 S330 30 390 18" stroke="#7dd3fc" stroke-width="5" fill="none" stroke-linecap="round"/></svg>`;
+  if (w.art === 'compare') art = [0, 1, 2].map((r) => `<div class="abs" style="left:28px;top:${30 + r * 54}px;width:380px;height:36px;display:flex;align-items:center;gap:12px"><span style="width:26px;height:26px;border-radius:7px;background:#1e2a44"></span><div style="flex:1;height:12px;border-radius:6px;background:#1e2a44;overflow:hidden"><div class="wfill" data-w="${[92, 64, 48][r]}" style="height:100%;width:0;background:${r === 0 ? '#6ee7b7' : '#334155'};border-radius:6px"></div></div><span class="wok" style="width:26px;height:26px;border-radius:50%;background:${r === 0 ? '#10b981' : 'transparent'};display:grid;place-items:center">${r === 0 ? svg('send', 16, '#fff', 3) : ''}</span></div>`).join('');
+  return `<div class="wcard" style="left:${160 + i * 550}px"><div class="wart">${art}</div><h3>${w.t}</h3><div class="ws">${w.s}</div><div class="wbig" style="color:${w.c}">${w.big}</div><div class="ws" style="margin-top:10px">${w.bigNote}</div><div class="wbadge">${svg('spark', 16, w.c)}${w.badge}</div></div>`;
+}).join('');
+const wCardEls = [...$('wCards').children];
 // montage 3: per-character
 (() => {
-  const L = [['Nothing', ''], ['silently', 'em'], [' lost.', '']];
+  const ch = (c, st) => `<i class="ch" style="display:inline-block;${st}">${c === ' ' ? '&nbsp;' : c}</i>`;
   let h = '<span class="line"><span>';
-  for (const ch of 'Nothing') h += `<i class="ch" style="display:inline-block;font-style:normal">${ch}</i>`;
+  for (const c of 'Every state') h += ch(c, 'font-style:normal');
   h += '</span></span><span class="line"><span>';
-  for (const ch of 'silently') h += `<i class="ch" style="display:inline-block;font-style:italic;color:#60a5fa">${ch}</i>`;
-  for (const ch of ' lost.') h += `<i class="ch" style="display:inline-block;font-style:normal">${ch === ' ' ? '&nbsp;' : ch}</i>`;
+  for (const c of 'designed.') h += ch(c, 'font-style:italic;color:#60a5fa');
   h += '</span></span>';
   $('g3t').innerHTML = h;
-  void L;
 })();
 const chEls = [...$('g3t').querySelectorAll('.ch')];
-// montage 2 scroll lines
-$('g2lines').innerHTML = Array.from({ length: 14 }, (_, i) => `<div style="height:16px;border-radius:8px;background:rgba(255,255,255,${i % 4 === 3 ? 0 : 0.28});margin-bottom:18px;width:${[92, 78, 86, 0][i % 4] || 60}%"></div>`).join('');
+// montage 2 system chips
+$('chips').innerHTML = [['grid', 'Tokens'], ['brief', 'Components'], ['spark', 'Patterns']].map(([k, l], i) => `<div class="abs" style="left:${i * 40}px;top:${i * 96}px;height:72px;padding:0 30px 0 22px;border-radius:999px;background:#fff;color:#1d4ed8;display:flex;align-items:center;gap:14px;font-weight:700;font-size:26px;white-space:nowrap;box-shadow:0 20px 50px rgba(0,0,0,.2)">${svg(k, 28, '#2563eb')}${l}</div>`).join('');
+const chipEls = [...$('chips').children];
 // curve path
 (() => {
   const f = eo; let d = '';
@@ -537,7 +619,7 @@ const grainFrames = [];
 })();
 
 // ---------- render ----------
-const CHAPTERS = [[0, '01 · Composer'], [1.5, '02 · Streaming'], [3.5, '03 · Adopt AI'], [5.5, '04 · SamaCare'], [7.5, '05 · Caret Legal'], [11.5, '06 · Principles'], [13.5, '07 · Edward Chu']];
+const CHAPTERS = [[0, '01 · Intro'], [5, '02 · AI twin'], [12.5, '03 · Adopt AI'], [20, '04 · SamaCare'], [27.5, '05 · Caret Legal'], [35, '06 · Kea AI'], [40, '07 · Earlier work'], [45, '08 · How I work'], [55, '09 · Edward Chu']];
 let stageScale = 1;
 
 function render(rt) {
@@ -546,7 +628,7 @@ function render(rt) {
   const frame = Math.round(rt * 60);
 
   // HUD
-  const ch = CHAPTERS.filter((c) => t >= c[0]).pop();
+  const ch = CHAPTERS.filter((c) => rt >= c[0]).pop();
   $('chapter').textContent = ch[1];
   const ss = Math.floor(rt), ff = Math.floor((rt - ss) * 30);
   $('tc').innerHTML = `TC 00:00:${String(ss).padStart(2, '0')}:${String(ff).padStart(2, '0')}<br><span style="opacity:.55">1920×1080 · 60p</span>`;
@@ -573,7 +655,7 @@ function render(rt) {
     $('pillInner').style.opacity = E(t, 0.45, 0.75);
     $('beam').style.opacity = working ? Math.min(1, E(t, 1.25, 1.4)) : 0;
     $('beam').style.transform = `rotate(${((t - 1.25) * 400) % 360}deg)`;
-    const MSG = 'Show me how Edward designs motion';
+    const MSG = 'Show me Edward’s product work';
     const n = Math.floor(MSG.length * P(t, 0.72, 1.12));
     const sent = t >= 1.3;
     $('pillText').innerHTML = sent ? '<span class="ph">Edward is answering…</span>' : (n === 0 ? '<span class="ph">Ask me anything…</span><span class="caret"></span>' : MSG.slice(0, n) + '<span class="caret"></span>');
@@ -655,6 +737,7 @@ function render(rt) {
     $('c7').textContent = Math.max(1, Math.round(1 + 6 * E(t, 4.6, 5.1, eio))) + '×';
     tf($('c7'), { s: 1 + 0.08 * Math.sin(Math.PI * P(t, 5.05, 5.25)) });
     tf($('cPatent'), { o: E(t, 4.8, 5.1) });
+    tf($('cSub'), { o: E(t, 3.85, 4.2) });
   }
 
   // violet iris into SamaCare
@@ -670,6 +753,7 @@ function render(rt) {
   // ===== D: SamaCare =====
   if (scene('sD', t, 5.5, 7.52)) {
     tf($('dChip'), { x: (1 - E(t, 5.6, 5.95)) * -40, o: E(t, 5.6, 5.85) });
+    tf($('dSub'), { o: E(t, 5.85, 6.2) });
     document.querySelectorAll('#sD .dw').forEach((w, i) => { const p = E(t, 5.58 + i * 0.07, 6.1 + i * 0.07); tf(w, { y: (1 - p) * 120, r: (1 - p) * 4 }); });
     const bp = E(t, 5.62, 6.1);
     tf($('browser'), { persp: 1600, y: (1 - bp) * 300, rx: (1 - bp) * 14, o: bp });
@@ -772,8 +856,64 @@ function render(rt) {
     });
   } else $('sE').style.clipPath = 'none';
 
-  // the Caret iris closes onto the first principle card's paper
-  $('stage').style.background = t >= 9.2 && t < 11.5 ? '#fafaf9' : '';
+  // the Caret iris closes onto Kea's background
+  $('stage').style.background = t >= 9.2 && t < 11.5 ? '#17120d' : '';
+
+  // ===== K: Kea AI (internal 20-25 = real seconds) =====
+  if (scene('sK', t, 20, 25)) {
+    tf($('kChip'), { x: (1 - E(t, 20.15, 20.7)) * -40, o: E(t, 20.15, 20.6) });
+    lines($('kHead'), t, 20.25, 0.14, 0.8);
+    const cp = E(t, 20.6, 21.3);
+    tf($('kCall'), { y: (1 - cp) * 80, o: cp });
+    $('kLive').style.opacity = 0.4 + 0.6 * (0.5 + 0.5 * Math.sin(t * 8));
+    const callerTalks = t > 21.0 && t < 22.7, agentTalks = t > 22.95 && t < 23.8;
+    kBars.forEach((b, i) => {
+      const n = Math.abs(Math.sin(t * 13 + i * 0.7) * Math.sin(t * 7.3 + i * 1.9));
+      const amp = callerTalks ? 0.25 + 0.75 * n : agentTalks ? 0.2 + 0.6 * n : 0.06 + 0.05 * n;
+      b.style.height = (8 + 104 * amp * cp).toFixed(1) + 'px';
+      b.style.background = agentTalks ? '#fbbf24' : '#e7e5e4';
+    });
+    const kn = Math.floor(KSAY.length * P(t, 21.0, 22.6));
+    $('kSay1').textContent = KSAY.slice(0, kn);
+    tf($('kSay1'), { o: P(t, 20.95, 21.05) });
+    const s2 = spr(t - 22.95, 16, 0.5);
+    tf($('kSay2'), { y: (1 - s2) * 30, s: 0.9 + 0.1 * s2, o: P(t, 22.95, 23.05) });
+    const tk = spr(t - 20.9, 11, 0.55);
+    tf($('kTicket'), { y: (1 - tk) * 500, r: lerp(8, -2, tk), o: P(t, 20.9, 21.0) });
+    let total = 0;
+    kItemEls.forEach((el, i) => {
+      const at = KITEMS[i][3];
+      const p = E(t, at, at + 0.4);
+      el.style.height = (66 * p) + 'px'; el.style.paddingTop = (14 * p) + 'px';
+      tf(el, { o: p, x: (1 - p) * 30 });
+      total += KITEMS[i][2] * E(t, at, at + 0.5);
+    });
+    $('kTotal').textContent = '$' + total.toFixed(2);
+    const sent = spr(t - 23.5, 18, 0.42);
+    tf($('kSent'), { s: 0.6 + 0.4 * sent, o: P(t, 23.5, 23.58) });
+    tf($('kNote'), { o: E(t, 21.6, 22.2) });
+    const out = E(t, 24.5, 25.0, eio);
+    tf($('kWrap'), { y: -out * 120, o: 1 - out });
+    tf($('kWipe'), { y: (1 - out) * 1080 });
+  }
+
+  // ===== W: earlier work (internal 25-30) =====
+  if (scene('sW', t, 25, 30)) {
+    tf($('wChip'), { x: (1 - E(t, 25.1, 25.6)) * -40, o: E(t, 25.1, 25.5) });
+    lines($('wHead'), t, 25.1, 0.14, 0.8);
+    wCardEls.forEach((el, i) => {
+      const a = 25.5 + i * 0.35;
+      const p = spr(t - a, 12, 0.55);
+      tf(el, { y: (1 - p) * 120, o: P(t, a, a + 0.15) });
+      const big = el.querySelector('.wbig');
+      if (i === 0) big.textContent = Math.round(200 * E(t, a + 0.3, a + 1.5, eio)) + 'K';
+      if (i === 0) tf(el.querySelector('.wtab'), { y: (1 - E(t, a + 0.1, a + 0.8)) * 60, r: lerp(-8, -3, E(t, a + 0.1, a + 0.9)) });
+      if (i === 1) { const w = el.querySelector('.wline'); const L = w.getTotalLength(); w.style.strokeDasharray = L; w.style.strokeDashoffset = L * (1 - E(t, a + 0.3, a + 1.6, eio)); }
+      if (i === 2) el.querySelectorAll('.wfill').forEach((f, r) => { f.style.width = (+f.dataset.w * E(t, a + 0.3 + r * 0.15, a + 1.2 + r * 0.15)) + '%'; });
+      if (i === 2) tf(el.querySelector('.wok'), { s: spr(t - (a + 1.3), 18, 0.4) });
+      tf(el.querySelector('.wbadge'), { o: E(t, a + 0.8, a + 1.2) });
+    });
+  }
 
   // ===== G: montage =====
   if (scene('sG', t, 11.5, 13.52)) {
@@ -791,9 +931,7 @@ function render(rt) {
     } else if (t < 12.5) {
       const p = E(t, 12.0, 12.35);
       tf($('g2t'), { x: (1 - p) * 500, sk: (1 - p) * -14, blur: (1 - p) * 14, o: P(t, 12.0, 12.08) });
-      $('g2lines').style.transform = `translateY(${-E(t, 12.0, 12.2) * 90 + E(t, 12.2, 12.45) * 40}px)`;
-      const j = spr(t - 12.18, 18, 0.42);
-      tf($('jump'), { y: (1 - j) * 60, s: 0.7 + 0.3 * j, o: P(t, 12.18, 12.24) });
+      chipEls.forEach((c, i) => { const j = spr(t - (12.12 + i * 0.07), 18, 0.45); tf(c, { y: (1 - j) * 60, s: 0.7 + 0.3 * j, o: P(t, 12.12 + i * 0.07, 12.17 + i * 0.07) }); });
     } else if (t < 13.0) {
       chEls.forEach((c, i) => { const p = E(t, 12.5 + i * 0.012, 12.5 + i * 0.012 + 0.32); tf(c, { s: lerp(1.9, 1, p), blur: (1 - p) * 16, o: p, y: (1 - p) * -20 }); });
       const ts = spr(t - 12.6, 14, 0.5);
