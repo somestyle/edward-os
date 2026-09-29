@@ -41,7 +41,7 @@ const ff = spawn(ffmpeg, [
   '-movflags', '+faststart', out,
 ], { stdio: ['pipe', 'inherit', 'inherit'] });
 
-const total = Math.round(15 * fps);
+const total = Math.round((await page.evaluate(() => window.__DUR)) * fps);
 for (let f = 0; f < total; f++) {
   await page.evaluate((t) => window.__seek(t), f / fps);
   const buf = await page.screenshot({ type: 'jpeg', quality: 95 });

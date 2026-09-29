@@ -1,11 +1,32 @@
-"""Synthesises the 15 s reel soundtrack, cue for cue with public/reel/index.html.
+"""Synthesises the reel soundtrack, cue for cue with public/reel/index.html.
 
-120 BPM, so every scene cut lands on a beat. Writes public/reel/assets/soundtrack.wav; encode it to soundtrack.mp3 before rendering.
+Cues are written on the page's internal 15 s clock and placed with real(), the same
+SEG table the page uses. 96 BPM, so every scene cut lands on a beat. Writes public/reel/assets/soundtrack.wav; encode it to soundtrack.mp3 before rendering.
 """
 import numpy as np, wave, os
 
 SR = 48000
-DUR = 15.0
+SEG = [
+    (0, 0.3, 0.55), (0.3, 1.25, 2.0), (1.25, 1.5, 0.575),
+    (1.5, 2.55, 2.1), (2.55, 3.22, 2.2), (3.22, 3.26, 0.875), (3.26, 3.5, 0.45),
+    (3.5, 4.2, 1.2), (4.2, 5.1, 1.75), (5.1, 5.26, 0.975), (5.26, 5.5, 0.45),
+    (5.5, 6.25, 1.2), (6.25, 7.1, 1.75), (7.1, 7.26, 0.975), (7.26, 7.5, 0.45),
+    (7.5, 8.0, 1.0), (8.0, 8.55, 1.3), (8.55, 9.2, 1.6), (9.2, 9.25, 0.65), (9.25, 9.5, 0.45),
+    (11.5, 12.0, 1.25), (12.0, 12.5, 1.25), (12.5, 13.0, 1.25), (13.0, 13.5, 1.25),
+    (13.5, 14.75, 2.3), (14.75, 15, 1.45),
+]
+DUR = sum(d for _, _, d in SEG)
+
+
+def real(ti):
+    """Internal page time -> real playback seconds."""
+    acc = 0.0
+    for a, b, d in SEG:
+        if ti <= b: return acc + (max(ti, a) - a) / (b - a) * d
+        acc += d
+    return DUR
+
+
 N = int(SR * DUR)
 L = np.zeros(N); R = np.zeros(N)
 rng = np.random.default_rng(7)
@@ -107,75 +128,71 @@ def thock():
 midi = lambda m: 440 * 2 ** ((m - 69) / 12)
 
 # ---------------- music bed ----------------
-BPM = 120; BEAT = 60 / BPM
+BPM = 96; BEAT = 60 / BPM; BAR = 4 * BEAT
 CHORDS = [(57, [69, 72, 76]), (53, [65, 69, 72]), (48, [67, 72, 76]), (55, [67, 71, 74])]  # Am F C G
+DROP, STOP = real(1.5), real(13.5)
 
-# pad from 0 (quiet) to end
-for bar in range(8):
-    t0 = bar * 2.0 - 0.5
+for bar in range(int(DUR / BAR) + 1):
+    t0 = bar * BAR - 0.4
     root, notes = CHORDS[bar % 4]
+    ln = BAR + 0.6
     for m in notes:
-        n = int(2.3 * SR); t = np.arange(n) / SR
-        f = midi(m - 12)
-        s = sum(tone(f * d, 2.3, 0.4, 5.0, 'saw') for d in (0.997, 1.003)) * 0.5
-        s = lowpass(s, 900) * np.minimum(1, t / 0.5) * np.minimum(1, (2.3 - t) / 0.5)
+        n = int(ln * SR); t = np.arange(n) / SR
+        s = sum(tone(midi(m - 12) * d, ln, 0.5, 6.0, 'saw') for d in (0.997, 1.003)) * 0.5
+        s = lowpass(s, 850) * np.minimum(1, t / 0.6) * np.minimum(1, (ln - t) / 0.6)
         add(s, max(0, t0), 0.05 if bar > 0 else 0.03, pan=(m % 3 - 1) * 0.4)
 
-# drums + bass from the drop (1.5) to the end card (13.5)
-t = 1.5
-while t < 13.49:
-    add(kick(), t, 0.9)
-    k = int(round((t - 1.5) / BEAT))
-    if k % 2 == 1: add(clap(), t, 0.45, 0.1)
-    add(hat(), t + BEAT / 2, 0.22, 0.35)
-    add(hat(0.03), t + BEAT / 4, 0.08, -0.35)
-    add(hat(0.03), t + 3 * BEAT / 4, 0.08, -0.35)
-    bar = int((t - 1.5) // 2)
-    root = CHORDS[bar % 4][0] - 24
-    b = tone(midi(root), 0.42, 0.005, 0.25, 'saw')
-    b = lowpass(b, 260) * 2.2
-    add(b, t + 0.02, 0.5)
+t = DROP
+while t < STOP - 0.01:
+    k = int(round((t - DROP) / BEAT))
+    add(kick(), t, 0.85)
+    if k % 2 == 1: add(clap(), t, 0.4, 0.1)
+    add(hat(), t + BEAT / 2, 0.2, 0.35)
+    add(hat(0.03), t + BEAT / 4, 0.06, -0.35)
+    add(hat(0.03), t + 3 * BEAT / 4, 0.06, -0.35)
+    root = CHORDS[int((t - DROP) // BAR) % 4][0] - 24
+    add(lowpass(tone(midi(root), 0.55, 0.005, 0.3, 'saw'), 240) * 2.2, t + 0.02, 0.5)
     t += BEAT
 
-# arp in the Adopt / SamaCare / Caret section
-for i in range(int((9.5 - 3.5) / (BEAT / 2))):
-    tt = 3.5 + i * BEAT / 2
-    bar = int((tt - 1.5) // 2)
-    notes = CHORDS[bar % 4][1]
+a0, a1 = real(3.5), real(9.5)
+i = 0
+while a0 + i * BEAT / 2 < a1:
+    tt = a0 + i * BEAT / 2
+    notes = CHORDS[int((tt - DROP) // BAR) % 4][1]
     m = notes[i % 3] + (12 if i % 6 >= 3 else 0)
-    add(pluck(midi(m), 0.3, 0.8), tt + BEAT / 4, 0.09, pan=0.5 * ((i % 2) * 2 - 1))
+    add(pluck(midi(m), 0.35, 0.8), tt + BEAT / 4, 0.08, pan=0.5 * ((i % 2) * 2 - 1))
+    i += 1
 
-# ---------------- cues ----------------
-add(tone(np.linspace(1400, 520, int(0.25 * SR)), 0.25, 0.002, 0.08), 0.05, 0.25)          # dot spawns
-add(whoosh(0.5), 0.32, 0.05)                                                                # stretch into pill
-for i in range(33): add(click(2600 + (i * 37) % 900), 0.72 + i * (0.4 / 33), 0.07, ((i % 5) - 2) * 0.15)  # typing
-add(thock(), 1.25, 0.5); add(click(4200), 1.25, 0.2)                                        # send
-add(whoosh(0.9), 0.62, 0.22)                                                                # riser to drop
-for tp in (1.55, 1.95, 2.3): add(pluck(midi(84), 0.2), tp, 0.07, 0.3)                     # phase ticks
-for i in range(40): add(click(5200), 2.55 + i * (0.67 / 40), 0.025, ((i % 3) - 1) * 0.5)   # steady drain
-for tc in (3.5, 5.5, 7.5, 9.5, 11.5): add(whoosh(0.42), tc - 0.42, 0.28)                   # every cut
-add(lowpass(noise(0.4, 0.15), 1200), 3.5, 0.4)
-for i in range(4): add(pluck(midi(72 + [0, 4, 7, 12][i]), 0.4), 3.95 + i * 0.16, 0.16, -0.3 + i * 0.2)  # nodes pop
-for i in range(4): add(click(3800), 4.55 + i * 0.13, 0.14, 0.3)                           # checks
-for i in range(6): add(click(2400 + i * 300), 4.6 + i * 0.08, 0.06)                       # 7x counter
-for i in range(4): add(pluck(midi(76 + [0, 3, 7, 10][i]), 0.35, 1.2), 6.25 + i * 0.16, 0.15, 0.4)  # fields fill
-add(bell(midi(88), 1.0), 7.0, 0.08)                                                         # submitted
-add(thock(), 7.72, 0.6, -0.2); add(thock(), 7.82, 0.6, 0.2)                                # ⌘ K
-for i in range(10): add(click(3000 + (i * 53) % 700), 8.02 + i * 0.032, 0.08)              # typing
-add(thock(), 8.5, 0.4); add(whoosh(0.3, rev=True), 8.55, 0.18, 0.6)                        # enter + peek
-for k in range(8): add(pluck(midi([72, 74, 76, 79, 81, 84, 86, 88][k]), 0.3, 1.0), 9.72 + k * 0.205, 0.13, -0.5 + k / 7)  # tour
-add(whoosh(0.5), 11.0, 0.35)                                                                # push-in
-for i, tc in enumerate((11.5, 12.0, 12.5, 13.0)):                                           # principle hits
-    add(kick(0.6, 180, 38), tc, 0.8)
-    add(lowpass(noise(0.5, 0.18), 3000), tc, 0.25)
-    root, notes = CHORDS[i]
-    for m in notes: add(tone(midi(m), 0.5, 0.003, 0.18, 'tri'), tc, 0.07)
-for i in range(8): add(tone(midi(79 + [0, 2, 4, 7, 9, 7, 4, 2][i]), 0.08, 0.001, 0.03, 'tri'), 13.05 + i * 0.05, 0.05)  # dock ripple
-# end card: impact, silence, then a chime when the beam settles
-add(kick(1.2, 120, 28), 13.5, 1.1)
-add(lowpass(noise(1.6, 0.6, 0.002), 700), 13.5, 0.5)
-add(tone(np.linspace(1400, 520, int(0.25 * SR)), 0.25, 0.002, 0.08), 13.5, 0.2)
-for i, m in enumerate((69, 76, 81)): add(bell(midi(m), 2.0), 14.5 + i * 0.03, 0.09, (i - 1) * 0.3)
+# ---------------- cues (internal times, placed with real) ----------------
+def cue(sig, ti, gain=1.0, pan=0.0): add(sig, real(ti), gain, pan)
+
+cue(tone(np.linspace(1400, 520, int(0.25 * SR)), 0.25, 0.002, 0.08), 0.05, 0.25)            # dot spawns
+cue(whoosh(0.8), 0.32, 0.05)                                                                  # stretch into pill
+for i in range(33): cue(click(2600 + (i * 37) % 900), 0.72 + i * (0.4 / 33), 0.07, ((i % 5) - 2) * 0.15)  # typing
+cue(thock(), 1.25, 0.5); cue(click(4200), 1.25, 0.2)                                          # send
+add(whoosh(1.4), DROP - 1.4, 0.22)                                                            # riser to drop
+for tp in (1.55, 1.95, 2.3): cue(pluck(midi(84), 0.2), tp, 0.07, 0.3)                         # phase ticks
+for i in range(60): cue(click(5200), 2.55 + i * (0.67 / 60), 0.022, ((i % 3) - 1) * 0.5)     # steady drain
+for tc in (3.5, 5.5, 7.5, 9.5): add(whoosh(0.5), real(tc) - 0.5, 0.26)                          # every cut
+cue(lowpass(noise(0.4, 0.15), 1200), 3.5, 0.4)
+for i in range(4): cue(pluck(midi(72 + [0, 4, 7, 12][i]), 0.4), 3.95 + i * 0.16, 0.16, -0.3 + i * 0.2)  # nodes pop
+for i in range(4): cue(click(3800), 4.55 + i * 0.13, 0.14, 0.3)                              # checks
+for i in range(6): cue(click(2400 + i * 300), 4.6 + i * 0.08, 0.06)                          # 7x counter
+for i in range(4): cue(pluck(midi(76 + [0, 3, 7, 10][i]), 0.35, 1.2), 6.25 + i * 0.16, 0.15, 0.4)  # fields fill
+cue(bell(midi(88), 1.0), 7.0, 0.08)                                                            # submitted
+cue(thock(), 7.72, 0.6, -0.2); cue(thock(), 7.82, 0.6, 0.2)                                   # cmd K
+for i in range(10): cue(click(3000 + (i * 53) % 700), 8.02 + i * 0.032, 0.08)                 # typing
+cue(thock(), 8.5, 0.4); cue(whoosh(0.4, rev=True), 8.55, 0.18, 0.6)                           # enter + peek
+for i, tc in enumerate((11.5, 12.0, 12.5, 13.0)):                                              # principle hits
+    cue(kick(0.6, 180, 38), tc, 0.8)
+    cue(lowpass(noise(0.5, 0.18), 3000), tc, 0.22)
+    for m in CHORDS[i][1]: cue(tone(midi(m), 0.7, 0.003, 0.25, 'tri'), tc, 0.07)
+for i in range(8): cue(tone(midi(79 + [0, 2, 4, 7, 9, 7, 4, 2][i]), 0.1, 0.001, 0.04, 'tri'), 13.1 + i * 0.047, 0.05)  # dock ripple
+# end card: impact, the bed thins out, then a chime when the beam settles
+cue(kick(1.2, 120, 28), 13.5, 1.1)
+cue(lowpass(noise(1.6, 0.6, 0.002), 700), 13.5, 0.5)
+cue(tone(np.linspace(1400, 520, int(0.25 * SR)), 0.25, 0.002, 0.08), 13.5, 0.2)
+for i, m in enumerate((69, 76, 81)): cue(bell(midi(m), 2.4), 14.5 + i * 0.01, 0.09, (i - 1) * 0.3)
 
 # ---------------- reverb + master ----------------
 ir_n = int(1.4 * SR); ti = np.arange(ir_n) / SR
@@ -186,7 +203,7 @@ def conv(x, h):
 wetL = conv(L, ir[0]); wetR = conv(R, ir[1])
 wet_scale = np.max(np.abs(L)) / (np.max(np.abs(wetL)) + 1e-9)
 L2 = L + wetL * wet_scale * 0.18; R2 = R + wetR * wet_scale * 0.18
-fade = np.ones(N); fn = int(0.35 * SR); fade[-fn:] = np.linspace(1, 0, fn) ** 2
+fade = np.ones(N); fn = int(0.9 * SR); fade[-fn:] = np.linspace(1, 0, fn) ** 2
 mix = np.stack([L2, R2], 1) * fade[:, None]
 mix = np.tanh(mix / np.max(np.abs(mix)) * 1.6)
 mix = mix / np.max(np.abs(mix)) * 0.89

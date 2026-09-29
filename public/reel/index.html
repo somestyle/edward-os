@@ -263,16 +263,6 @@
     <div id="eStages" class="abs" style="left:300px;top:930px;width:1100px;height:80px;z-index:3"></div>
   </section>
 
-  <!-- F: Tiny planet -->
-  <section id="sF" class="scene" style="background:#0b1026">
-    <canvas id="planet" width="1920" height="1080" class="abs" style="left:0;top:0"></canvas>
-    <div id="fCard" class="abs" style="left:240px;top:86px;width:1920px;text-align:center;height:160px;overflow:hidden"></div>
-    <div id="fCap" class="abs" style="left:160px;top:840px">
-      <div class="serif" style="font-size:74px;color:#fff;line-height:1"><span class="line"><span>Career, as a <em style="color:#a5b4fc">tiny planet.</em></span></span></div>
-      <div class="mono" style="font-size:15px;color:#818cf8;margin-top:16px">three.js widget · auto tour · one landmark per role</div>
-    </div>
-  </section>
-
   <!-- G: montage -->
   <section id="sG" class="scene">
     <div id="g1" class="card" style="background:#fafaf9">
@@ -318,7 +308,7 @@
     <div id="hSub" class="abs" style="left:0;width:1920px;top:500px;text-align:center;font-size:32px;color:#a8a29e">Staff Product Designer · AI, systems &amp; motion</div>
     <div id="endPill" class="abs" style="overflow:hidden;background:#44403c">
       <div id="endBeam" class="abs" style="left:50%;top:50%;width:2000px;height:2000px;margin:-1000px 0 0 -1000px;background:conic-gradient(from 90deg, transparent 0 290deg, #3b82f6 346deg, #bfdbfe 357deg, transparent 360deg)"></div>
-      <div id="endInner" class="abs" style="inset:2px;background:#1c1917;display:flex;align-items:center;justify-content:center;gap:16px;font-size:34px;font-weight:600;color:#fafaf9;white-space:nowrap"><span id="endUrl">edward2.com</span></div>
+      <div id="endInner" class="abs" style="inset:2px;background:#1c1917;display:flex;align-items:center;justify-content:center;gap:16px;font-size:34px;font-weight:600;color:#fafaf9;white-space:nowrap"><span id="endUrl">edwardchu.xyz</span></div>
     </div>
     <div id="hList" class="abs mono" style="left:0;width:1920px;top:900px;text-align:center;font-size:16px;color:#78716c">Elation Health · Caret Legal · Adopt AI · SamaCare · Kea AI · Tier1 · Flybits · Toronto Star</div>
   </section>
@@ -328,7 +318,6 @@
   <div id="wipeViolet" class="abs" style="left:0;top:0;width:1920px;height:1080px;background:#6d28d9;z-index:20;display:none"></div>
   <div id="wipeLav" class="abs" style="left:0;top:0;width:1920px;height:1080px;background:#f5f3ff;z-index:21;display:none"></div>
   <div id="slats" class="abs" style="inset:0;z-index:20;pointer-events:none"></div>
-  <div id="flash" class="abs" style="inset:0;background:#fafaf9;z-index:22;opacity:0;pointer-events:none"></div>
   <canvas id="grain" width="480" height="270" class="abs" style="left:0;top:0;width:1920px;height:1080px;z-index:40;opacity:.07;mix-blend-mode:overlay;pointer-events:none;image-rendering:pixelated"></canvas>
 
   <div id="hud">
@@ -346,7 +335,7 @@
 <div id="controls">
   <button id="playBtn" aria-label="Play or pause"></button>
   <button id="restartBtn" aria-label="Restart"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
-  <input id="scrub" type="range" min="0" max="15000" step="1" value="0" aria-label="Scrub">
+  <input id="scrub" type="range" min="0" max="31250" step="1" value="0" aria-label="Scrub">
   <span id="tcLabel">0.00s</span>
   <button id="muteBtn" aria-label="Mute"></button>
 </div>
@@ -357,7 +346,25 @@
 <script>
 (() => {
 'use strict';
-const DUR = 15;
+// Scenes are authored on a compact 15 s "internal" clock. SEG maps it onto
+// real playback time: [internal from, internal to, real seconds]. Motion runs
+// near natural speed, reading moments get held, and the 9.5-11.5 range is
+// skipped. Every scene cut lands on a 96 BPM beat (0.625 s).
+const SEG = [
+  [0, 0.3, 0.55], [0.3, 1.25, 2.0], [1.25, 1.5, 0.575],                                  // composer  -> 3.125
+  [1.5, 2.55, 2.1], [2.55, 3.22, 2.2], [3.22, 3.26, 0.875], [3.26, 3.5, 0.45],            // streaming -> 8.75
+  [3.5, 4.2, 1.2], [4.2, 5.1, 1.75], [5.1, 5.26, 0.975], [5.26, 5.5, 0.45],               // Adopt AI  -> 13.125
+  [5.5, 6.25, 1.2], [6.25, 7.1, 1.75], [7.1, 7.26, 0.975], [7.26, 7.5, 0.45],             // SamaCare  -> 17.5
+  [7.5, 8.0, 1.0], [8.0, 8.55, 1.3], [8.55, 9.2, 1.6], [9.2, 9.25, 0.65], [9.25, 9.5, 0.45], // Caret -> 22.5
+  [11.5, 12.0, 1.25], [12.0, 12.5, 1.25], [12.5, 13.0, 1.25], [13.0, 13.5, 1.25],         // principles -> 27.5
+  [13.5, 14.75, 2.3], [14.75, 15, 1.45],                                                  // end card  -> 31.25
+];
+const DUR = SEG.reduce((n, s) => n + s[2], 0);
+function internal(rt) {
+  let acc = 0;
+  for (const [a, b, d] of SEG) { if (rt < acc + d) return a + (b - a) * (rt - acc) / d; acc += d; }
+  return 15;
+}
 const $ = (id) => document.getElementById(id);
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const lerp = (a, b, p) => a + (b - a) * p;
@@ -529,158 +536,21 @@ const grainFrames = [];
   }
 })();
 
-// planet data
-const avatarImg = new Image(); avatarImg.src = 'assets/avatar.png';
-const STOPS = [
-  ['01', 'Toronto Star', 'StarTouch iPad · App Store Best of Year', '#ef4444', 'press'],
-  ['02', 'Tier1 Financial', 'IC to Design Manager', '#0ea5e9', 'bank'],
-  ['03', 'Flybits', 'Platform UX at enterprise scale', '#8b5cf6', 'tower'],
-  ['04', 'Kea AI', 'Head of Product Design · voice ordering', '#f59e0b', 'shop'],
-  ['05', 'SamaCare', 'First design hire · $17M Series B', '#7c3aed', 'clinic'],
-  ['06', 'Adopt AI', 'Founding Staff Designer · agentic copilot', '#2563eb', 'api'],
-  ['07', 'Caret Legal', 'Director of Product Design · AI initiative', '#64748b', 'court'],
-  ['08', 'Elation Health', 'Staff Product Designer · clinical AI', '#0284c7', 'clinic2'],
-];
-$('fCard').innerHTML = STOPS.map(([n, name, role]) => `<div class="fc abs" style="left:0;top:0;width:1920px"><div class="mono" style="font-size:15px;color:#818cf8">${n} / 08</div><div class="serif" style="font-size:66px;color:#fff;line-height:1.1;margin-top:6px">${name}</div><div style="font-size:22px;color:#c7d2fe;margin-top:4px">${role}</div></div>`).join('');
-const fcEls = [...$('fCard').children];
-let seed = 3; const srnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-const STARS = Array.from({ length: 160 }, () => [srnd() * 1920, srnd() * 1080, srnd() * 1.8 + 0.4, srnd() * 6.28, srnd() * 3 + 1]);
-const pctx = $('planet').getContext('2d');
-const PCX = 1200, PCY = 700;
-
-function drawLandmark(c, kind, col, t) {
-  const r = (x, y, w, h, f) => { c.fillStyle = f; c.fillRect(x, y, w, h); };
-  const win = (x0, y0, cols, rows, gap = 13) => { for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) r(x0 + i * gap, y0 + j * gap, 7, 7, 'rgba(254,243,199,.9)'); };
-  switch (kind) {
-    case 'press': r(-36, -70, 72, 70, '#f5f5f4'); r(-40, -78, 80, 10, col); win(-26, -58, 4, 4); c.fillStyle = col; c.font = '700 14px Lora'; c.textAlign = 'center'; break;
-    case 'bank': r(-44, -18, 88, 18, '#e2e8f0'); for (let i = 0; i < 5; i++) r(-38 + i * 18, -62, 8, 44, '#f8fafc'); r(-48, -70, 96, 10, '#e2e8f0'); c.fillStyle = col; c.beginPath(); c.moveTo(-50, -70); c.lineTo(0, -98); c.lineTo(50, -70); c.fill(); break;
-    case 'tower': r(-16, -130, 32, 130, '#ede9fe'); r(-22, -134, 44, 8, col); win(-10, -118, 2, 8); r(-2, -168, 4, 36, '#c4b5fd'); c.fillStyle = (Math.sin(t * 18) > 0) ? '#f472b6' : '#831843'; c.beginPath(); c.arc(0, -170, 5, 0, 7); c.fill(); break;
-    case 'shop': r(-40, -56, 80, 56, '#fffbeb'); for (let i = 0; i < 5; i++) r(-44 + i * 17.6, -66, 17.6, 14, i % 2 ? '#fff' : col); r(-12, -34, 24, 34, '#92400e'); win(20, -44, 1, 2); win(-34, -44, 1, 2); break;
-    case 'clinic': case 'clinic2': r(-42, -64, 84, 64, '#fff'); r(-46, -70, 92, 10, col); r(-6, -54, 12, 30, '#ef4444'); r(-15, -45, 30, 12, '#ef4444'); win(-34, -52, 1, 3, 15); win(27, -52, 1, 3, 15); break;
-    case 'api': r(-30, -90, 60, 90, '#1e293b'); win(-20, -76, 3, 5, 15); r(-34, -112, 68, 22, '#0f172a'); c.fillStyle = `rgba(96,165,250,${0.7 + 0.3 * Math.sin(t * 9)})`; c.font = '800 18px Inter'; c.textAlign = 'center'; c.fillText('API', 0, -95); break;
-    case 'court': r(-46, -12, 92, 12, '#e5e7eb'); for (let i = 0; i < 4; i++) r(-36 + i * 22, -58, 10, 46, '#f9fafb'); r(-50, -66, 100, 8, '#e5e7eb'); c.fillStyle = col; c.beginPath(); c.moveTo(-52, -66); c.lineTo(0, -92); c.lineTo(52, -66); c.fill(); break;
-  }
-  // flag
-  r(38, -120, 3, 50, '#e2e8f0'); c.fillStyle = col; c.beginPath(); c.moveTo(41, -120); c.lineTo(41 + 26 + Math.sin(t * 12) * 3, -112); c.lineTo(41, -103); c.fill();
-}
-
-function planetAngle(t) {
-  // tour: 8 stops from 9.72, 0.2s each (0.12 move, 0.08 dwell)
-  const step = (Math.PI * 2) / 8;
-  const t0 = 9.72, per = 0.205;
-  if (t < t0) return 0.9 * (1 - E(t, 9.4, t0));
-  void per;
-  return -tourPos(t) * step;
-}
-// continuous tour position, shared by the planet and the odometer card
-function tourPos(t) {
-  const t0 = 9.72, per = 0.205;
-  if (t < t0) return 0;
-  const k = Math.floor((t - t0) / per), f = (t - t0) / per - k;
-  return k >= 7 ? 7 : k + eo(clamp(f / 0.62));
-}
-
-function drawPlanet(t) {
-  const c = pctx; const W = 1920, H = 1080;
-  const g = c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#0b1026'); g.addColorStop(1, '#1e1b4b');
-  c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = g; c.fillRect(0, 0, W, H);
-  for (const [x, y, s, ph, fr] of STARS) { c.globalAlpha = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(t * fr + ph)); c.fillStyle = '#e0e7ff'; c.fillRect(x, y, s, s); }
-  c.globalAlpha = 1;
-  const grow = spr(t - 9.3, 11, 0.5);
-  const push = E(t, 11.2, 11.5, ein);
-  const R = 250 * grow;
-  const cx = PCX, cy = PCY;
-  const zoom = 1 + push * 7;
-  c.save();
-  c.translate(cx, cy - R - 60); c.scale(zoom, zoom); c.translate(-cx, -(cy - R - 60));
-  if (R > 1) {
-    // atmosphere
-    const at = c.createRadialGradient(cx, cy, R * 0.9, cx, cy, R * 1.5); at.addColorStop(0, 'rgba(129,140,248,.35)'); at.addColorStop(1, 'rgba(129,140,248,0)');
-    c.fillStyle = at; c.beginPath(); c.arc(cx, cy, R * 1.5, 0, 7); c.fill();
-    // orbit ring (back)
-    c.strokeStyle = 'rgba(165,180,252,.35)'; c.lineWidth = 2; c.setLineDash([6, 10]); c.beginPath(); c.ellipse(cx, cy, R * 1.55, R * 0.35, -0.2, Math.PI, Math.PI * 2); c.stroke(); c.setLineDash([]);
-    const ang = planetAngle(t);
-    // landmarks
-    for (let i = 0; i < 8; i++) {
-      const a = ang + i * (Math.PI * 2 / 8);
-      c.save(); c.translate(cx, cy); c.rotate(a); c.translate(0, -R + 6);
-      const sc = R / 250; c.scale(sc, sc);
-      drawLandmark(c, STOPS[i][4], STOPS[i][3], t + i);
-      c.restore();
-      // trees
-      for (let j = 1; j < 3; j++) {
-        c.save(); c.translate(cx, cy); c.rotate(a + j * 0.26); c.translate(0, -R + 4); c.scale(R / 250, R / 250);
-        c.fillStyle = '#065f46'; c.fillRect(-2, -18, 4, 18); c.fillStyle = j % 2 ? '#34d399' : '#10b981'; c.beginPath(); c.arc(0, -26, 13, 0, 7); c.fill();
-        c.restore();
-      }
-    }
-    // planet body
-    const pg = c.createRadialGradient(cx - R * 0.35, cy - R * 0.45, R * 0.1, cx, cy, R);
-    pg.addColorStop(0, '#6ee7b7'); pg.addColorStop(0.55, '#10b981'); pg.addColorStop(1, '#065f46');
-    c.fillStyle = pg; c.beginPath(); c.arc(cx, cy, R, 0, 7); c.fill();
-    // continents rotate with planet
-    c.save(); c.beginPath(); c.arc(cx, cy, R, 0, 7); c.clip();
-    c.translate(cx, cy); c.rotate(ang);
-    c.fillStyle = 'rgba(52,211,153,.55)';
-    for (let i = 0; i < 7; i++) { const a = i * 0.9, d = R * (0.3 + (i % 3) * 0.18); c.beginPath(); c.ellipse(Math.cos(a) * d, Math.sin(a) * d, R * 0.22, R * 0.12, a, 0, 7); c.fill(); }
-    c.fillStyle = 'rgba(56,189,248,.5)';
-    for (let i = 0; i < 4; i++) { const a = i * 1.7 + 0.4, d = R * 0.55; c.beginPath(); c.ellipse(Math.cos(a) * d, Math.sin(a) * d, R * 0.16, R * 0.09, a, 0, 7); c.fill(); }
-    c.restore();
-    // terminator shade
-    const sh = c.createLinearGradient(cx - R, cy - R, cx + R, cy + R); sh.addColorStop(0.45, 'rgba(15,23,42,0)'); sh.addColorStop(1, 'rgba(15,23,42,.45)');
-    c.fillStyle = sh; c.beginPath(); c.arc(cx, cy, R, 0, 7); c.fill();
-    // orbit ring (front)
-    c.strokeStyle = 'rgba(199,210,254,.55)'; c.lineWidth = 2.5; c.beginPath(); c.ellipse(cx, cy, R * 1.55, R * 0.35, -0.2, 0, Math.PI); c.stroke();
-    // moon on orbit
-    const ma = t * 2.2; c.fillStyle = '#e0e7ff'; c.beginPath(); c.arc(cx + Math.cos(ma) * R * 1.55 * Math.cos(-0.2) - Math.sin(ma) * R * 0.35 * Math.sin(-0.2), cy + Math.cos(ma) * R * 1.55 * Math.sin(-0.2) + Math.sin(ma) * R * 0.35 * Math.cos(-0.2), 9 * grow, 0, 7); c.fill();
-    // walker
-    const moving = t > 9.72 && t < 11.35;
-    const bob = moving ? Math.abs(Math.sin(t * 22)) * 7 : 0;
-    const top = cy - R;
-    c.save(); c.translate(cx, top - bob); c.scale(R / 250, R / 250);
-    c.strokeStyle = '#0c0a09'; c.lineWidth = 6; c.lineCap = 'round';
-    const leg = moving ? Math.sin(t * 22) * 10 : 0;
-    c.beginPath(); c.moveTo(-6, -38); c.lineTo(-6 + leg, -4); c.moveTo(6, -38); c.lineTo(6 - leg, -4); c.stroke();
-    c.fillStyle = '#2563eb'; c.beginPath(); c.roundRect(-18, -80, 36, 46, 12); c.fill();
-    if (avatarImg.complete && avatarImg.naturalWidth) {
-      c.fillStyle = '#fafaf9'; c.beginPath(); c.arc(0, -112, 34, 0, 7); c.fill();
-      c.save(); c.beginPath(); c.arc(0, -112, 34, 0, 7); c.clip(); c.drawImage(avatarImg, -52, -166, 104, 104); c.restore();
-    }
-    c.restore();
-  }
-  // airship (Sky Islands nod)
-  const ap = P(t, 9.55, 11.45);
-  if (ap > 0 && ap < 1) {
-    const ax = lerp(-160, 2080, ap), ay = 300 + Math.sin(ap * 9) * 14;
-    c.save(); c.translate(ax, ay);
-    c.strokeStyle = 'rgba(199,210,254,.35)'; c.setLineDash([4, 10]); c.lineWidth = 2; c.beginPath(); c.moveTo(-60, 0); c.lineTo(-420, 0); c.stroke(); c.setLineDash([]);
-    c.fillStyle = '#fca5a5'; c.beginPath(); c.ellipse(0, 0, 70, 26, 0, 0, 7); c.fill();
-    c.fillStyle = '#f87171'; c.beginPath(); c.ellipse(0, 6, 70, 18, 0, 0, Math.PI); c.fill();
-    c.fillStyle = '#fde68a'; c.fillRect(-18, 26, 36, 14);
-    c.fillStyle = '#fca5a5'; c.beginPath(); c.moveTo(-62, 0); c.lineTo(-86, -18); c.lineTo(-86, 18); c.fill();
-    c.strokeStyle = '#e0e7ff'; c.lineWidth = 3; const pr = Math.sin(t * 60) * 12; c.beginPath(); c.moveTo(-92, -pr); c.lineTo(-92, pr); c.stroke();
-    c.restore();
-  }
-  c.restore();
-  // clouds band
-  c.fillStyle = 'rgba(224,231,255,.08)';
-  for (let i = 0; i < 6; i++) { const x = ((i * 380 + t * 80) % 2300) - 200; c.beginPath(); c.ellipse(x, 1030 - (i % 2) * 30, 220, 50, 0, 0, 7); c.fill(); }
-}
-
 // ---------- render ----------
-const CHAPTERS = [[0, '01 · Composer'], [1.5, '02 · Streaming'], [3.5, '03 · Adopt AI'], [5.5, '04 · SamaCare'], [7.5, '05 · Caret Legal'], [9.5, '06 · Tiny Planet'], [11.5, '07 · Principles'], [13.5, '08 · Edward Chu']];
+const CHAPTERS = [[0, '01 · Composer'], [1.5, '02 · Streaming'], [3.5, '03 · Adopt AI'], [5.5, '04 · SamaCare'], [7.5, '05 · Caret Legal'], [11.5, '06 · Principles'], [13.5, '07 · Edward Chu']];
 let stageScale = 1;
 
-function render(t) {
-  t = clamp(t, 0, DUR - 1e-4);
-  const frame = Math.round(t * 60);
+function render(rt) {
+  rt = clamp(rt, 0, DUR - 1e-4);
+  const t = internal(rt);
+  const frame = Math.round(rt * 60);
 
   // HUD
   const ch = CHAPTERS.filter((c) => t >= c[0]).pop();
   $('chapter').textContent = ch[1];
-  const ss = Math.floor(t), ff = Math.floor((t - ss) * 30);
+  const ss = Math.floor(rt), ff = Math.floor((rt - ss) * 30);
   $('tc').innerHTML = `TC 00:00:${String(ss).padStart(2, '0')}:${String(ff).padStart(2, '0')}<br><span style="opacity:.55">1920×1080 · 60p</span>`;
-  $('prog').style.width = (t / DUR * 100).toFixed(2) + '%';
+  $('prog').style.width = (rt / DUR * 100).toFixed(2) + '%';
   gctx.putImageData(grainFrames[frame % grainFrames.length], 0, 0);
 
   // ===== A + B =====
@@ -845,7 +715,7 @@ function render(t) {
   if (scene('sE', t, 7.5, 9.56)) {
     const iris = E(t, 9.2, 9.5, eio);
     const sE = $('sE');
-    sE.style.clipPath = iris > 0 ? `circle(${lerp(1400, 0, iris)}px at ${PCX}px ${PCY}px)` : 'none';
+    sE.style.clipPath = iris > 0 ? `circle(${lerp(1300, 0, iris)}px at 960px 540px)` : 'none';
     tf($('eApp'), { o: 0.9 - E(t, 7.85, 8.1) * 0.35 + E(t, 8.55, 8.8) * 0.3 });
     // highlight the row the peek belongs to
     document.querySelectorAll('#eApp .erow').forEach((r, i) => { r.style.background = i === 3 && t > 8.6 ? `rgba(59,130,246,${0.14 * E(t, 8.6, 8.8)})` : 'transparent'; });
@@ -902,24 +772,8 @@ function render(t) {
     });
   } else $('sE').style.clipPath = 'none';
 
-  // ===== F: Tiny planet =====
-  if (scene('sF', t, 9.2, 11.5)) {
-    drawPlanet(t);
-    $('sF').style.zIndex = t < 9.52 ? 0 : '';
-    const pos = tourPos(t) - (1 - E(t, 9.5, 9.72)) * 0.9;
-    const gone = E(t, 11.2, 11.36, ein);
-    fcEls.forEach((el, i) => {
-      const d = i - pos;
-      tf(el, { y: d * 150 - gone * 150, o: (1 - Math.min(1, Math.abs(d) * 1.3)) * (1 - gone), blur: Math.min(8, Math.abs(d) * 10) });
-    });
-    lines($('fCap'), t, 9.8, 0.08, 0.55);
-    tf($('fCap').querySelector('.mono'), { o: E(t, 10.0, 10.4) - E(t, 11.2, 11.35) });
-    $('fCap').style.opacity = 1 - E(t, 11.2, 11.35);
-  }
-  // put planet behind the shrinking iris of E
-  $('sF').style.zIndex = '';
-  if (t >= 9.2 && t < 9.56) { $('sE').style.zIndex = 2; } else $('sE').style.zIndex = '';
-  $('flash').style.opacity = t >= 11.35 && t < 11.62 ? (t < 11.5 ? E(t, 11.35, 11.5) : 1 - E(t, 11.5, 11.62)) : 0;
+  // the Caret iris closes onto the first principle card's paper
+  $('stage').style.background = t >= 9.2 && t < 11.5 ? '#fafaf9' : '';
 
   // ===== G: montage =====
   if (scene('sG', t, 11.5, 13.52)) {
@@ -960,7 +814,7 @@ function render(t) {
     const ep = $('endPill');
     const dot = spr(t - 13.5, 18, 0.42);
     const st = E(t, 13.64, 14.02);
-    const W = lerp(24, 520, st), H = lerp(24, 92, E(t, 13.62, 13.9));
+    const W = lerp(24, 560, st), H = lerp(24, 92, E(t, 13.62, 13.9));
     ep.style.width = W + 'px'; ep.style.height = H + 'px'; ep.style.borderRadius = H / 2 + 'px';
     ep.style.left = (960 - W / 2) + 'px'; ep.style.top = (660 - H / 2) + 'px';
     ep.style.background = st < 0.03 ? '#3b82f6' : '#44403c';
@@ -998,7 +852,8 @@ function fit() {
 window.addEventListener('resize', fit); fit();
 
 window.__seek = (t) => render(t);
-window.__ready = async () => { await document.fonts.ready; await Promise.all([...document.images].map((im) => im.complete ? 0 : new Promise((r) => { im.onload = im.onerror = r; }))); if (!avatarImg.complete) await new Promise((r) => { avatarImg.onload = r; }); return true; };
+window.__DUR = DUR;
+window.__ready = async () => { await document.fonts.ready; await Promise.all([...document.images].map((im) => im.complete ? 0 : new Promise((r) => { im.onload = im.onerror = r; }))); return true; };
 
 render(0);
 if (RENDER) return;
