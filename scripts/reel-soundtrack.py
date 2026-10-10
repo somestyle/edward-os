@@ -210,10 +210,19 @@ for i in range(4): cue(click(3800), 4.55 + i * 0.13, 0.14, 0.3)                 
 for i in range(6): cue(click(2400 + i * 300), 4.6 + i * 0.08, 0.06)                          # 7x counter
 for i in range(4): cue(pluck(midi(76 + [0, 3, 7, 10][i]), 0.35, 1.2), 6.25 + i * 0.16, 0.15, 0.4)  # fields fill
 cue(bell(midi(88), 1.0), 7.0, 0.08)                                                            # submitted
+# SamaCare extension: popover, autofill, tab switch, status captured, synced
+add(whoosh(0.4), START['sama2'] - 0.4, 0.14)
+cue(pluck(midi(84), 0.25), 60.85, 0.1, 0.5)
+cue(click(4200), 61.32, 0.14, 0.5)
+for i in range(6): cue(pluck(midi(76 + [0, 2, 4, 7, 9, 12][i]), 0.3, 1.1), 61.6 + i * 0.09, 0.12, 0.2)
+cue(whoosh(0.3, rev=True), 62.3, 0.12)
+cue(bell(midi(86), 1.2), 63.05, 0.09, 0.5)
+cue(whoosh(0.4), 63.2, 0.1, 0.4)
+cue(click(3200), 63.65, 0.14, 0.6)
 for at in (21.95, 22.45, 23.0): cue(click(2200), at, 0.12); cue(pluck(midi(79), 0.25), at, 0.08, 0.4)  # ticket prints
 cue(bell(midi(84), 1.2), 23.5, 0.09)                                                           # sent to kitchen
 for i in range(3): cue(pluck(midi([69, 72, 76][i]), 0.5, 0.9), 25.5 + i * 0.35, 0.14, -0.4 + i * 0.4)  # earlier-work cards
-for i, sc in enumerate(('how1', 'how2', 'how3', 'now')):                                       # principle hits
+for i, sc in enumerate(('how1', 'how2', 'how3')):                                       # principle hits
     add(kick(0.6, 180, 38), START[sc], 0.8)
     add(lowpass(noise(0.5, 0.18), 3000), START[sc], 0.22)
     for m in CHORDS[i][1]: add(tone(midi(m), 0.9, 0.003, 0.3, 'tri'), START[sc], 0.07)
