@@ -180,16 +180,14 @@ const cvData = {
   about: "I design complex, high-stakes products where automation, control, and trust must coexist. My work focuses on reducing system friction, clarifying decision paths, and turning ambiguous technical constraints into usable, scalable experiences.",
   experience: [
     {
-      company: "Elation Health",
-      role: "Staff Product Designer",
+      company: "Health Tech Company",
+      role: "Consulting · Special Project",
       period: "May 2026 – Present",
-      summary: "Leading design on AI and clinician workflows for a clinical-first EHR platform used by primary care practices.",
+      summary: "Working at a health tech company and consulting on a special project.",
       highlights: [
-        "Leading design for AI features that fit into the clinical day rather than sitting beside it, so assistance shows up inside the workflows clinicians already run",
-        "Owning clinician-facing workflow design across the platform, with a focus on clarity, safety, and the time each interaction costs a busy practice",
-        "Working with product, engineering, and clinical partners to turn AI capability into patterns clinicians can trust and adopt"
+        "The project is confidential for now. Happy to talk through how I approach the work in a live conversation"
       ],
-      tags: ["AI Features", "Clinician Workflows", "Health Tech", "EHR", "SaaS"]
+      tags: ["Health Tech", "AI", "Consulting"]
     },
     {
       company: "Caret Legal",
@@ -521,7 +519,7 @@ const HomeView = ({ onNavigate }) => {
         
         <div className="mb-6">
           <p className="text-lg md:text-xl text-stone-800 dark:text-stone-200 leading-relaxed font-medium">
-            I’m a <span className="font-semibold shimmer-text">Staff Product Designer</span> at Elation Health, leading design on AI and clinician workflows, and an <span className="font-semibold shimmer-text">Advisor</span> helping startups build delightful product and AI experiences.
+            I’m a <span className="font-semibold shimmer-text">Product Designer</span> working at a health tech company and consulting on a special project, and an <span className="font-semibold shimmer-text">Advisor</span> helping startups build delightful product and AI experiences.
           </p>
         </div>
         
@@ -541,7 +539,7 @@ const HomeView = ({ onNavigate }) => {
       <h2 className="text-sm font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider mb-4">What I'm up to recently</h2>
       <p className="text-stone-500 dark:text-stone-400 text-sm mb-2">👨🏻‍💻 Designing with AI, Designing for AI and Designing the AI</p>
       <p className="text-stone-500 dark:text-stone-400 text-sm mb-6 text-pretty">
-        Leading design on AI and clinician workflows at Elation Health. Building with AI daily. Advising early-stage teams on agentic products, product discovery, and prototyping. Also helping small businesses automate everyday workflows.
+        Working at a health tech company and consulting on a special project. Building with AI daily. Advising early-stage teams on agentic products, product discovery, and prototyping. Also helping small businesses automate everyday workflows.
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 text-sm text-stone-600 dark:text-stone-300">
         {/* Left: Listening */}
@@ -744,7 +742,7 @@ const HomeView = ({ onNavigate }) => {
   );
 };
 
-const BRIEF_ROLE_COUNT = 6; // Elation Health, Caret Legal, Adopt AI, SamaCare, Kea AI, Tier1
+const BRIEF_ROLE_COUNT = 6; // Current health tech role, Caret Legal, Adopt AI, SamaCare, Kea AI, Tier1
 
 // Brief mode leads with the four roles that carry the most weight, which is why
 // cvData keeps Tier1 (and its acquisition) ahead of the shorter Flybits stint.
@@ -2031,7 +2029,7 @@ const CHANGELOG_ENTRIES = [
       'Widgets: Added Tiny Planet, a 3D world you can roll through to walk my career one landmark at a time, with an auto tour, zoom, and day and night.',
       'Widgets: Added Sky Islands, an airship you fly over a sea of clouds to find one floating island per role, each dressed for the job.',
       'AI Twin: The twin can now offer the Tiny Planet or the Sky Islands when you talk about my career, and open them for you from the chat.',
-      'Career: Added my current role at Elation Health, closed out the Adopt AI dates, and added the Caret Legal role.',
+      'Career: Added my current health tech role, closed out the Adopt AI dates, and added the Caret Legal role.',
     ],
   },
   {

@@ -13,13 +13,14 @@ import { SYSTEM_PROMPT } from '../api/system-prompt.js';
 const GEMINI_MODEL = 'gemini-3.5-flash'; // keep in step with api/chat.js
 
 const CHECKS = [
-  { q: 'What are you working on right now?', must: [/elation/i], mustNot: [/adopt ai.*(present|currently)/i] },
-  { q: 'Where do you work?', must: [/elation/i] },
+  { q: 'What are you working on right now?', must: [/health tech/i, /special project/i], mustNot: [/elation/i, /adopt ai.*(present|currently)/i] },
+  { q: 'Where do you work?', must: [/health tech/i], mustNot: [/elation/i, /staff product designer/i] },
+  { q: 'Do you work at Elation Health?', must: [/health tech|confidential/i], mustNot: [/\byes\b/i, /i work at elation/i] },
   { q: 'Are you still at Adopt AI?', must: [/april 2026|apr 2026|until 2026|through april|wrapped|moved on|no longer|ended/i], mustNot: [/still (advise|advising|there|with adopt)/i] },
   { q: 'Tell me about Adopt AI.', must: [/founding|0.1|copilot|agent/i] },
-  { q: 'Walk me through your career.', must: [/elation/i, /adopt ai/i, /samacare/i] },
-  { q: 'What is your experience in healthcare?', must: [/elation|samacare/i] },
-  { q: 'What did you do at Elation Health?', must: [/clinician|clinical|AI/i], mustNot: [/\d+%|\$\d/] },
+  { q: 'Walk me through your career.', must: [/health tech/i, /adopt ai/i, /samacare/i], mustNot: [/elation/i] },
+  { q: 'What is your experience in healthcare?', must: [/samacare/i], mustNot: [/elation/i] },
+  { q: 'What is the special project?', must: [/confidential/i], mustNot: [/elation/i, /\d+%|\$\d/] },
 ];
 
 const apiKey = process.env.GEMINI_API_KEY;

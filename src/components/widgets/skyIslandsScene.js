@@ -16,7 +16,7 @@ export const SKY_ISLANDS = [
   { company: 'SamaCare', role: 'Staff Product Designer', period: 'Aug 2022 – Sept 2024', year: '2022', kind: 'forms' },
   { company: 'Adopt AI', role: 'Design Advisor (Founding Staff Product Designer)', period: 'Oct 2024 – Apr 2026', year: '2024', kind: 'api' },
   { company: 'Caret Legal', role: 'Director of Product Design', period: 'Mar – May 2026', year: '2026', kind: 'court' },
-  { company: 'Elation Health', role: 'Staff Product Designer', period: 'May 2026 – Present', year: '2026', kind: 'practice', summit: true },
+  { company: 'Health Tech Company', role: 'Consulting · Special Project', period: 'May 2026 – Present', year: '2026', kind: 'practice', summit: true },
 ];
 
 /**
