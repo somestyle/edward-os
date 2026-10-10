@@ -176,9 +176,8 @@
 
     <div id="bType" class="abs serif" style="left:1200px;top:300px;font-size:92px;line-height:1.02;color:#fafaf9">
       <div id="bSet1">
-        <span class="line"><span>Portfolio</span></span>
-        <span class="line"><span>as a</span></span>
-        <span class="line"><span><em style="color:#60a5fa">product.</em></span></span>
+        <span class="line"><span>My portfolio</span></span>
+        <span class="line"><span><em style="color:#60a5fa">talks back.</em></span></span>
       </div>
     </div>
     <div id="bNote" class="abs mono" style="left:1204px;top:640px;font-size:15px;color:#78716c;line-height:1.8">edwardchu.xyz · AI twin<br>designed and built in code</div>
@@ -213,7 +212,6 @@
         <div style="font-size:28px;font-weight:700;color:#1c1917">Workflow step reuse</div>
         <div style="font-size:24px;color:#78716c;margin-top:4px">across customers</div>
       </div>
-      <div id="cPatent" class="mono" style="padding-bottom:18px;margin-left:40px;font-size:15px;line-height:1.8;color:#a8a29e;border-left:1px solid #e7e5e4;padding-left:28px">Patent US12430227<br>API discovery → action workflows</div>
     </div>
     <div id="phone" class="abs" style="left:1390px;top:130px;width:400px;height:606px">
       <img src="assets/copilot.png" alt="" style="width:100%;height:100%;display:block;filter:drop-shadow(0 40px 60px rgba(30,64,175,.22))">
@@ -282,6 +280,55 @@
     </div>
     <div id="eOut" class="abs" style="left:300px;top:836px;font-size:24px;font-weight:600;color:#d6d3d1;z-index:3"><span class="mono" style="font-size:14px;font-weight:500;color:#60a5fa;margin-right:12px">Outcome</span>One pattern to create, inspect and navigate, across the product</div>
     <div id="eStages" class="abs" style="left:300px;top:930px;width:1100px;height:80px;z-index:3"></div>
+  </section>
+
+  <!-- I: company intro card (shared by Caret, Adopt, SamaCare, Kea) -->
+  <section id="sI" class="scene">
+    <div id="iName" class="abs" style="left:0;top:0;font-size:150px;font-weight:800;letter-spacing:-.045em;line-height:1;white-space:nowrap;transform-origin:0 50%"></div>
+    <div id="iDesc" class="abs" style="left:0;width:1920px;top:560px;text-align:center;font-size:36px;line-height:1.35"></div>
+    <div id="iMeta" class="abs mono" style="left:0;width:1920px;top:680px;text-align:center;font-size:17px"></div>
+    <div id="iChips"></div>
+  </section>
+
+  <!-- X: Adopt console -->
+  <section id="sX" class="scene" style="background:#fafaf9">
+    <div class="abs" style="left:0;top:0;width:1920px;height:1080px;background-image:radial-gradient(#e7e5e4 1.2px, transparent 1.2px);background-size:32px 32px;opacity:.7"></div>
+    <div class="abs chip" style="left:160px;top:120px;background:#eff6ff;color:#1d4ed8"><span class="dotc" style="background:#2563eb"></span>ADOPT AI · FOUNDING STAFF PRODUCT DESIGNER</div>
+    <div id="xWrap" class="abs" style="inset:0">
+      <div id="xHead" class="abs serif" style="left:160px;top:180px;font-size:96px;line-height:1.02;color:#0c0a09">
+        <span class="line"><span>APIs in,</span></span>
+        <span class="line"><span><em style="color:#2563eb">actions out.</em></span></span>
+      </div>
+      <div id="xSub" class="abs" style="left:1000px;top:250px;width:760px;font-size:24px;line-height:1.5;color:#57534e">The customer console finds a product’s APIs, turns them into actions zero-shot, and lets the team switch each one on or off and refine it.<div class="mono" style="font-size:15px;color:#2563eb;margin-top:14px">Patent US12430227 · automated API discovery and action generation</div></div>
+      <div id="xWin" class="abs" style="left:160px;top:440px;width:1600px;height:580px;background:#fff;border-radius:22px;border:1px solid #e7e5e4;box-shadow:0 40px 90px rgba(30,64,175,.12);overflow:hidden">
+        <div style="height:56px;border-bottom:1px solid #f0efee;display:flex;align-items:center;gap:14px;padding:0 22px;font-size:17px;color:#1c1917;font-weight:700">
+          <span style="width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#2563eb,#7c3aed)"></span>Adopt console
+          <span style="font-weight:500;color:#a8a29e;margin-left:10px">Actions › Discovered</span>
+        </div>
+        <div id="xNav" style="position:absolute;left:0;top:56px;bottom:0;width:210px;border-right:1px solid #f0efee;padding:18px 14px"></div>
+        <div style="position:absolute;left:240px;top:80px;width:560px">
+          <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:700;color:#1c1917"><span>Discovered APIs</span><span id="xCount" class="mono" style="color:#78716c;font-weight:500">0 endpoints</span></div>
+          <div style="height:6px;border-radius:3px;background:#f0efee;margin:12px 0 14px;overflow:hidden"><div id="xBar" style="height:100%;width:0;background:linear-gradient(90deg,#2563eb,#7c3aed)"></div></div>
+          <div id="xApis"></div>
+        </div>
+        <div style="position:absolute;left:840px;top:80px;width:720px">
+          <div style="font-size:15px;font-weight:700;color:#1c1917;margin-bottom:32px">Generated actions</div>
+          <div id="xActs" style="display:grid;grid-template-columns:1fr 1fr;gap:14px"></div>
+        </div>
+        <div id="xPanel" style="position:absolute;top:56px;right:0;bottom:0;width:470px;background:#fbfbfa;border-left:1px solid #e7e5e4;box-shadow:-30px 0 60px rgba(28,25,23,.08);padding:24px 28px">
+          <div class="mono" style="font-size:13px;color:#2563eb">Refine action</div>
+          <div style="font-size:28px;font-weight:800;color:#0c0a09;margin:6px 0 18px">Create lead</div>
+          <div style="font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#a8a29e;margin-bottom:10px">Inputs</div>
+          <div id="xParams"></div>
+          <div style="font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#a8a29e;margin:16px 0 8px">Instructions</div>
+          <div id="xInstr" style="min-height:74px;border:1px solid #e7e5e4;border-radius:12px;background:#fff;padding:12px 14px;font-size:17px;color:#1c1917;line-height:1.45"></div>
+          <div style="display:flex;align-items:center;gap:14px;margin-top:16px">
+            <div id="xRun" style="height:46px;padding:0 20px;border-radius:12px;background:#1c1917;color:#fff;display:flex;align-items:center;font-weight:700;font-size:16px">Test run</div>
+            <div id="xOk" class="mono" style="font-size:15px;color:#16a34a;font-weight:600">200 OK · lead created</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- K: Kea AI -->
@@ -399,7 +446,7 @@
 <div id="controls">
   <button id="playBtn" aria-label="Play or pause"></button>
   <button id="restartBtn" aria-label="Restart"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
-  <input id="scrub" type="range" min="0" max="60000" step="1" value="0" aria-label="Scrub">
+  <input id="scrub" type="range" min="0" max="70000" step="1" value="0" aria-label="Scrub">
   <span id="tcLabel">0.00s</span>
   <button id="muteBtn" aria-label="Mute"></button>
 </div>
@@ -428,39 +475,54 @@ const SEG = [
   [1.5, 1.85, 0.55, 'twin'],
   [1.85, 2.55, 1.5, 'twin'],
   [2.55, 3.22, 3.3, 'twin'],
-  [3.22, 3.24, 2.375, 'twin'],
+  [3.22, 3.24, 1.75, 'twin'],
   [3.24, 3.5, 0.4, 'twin'],
+  [40, 40.9, 0.9, 'bump_caret'],
+  [40.9, 40.92, 0.92, 'bump_caret'],
+  [40.92, 41.6, 0.68, 'bump_caret'],
   [7.5, 7.78, 0.4, 'caret'],
   [7.78, 8.02, 0.45, 'caret'],
   [8.02, 8.34, 1.0, 'caret'],
   [8.34, 8.5, 0.45, 'caret'],
   [8.5, 9.2, 1.15, 'caret'],
-  [9.2, 9.22, 2.4, 'caret'],
+  [9.2, 9.22, 1.775, 'caret'],
   [9.22, 9.5, 0.4, 'caret'],
+  [42, 42.9, 0.9, 'bump_adopt'],
+  [42.9, 42.92, 0.92, 'bump_adopt'],
+  [42.92, 43.6, 0.68, 'bump_adopt'],
+  [50, 55.0, 5.0, 'console'],
+  [55.0, 55.02, 1.275, 'console'],
+  [55.02, 56, 0.6, 'console'],
   [3.5, 4.2, 1.0, 'adopt'],
   [4.2, 5.1, 1.5, 'adopt'],
-  [5.1, 5.12, 2.625, 'adopt'],
+  [5.1, 5.12, 1.375, 'adopt'],
   [5.12, 5.5, 0.5, 'adopt'],
+  [44, 44.9, 0.9, 'bump_sama'],
+  [44.9, 44.92, 0.92, 'bump_sama'],
+  [44.92, 45.6, 0.68, 'bump_sama'],
   [5.5, 6.25, 1.0, 'sama'],
   [6.25, 7.1, 1.6, 'sama'],
-  [7.1, 7.12, 2.575, 'sama'],
+  [7.1, 7.12, 1.95, 'sama'],
   [7.12, 7.5, 0.45, 'sama'],
+  [46, 46.9, 0.9, 'bump_kea'],
+  [46.9, 46.92, 0.92, 'bump_kea'],
+  [46.92, 47.6, 0.68, 'bump_kea'],
   [20, 23.9, 3.9, 'kea'],
   [23.9, 23.92, 1.27, 'kea'],
   [23.92, 25, 1.08, 'kea'],
   [25, 28.2, 3.2, 'early'],
-  [28.2, 28.22, 2.225, 'early'],
+  [28.2, 28.22, 1.6, 'early'],
   [28.22, 30, 0.2, 'early'],
   [11.5, 11.9, 0.7, 'how1'],
-  [11.9, 12.0, 1.8, 'how1'],
+  [11.9, 12.0, 1.175, 'how1'],
   [12.0, 12.4, 0.7, 'how2'],
-  [12.4, 12.5, 1.8, 'how2'],
+  [12.4, 12.5, 1.175, 'how2'],
   [12.5, 12.9, 0.7, 'how3'],
-  [12.9, 13.0, 1.8, 'how3'],
+  [12.9, 13.0, 1.175, 'how3'],
   [13.0, 13.4, 0.8, 'now'],
   [13.4, 13.5, 1.7, 'now'],
   [13.5, 14.75, 1.9, 'end'],
-  [14.75, 15, 4.35, 'end'],
+  [14.75, 15, 3.1, 'end'],
 ];
 const DUR = SEG.reduce((n, s) => n + s[2], 0);
 function internal(rt) {
@@ -601,6 +663,33 @@ $('slats').innerHTML = Array.from({ length: 9 }, (_, i) => `<div class="abs slat
 const slatEls = [...$('slats').children];
 
 
+
+// company intro cards
+const INTROS = [
+  { at: 40, chip: 'eChip', bg: '#0f0e0d', fg: '#fafaf9', sub: '#a8a29e', accent: '#60a5fa', name: 'Caret Legal', desc: 'AI practice management for law firms:<br>matters, documents and billing in one platform', meta: 'Director of Product Design · 2026' },
+  { at: 42, chip: 'cChip', bg: '#fafaf9', fg: '#0c0a09', sub: '#57534e', accent: '#2563eb', name: 'Adopt AI', desc: 'Agentic AI that turns any SaaS product’s APIs<br>into actions people can ask for', meta: 'Founding Staff Product Designer · 2024 – 2026' },
+  { at: 44, chip: 'dChip', bg: '#f5f3ff', fg: '#0c0a09', sub: '#57534e', accent: '#6d28d9', name: 'SamaCare', desc: 'Prior authorization and benefit verification<br>for specialty practices', meta: 'First design hire · 2022 – 2024' },
+  { at: 46, chip: 'kChip', bg: '#17120d', fg: '#fafaf9', sub: '#d6d3d1', accent: '#fbbf24', name: 'Kea AI', desc: 'AI voice ordering for restaurants,<br>live on the phone during service', meta: 'Head of Product Design · 2021 – 2022' },
+];
+INTROS.forEach((c) => {
+  const src = $(c.chip);
+  const k = src.cloneNode(true); k.removeAttribute('id'); k.style.zIndex = '';
+  k.classList.add('ichip'); $('iChips').appendChild(k); c.chipEl = k;
+  c.target = { x: parseFloat(src.style.left) + 36, y: parseFloat(src.style.top) + 20 };
+});
+
+// Adopt console
+$('xNav').innerHTML = [['spark', 'Agents'], ['send', 'Actions', 1], ['grid', 'Tools'], ['doc', 'Data'], ['nav', 'Integrations']].map(([k, l, on]) => `<div style="height:42px;border-radius:10px;display:flex;align-items:center;gap:12px;padding:0 12px;font-size:16px;font-weight:600;${on ? 'background:#eff6ff;color:#1d4ed8' : 'color:#78716c'}">${svg(k, 18)}${l}</div>`).join('');
+const XAPIS = [['GET', '/v2/contacts'], ['POST', '/v2/leads'], ['PATCH', '/v2/deals/{id}'], ['GET', '/v2/reports/export'], ['DELETE', '/v2/licenses/{id}'], ['PUT', '/v2/accounts/{id}/owner'], ['GET', '/v2/users'], ['POST', '/v2/tickets']];
+const MCOL = { GET: ['#ecfdf5', '#047857'], POST: ['#eff6ff', '#1d4ed8'], PATCH: ['#fff7ed', '#c2410c'], PUT: ['#fff7ed', '#c2410c'], DELETE: ['#fef2f2', '#b91c1c'] };
+$('xApis').innerHTML = XAPIS.map(([m, p]) => `<div class="xapi" style="height:46px;display:flex;align-items:center;gap:14px;border-bottom:1px solid #f5f5f4;font-family:'JetBrains Mono',monospace;font-size:15px;color:#44403c"><span style="width:70px;text-align:center;border-radius:6px;padding:3px 0;font-size:12px;font-weight:600;background:${MCOL[m][0]};color:${MCOL[m][1]}">${m}</span>${p}</div>`).join('');
+const xApiEls = [...$('xApis').children];
+const XACTS = [['Search contacts', 'GET /contacts', 1], ['Create lead', 'POST /leads', 1], ['Update deal stage', 'PATCH /deals', 1], ['Export report', 'GET /reports', 1], ['Cancel license', 'DELETE /licenses', 0], ['Assign owner', 'PUT /accounts', 1]];
+$('xActs').innerHTML = XACTS.map(([n, f]) => `<div class="xact" style="height:96px;border-radius:16px;border:1px solid #e7e5e4;background:#fff;padding:16px 18px;display:flex;align-items:center;gap:14px;box-shadow:0 6px 18px rgba(28,25,23,.04)"><div style="flex:1;min-width:0"><div style="font-size:19px;font-weight:700;color:#1c1917">${n}</div><div style="display:flex;gap:8px;align-items:center;margin-top:6px"><span style="font-size:11px;font-weight:700;letter-spacing:.06em;color:#7c3aed;background:#f5f3ff;border-radius:6px;padding:2px 7px">ZERO-SHOT</span><span class="mono" style="font-size:12px;color:#a8a29e">${f}</span></div></div><div class="xtog" style="width:50px;height:28px;border-radius:14px;background:#e7e5e4;position:relative;flex:none"><div style="position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2)"></div></div></div>`).join('');
+const xActEls = [...$('xActs').children];
+$('xParams').innerHTML = [['company', 'Account name'], ['email', 'Contact email'], ['source', '“Copilot”']].map(([a, b]) => `<div class="xparam" style="height:40px;display:flex;align-items:center;gap:10px;font-size:15px;margin-bottom:8px"><span class="mono" style="background:#f5f5f4;border-radius:8px;padding:6px 10px;color:#44403c">${a}</span><span style="color:#a8a29e">←</span><span style="background:#eff6ff;color:#1d4ed8;border-radius:8px;padding:6px 10px;font-weight:600">${b}</span></div>`).join('');
+const xParamEls = [...$('xParams').children];
+const XINSTR = 'Only create leads for new domains. Ask before overwriting an owner.';
 // kea
 const KWAVE = 58;
 $('kWave').innerHTML = Array.from({ length: KWAVE }, () => '<div class="kbar"></div>').join('');
@@ -613,7 +702,7 @@ const KSAY = '“Two cheeseburgers, no onion, a large fries and a lemonade, no i
 const WCARDS = [
   { t: 'Toronto Star', s: 'StarTouch iPad app', big: '200K', bigNote: 'downloads in 4 months', c: '#f87171', badge: 'App Store · Best of Year', art: 'tablet' },
   { t: 'Tier1 Financial · Flybits', s: 'Complex financial platforms', big: 'IC → Manager', bigNote: 'enterprise constraints, platform UX', c: '#7dd3fc', badge: 'Best Mobile Solutions Provider', art: 'chart' },
-  { t: 'Elion Health', s: 'AI health-tech marketplace', big: 'Clarity to decide', bigNote: 'trust, comparison, decision support', c: '#6ee7b7', badge: 'Provider-facing marketplace', art: 'compare' },
+  { t: 'Elion Health', s: 'AI health-tech marketplace', big: 'Discover → Decide', bigNote: 'providers find, compare and choose health tech vendors', c: '#6ee7b7', badge: 'Provider-facing marketplace', art: 'compare' },
 ];
 $('wCards').innerHTML = WCARDS.map((w, i) => {
   let art = '';
@@ -662,7 +751,7 @@ const grainFrames = [];
 })();
 
 // ---------- render ----------
-const LABELS = { title: '01 · Intro', composer: '01 · Intro', twin: '02 · AI twin', caret: '03 · Caret Legal', adopt: '04 · Adopt AI', sama: '05 · SamaCare', kea: '06 · Kea AI', early: '07 · Earlier work', how1: '08 · How I work', how2: '08 · How I work', how3: '08 · How I work', now: '09 · Now', end: '10 · Edward Chu' };
+const LABELS = { title: '01 · Intro', composer: '01 · Intro', twin: '02 · AI twin', bump_caret: '03 · Caret Legal', caret: '03 · Caret Legal', bump_adopt: '04 · Adopt AI', console: '04 · Adopt AI', adopt: '04 · Adopt AI', bump_sama: '05 · SamaCare', bump_kea: '06 · Kea AI', sama: '05 · SamaCare', kea: '06 · Kea AI', early: '07 · Earlier work', how1: '08 · How I work', how2: '08 · How I work', how3: '08 · How I work', now: '09 · Now', end: '10 · Edward Chu' };
 const CHAPTERS = [];
 { let acc = 0; for (const [, , d, sc] of SEG) { if (!CHAPTERS.length || CHAPTERS[CHAPTERS.length - 1][1] !== LABELS[sc]) CHAPTERS.push([acc, LABELS[sc]]); acc += d; } }
 let stageScale = 1;
@@ -757,10 +846,10 @@ function render(rt) {
 
   // caret -> blue wipe
   const wb = $('wipeBlue');
-  if (t >= 7.5 && t < 7.78) {
+  if (t >= 40 && t < 40.28) {
     show(wb, true);
     wb.style.left = '0px'; wb.style.top = '0px'; wb.style.width = '1920px'; wb.style.height = '1080px'; wb.style.borderRadius = '0px';
-    tf(wb, { x: E(t, 7.5, 7.78) * 1920 });
+    tf(wb, { x: E(t, 40, 40.28) * 1920 });
   } else if (t >= 3.26 && t < 3.5) {
     show(wb, true);
     let cx = 900, cy = 420;
@@ -774,9 +863,63 @@ function render(rt) {
     tf(wb, { x: off * 1920 });
   } else show(wb, false);
 
+  // ===== I: company intro cards (internal 40-47.6, authored at real speed) =====
+  const intro = INTROS.find((c) => t >= c.at && t < c.at + 1.6);
+  if (scene('sI', t, intro ? intro.at : -1, intro ? intro.at + 1.6 : -1)) {
+    const u = t - intro.at;
+    $('sI').style.background = intro.bg;
+    const nm = $('iName');
+    if (nm.dataset.who !== intro.name) { nm.dataset.who = intro.name; nm.innerHTML = intro.name.replace(/(\S+)$/, `<span style="color:${intro.accent}">$1</span>`); }
+    nm.style.color = intro.fg;
+    $('iDesc').innerHTML = intro.desc; $('iDesc').style.color = intro.sub;
+    $('iMeta').textContent = intro.meta; $('iMeta').style.color = intro.accent;
+    const w = nm.offsetWidth, h = nm.offsetHeight;
+    const inP = E(u, 0, 0.6), go = E(u, 0.95, 1.5, eio);
+    const sc = lerp(1, 0.105, go);
+    const x = lerp(960 - w / 2, intro.target.x, go), y = lerp(410 - h / 2, intro.target.y - h / 2, go);
+    tf(nm, { x, y: y + (1 - inP) * 70, s: sc, o: Math.min(P(u, 0, 0.25), 1 - P(u, 1.42, 1.56)), blur: (1 - inP) * 8 });
+    tf($('iDesc'), { y: (1 - E(u, 0.25, 0.7)) * 24, o: E(u, 0.25, 0.65) - E(u, 0.92, 1.1) });
+    tf($('iMeta'), { o: E(u, 0.45, 0.8) - E(u, 0.92, 1.05) });
+    INTROS.forEach((c) => tf(c.chipEl, { o: c === intro ? E(u, 1.3, 1.55) : 0, x: c === intro ? (1 - E(u, 1.3, 1.55)) * -10 : 0 }));
+  }
+
+  // ===== X: Adopt console (internal 50-56) =====
+  if (scene('sX', t, 50, 56)) {
+    lines($('xHead'), t, 50.0, 0.1, 0.6);
+    tf($('xSub'), { y: (1 - E(t, 50.35, 50.8)) * 20, o: E(t, 50.35, 50.75) });
+    const wp = spr(t - 50.3, 11, 0.6);
+    tf($('xWin'), { y: (1 - wp) * 300, o: P(t, 50.3, 50.45) });
+    const disc = E(t, 50.8, 52.2, eio);
+    $('xBar').style.width = (disc * 100) + '%';
+    let shown = 0;
+    xApiEls.forEach((el, i) => { const p = E(t, 50.9 + i * 0.15, 51.15 + i * 0.15); if (p > 0.5) shown++; tf(el, { x: (1 - p) * -20, o: p }); });
+    $('xCount').textContent = (t < 52.2 ? 'Scanning · ' : '') + (shown * 6 + (shown ? 4 : 0)) + ' endpoints';
+    xActEls.forEach((el, i) => {
+      const a = 1.7 + i * 0.18;
+      const p = spr(t - (50 + a), 16, 0.5);
+      tf(el, { y: (1 - p) * 40, s: 0.85 + 0.15 * p, o: P(t, 50 + a, 50.1 + a) });
+      const on = XACTS[i][2] && t > 52.7 + i * 0.09;
+      const tog = el.querySelector('.xtog');
+      tog.style.background = on ? '#16a34a' : '#e7e5e4';
+      tf(tog.firstChild, { x: on ? 22 : 0 });
+      el.style.borderColor = i === 1 && t > 53.3 ? '#2563eb' : '#e7e5e4';
+      el.style.opacity = (XACTS[i][2] || t < 52.8 ? 1 : 0.55) * P(t, 50 + a, 50.1 + a);
+    });
+    const pp = spr(t - 53.35, 13, 0.6);
+    tf($('xPanel'), { x: (1 - pp) * 520 });
+    xParamEls.forEach((el, i) => { const p = E(t, 53.6 + i * 0.1, 53.9 + i * 0.1); tf(el, { x: (1 - p) * 20, o: p }); });
+    const n = Math.floor(XINSTR.length * P(t, 53.9, 54.7));
+    $('xInstr').innerHTML = XINSTR.slice(0, n) + (t > 53.9 && t < 54.8 ? '<span class="caret" style="height:1em"></span>' : '');
+    tf($('xRun'), { s: t > 54.82 && t < 54.92 ? 0.94 : 1 });
+    const ok = spr(t - 54.95, 18, 0.45);
+    tf($('xOk'), { x: (1 - ok) * -16, o: P(t, 54.95, 55.02) });
+    const out = E(t, 55.1, 55.6, ein);
+    tf($('xWrap'), { y: -out * 80, o: 1 - out });
+  }
+
   // ===== C: Adopt AI =====
   if (scene('sC', t, 3.5, 5.62)) {
-    tf($('cChip'), { x: (1 - E(t, 3.6, 4.0)) * -40, o: E(t, 3.6, 3.9) });
+    tf($('cChip'), { o: 1 });
     document.querySelectorAll('#sC .cw').forEach((w, i) => { const p = E(t, 3.6 + i * 0.07, 4.15 + i * 0.07); tf(w, { y: (1 - p) * 120, r: (1 - p) * 4 }); });
     const ph = spr(t - 3.62, 12, 0.5);
     tf($('phone'), { persp: 1400, y: (1 - ph) * 700 + Math.sin(t * 2.4) * 8, rx: (1 - ph) * 28, r: lerp(-10, -3, ph), o: P(t, 3.62, 3.75) });
@@ -798,23 +941,21 @@ function render(rt) {
     tf($('cStat'), { y: (1 - cs) * 40, o: cs });
     $('c7').textContent = Math.max(1, Math.round(1 + 6 * E(t, 4.6, 5.1, eio))) + '×';
     tf($('c7'), { s: 1 + 0.08 * Math.sin(Math.PI * P(t, 5.05, 5.25)) });
-    tf($('cPatent'), { o: E(t, 4.8, 5.1) });
     tf($('cSub'), { o: E(t, 3.85, 4.2) });
   }
 
   // violet iris into SamaCare
   const wv = $('wipeViolet'), wl = $('wipeLav');
-  if (t >= 5.26 && t < 5.8) {
-    show(wv, t < 5.62); show(wl, true);
-    const r1 = 2300 * E(t, 5.26, 5.5, ein), r2 = 2300 * E(t, 5.4, 5.72, eo);
+  if (t >= 5.26 && t < 5.5) {
+    show(wv, true); show(wl, true);
+    const r1 = 2300 * E(t, 5.26, 5.42, ein), r2 = 2300 * E(t, 5.34, 5.5, eo);
     wv.style.clipPath = `circle(${r1}px at 250px 850px)`;
     wl.style.clipPath = `circle(${r2}px at 250px 850px)`;
-    wl.style.opacity = t < 5.62 ? 1 : 1 - E(t, 5.62, 5.8);
   } else { show(wv, false); show(wl, false); }
 
   // ===== D: SamaCare =====
   if (scene('sD', t, 5.5, 7.52)) {
-    tf($('dChip'), { x: (1 - E(t, 5.6, 5.95)) * -40, o: E(t, 5.6, 5.85) });
+    tf($('dChip'), { o: 1 });
     tf($('dSub'), { o: E(t, 5.85, 6.2) });
     document.querySelectorAll('#sD .dw').forEach((w, i) => { const p = E(t, 5.58 + i * 0.07, 6.1 + i * 0.07); tf(w, { y: (1 - p) * 120, r: (1 - p) * 4 }); });
     const bp = E(t, 5.62, 6.1);
@@ -865,7 +1006,7 @@ function render(rt) {
     tf($('eApp'), { o: 0.9 - E(t, 7.85, 8.1) * 0.35 + E(t, 8.55, 8.8) * 0.3 });
     // highlight the row the peek belongs to
     document.querySelectorAll('#eApp .erow').forEach((r, i) => { r.style.background = i === 3 && t > 8.6 ? `rgba(59,130,246,${0.14 * E(t, 8.6, 8.8)})` : 'transparent'; });
-    tf($('eChip'), { o: E(t, 7.6, 7.9), x: (1 - E(t, 7.6, 7.9)) * -30 });
+    tf($('eChip'), { o: 1 });
     // keycaps
     [[$('kCmd'), 0, 7.72], [$('kK'), 1, 7.82]].forEach(([k, i, tp]) => {
       const inn = spr(t - (7.54 + i * 0.06), 16, 0.45);
@@ -924,7 +1065,7 @@ function render(rt) {
 
   // ===== K: Kea AI (internal 20-25 = real seconds) =====
   if (scene('sK', t, 20, 25)) {
-    tf($('kChip'), { x: (1 - E(t, 20.0, 20.45)) * -40, o: E(t, 20.0, 20.35) });
+    tf($('kChip'), { o: 1 });
     lines($('kHead'), t, 20.05, 0.12, 0.6);
     const cp = E(t, 20.35, 21.0);
     tf($('kCall'), { y: (1 - cp) * 80, o: cp });

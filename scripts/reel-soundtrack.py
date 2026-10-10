@@ -164,7 +164,7 @@ while t < STOP - 0.01:
     add(lowpass(tone(midi(root), 0.55, 0.005, 0.3, 'saw'), 240) * 2.2, t + 0.02, 0.5 if not brk else 0.3)
     t += BEAT
 
-a0, a1 = START['caret'], END['early']
+a0, a1 = START['bump_caret'], END['early']
 i = 0
 while a0 + i * BEAT / 2 < a1:
     tt = a0 + i * BEAT / 2
@@ -187,9 +187,21 @@ cue(thock(), 1.25, 0.5); cue(click(4200), 1.25, 0.2)                            
 add(whoosh(1.4), DROP - 1.4, 0.22)                                                            # riser to drop
 for tp in (1.55, 1.95, 2.3): cue(pluck(midi(84), 0.2), tp, 0.07, 0.3)                         # phase ticks
 for i in range(70): cue(click(5200), 2.55 + i * (0.67 / 70), 0.02, ((i % 3) - 1) * 0.5)      # steady drain
-for sc in ('caret', 'adopt', 'sama', 'kea', 'early', 'how1'):                                  # scene cuts
+for sc in ('bump_caret', 'bump_adopt', 'bump_sama', 'bump_kea', 'early', 'how1'):            # scene cuts
     add(whoosh(0.5), START[sc] - 0.5, 0.26)
-for sc in ('caret', 'adopt', 'kea'): add(lowpass(noise(0.4, 0.15), 1200), START[sc], 0.35)    # landing thumps
+for x in (40, 42, 44, 46):                                                                    # company intro cards
+    cue(lowpass(noise(0.4, 0.15), 1200), x, 0.35)
+    cue(tone(midi(57 + (x - 40)), 0.9, 0.004, 0.35, 'tri'), x + 0.05, 0.08)
+    cue(whoosh(0.35, rev=True), x + 0.95, 0.12)                                               # name tucks into the corner
+    cue(click(3400), x + 1.5, 0.1)
+# Adopt console: endpoints stream in, actions generate, toggles, refine, test run
+for i in range(8): cue(click(4200 + i * 120), 50.9 + i * 0.15, 0.06, 0.3)
+for i in range(6): cue(pluck(midi(76 + [0, 2, 4, 7, 9, 12][i]), 0.3, 1.0), 51.7 + i * 0.18, 0.1, -0.3 + i * 0.12)
+for i in range(6): cue(click(2600), 52.7 + i * 0.09, 0.08)
+cue(whoosh(0.4, rev=True), 53.35, 0.14, 0.6)
+for i in range(30): cue(click(3000 + (i * 47) % 800), 53.9 + i * (0.8 / 30), 0.05)
+cue(thock(), 54.85, 0.45)
+cue(bell(midi(84), 1.0), 54.95, 0.08)
 cue(thock(), 7.72, 0.6, -0.2); cue(thock(), 7.82, 0.6, 0.2)                                   # cmd K
 for i in range(10): cue(click(3000 + (i * 53) % 700), 8.02 + i * 0.032, 0.08)                 # typing
 cue(thock(), 8.5, 0.4); cue(whoosh(0.4, rev=True), 8.55, 0.18, 0.6)                           # enter + peek
