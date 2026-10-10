@@ -16,6 +16,7 @@ const CHECKS = [
   { q: 'What are you working on right now?', must: [/health tech/i, /special project/i], mustNot: [/elation/i, /adopt ai.*(present|currently)/i] },
   { q: 'Where do you work?', must: [/health tech/i], mustNot: [/elation/i, /staff product designer/i] },
   { q: 'Do you work at Elation Health?', must: [/health tech|confidential/i], mustNot: [/\byes\b/i, /i work at elation/i] },
+  { q: 'You worked with elation?', must: [/health tech|confidential/i], mustNot: [/thinking of/i, /\byes\b/i] },
   { q: 'Are you still at Adopt AI?', must: [/april 2026|apr 2026|until 2026|through april|wrapped|moved on|no longer|ended/i], mustNot: [/still (advise|advising|there|with adopt)/i] },
   { q: 'Tell me about Adopt AI.', must: [/founding|0.1|copilot|agent/i] },
   { q: 'Walk me through your career.', must: [/health tech/i, /adopt ai/i, /samacare/i], mustNot: [/elation/i] },
