@@ -505,8 +505,8 @@ const HomeView = ({ onNavigate }) => {
     {/* Intro Section */}
     <div className="mt-8 relative z-10 stagger-item" style={{ '--stagger-index': 0 }}>
       <div>
-        <Suspense fallback={<div className="w-40 h-28 md:w-56 md:h-36 -mt-4 mb-1" aria-hidden />}>
-          <EcLogo3D className="w-40 h-28 md:w-56 md:h-36 -ml-9 md:-ml-[52px] -mt-4 mb-1" />
+        <Suspense fallback={<div className="w-28 h-20 md:w-36 md:h-24 mb-2" aria-hidden />}>
+          <EcLogo3D className="w-28 h-20 md:w-36 md:h-24 -ml-3 md:-ml-4 mb-2" />
         </Suspense>
         <h1 className="text-3xl md:text-4xl font-bold text-stone-900 dark:text-white mb-3 tracking-tight">
           <span
