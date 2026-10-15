@@ -10,7 +10,7 @@
 
 import { SYSTEM_PROMPT } from '../api/system-prompt.js';
 
-const GEMINI_MODEL = 'gemini-3.5-flash'; // keep in step with api/chat.js
+const GEMINI_MODEL = 'gemini-3.6-flash'; // keep in step with api/chat.js
 
 const CHECKS = [
   { q: 'What are you working on right now?', must: [/health tech/i, /special project/i], mustNot: [/elation/i, /adopt ai.*(present|currently)/i] },

@@ -11,7 +11,7 @@
 import { SYSTEM_PROMPT } from './system-prompt.js';
 import { logTurn, extractTextFromSSE } from './chat-log.js';
 
-const GEMINI_MODEL = 'gemini-3.5-flash';
+const GEMINI_MODEL = 'gemini-3.6-flash';
 
 export default async function handler(req, res) {
   // CORS Headers for local development
