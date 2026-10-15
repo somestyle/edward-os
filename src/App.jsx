@@ -1155,6 +1155,36 @@ const ProjectsView = ({ scrollState }) => {
           </p>
        </div>
 
+       {/* Showreel: open to everyone, locked or not */}
+       <div className="relative z-10 mb-6 bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 overflow-hidden">
+          <video
+            className="block w-full aspect-video bg-stone-950"
+            src="/reel/edward-chu-showreel-web.mp4"
+            poster="/reel/poster.jpg"
+            controls
+            playsInline
+            preload="none"
+            aria-label="Edward Chu showreel, 72 seconds"
+          />
+          <div className="p-5 flex flex-col md:flex-row md:items-end md:justify-between gap-3">
+            <div>
+              <h3 className="font-bold text-lg leading-snug text-stone-900 dark:text-white">Showreel · Selected work</h3>
+              <p className="text-stone-500 dark:text-stone-400 text-sm leading-relaxed mt-1">
+                72 seconds across Caret Legal, Adopt AI, SamaCare, Kea AI and earlier work, designed and coded as a motion piece.
+              </p>
+            </div>
+            <a
+              href="/reel/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group shrink-0 inline-flex items-center gap-2 text-sm font-medium text-stone-700 dark:text-stone-200 hover:text-brand dark:hover:text-blue-400 transition-colors"
+            >
+              <span>Open interactive reel</span>
+              <ExternalLink size={16} className="shrink-0 opacity-70 group-hover:opacity-100" aria-hidden />
+            </a>
+          </div>
+       </div>
+
        {(() => {
           const projects = [
             { title: 'Adopt AI · Action Builder', description: 'End-to-end workflow design for an AI action builder: 0-to-1 through five iterations, from node canvas to structured step templates.', caseStudyKey: 'adopt-action-builder' },
