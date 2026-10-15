@@ -3,27 +3,32 @@
 Cues are written on the page's internal 15 s clock and placed with real(), the same
 SEG table the page uses. 96 BPM, so every scene cut lands on a bar. Writes public/reel/assets/soundtrack.wav; encode it to soundtrack.mp3 before rendering.
 """
-import numpy as np, wave, os
+import numpy as np, wave, os, re
 
 SR = 48000
-SEG = [
-    (0, 0.3, 0.7), (0.3, 1.25, 2.8), (1.25, 1.5, 1.5),
-    (1.5, 2.55, 2.6), (2.55, 3.22, 2.9), (3.22, 3.26, 1.55), (3.26, 3.5, 0.45),
-    (3.5, 4.2, 1.9), (4.2, 5.1, 2.6), (5.1, 5.26, 2.55), (5.26, 5.5, 0.45),
-    (5.5, 6.25, 1.9), (6.25, 7.1, 2.6), (7.1, 7.26, 2.55), (7.26, 7.5, 0.45),
-    (7.5, 8.0, 1.4), (8.0, 8.55, 1.8), (8.55, 9.2, 2.2), (9.2, 9.25, 1.65), (9.25, 9.5, 0.45),
-    (20, 25, 5), (25, 30, 5),
-    (11.5, 11.9, 1.3), (11.9, 12.0, 1.2), (12.0, 12.4, 1.3), (12.4, 12.5, 1.2),
-    (12.5, 12.9, 1.3), (12.9, 13.0, 1.2), (13.0, 13.4, 1.3), (13.4, 13.5, 1.2),
-    (13.5, 14.75, 2.8), (14.75, 15, 2.2),
-]
-DUR = sum(d for _, _, d in SEG)
+# The timeline lives in the page; read it from there so picture and sound share it.
+_html = open(os.path.join(os.path.dirname(__file__), '..', 'public', 'reel', 'index.html')).read()
+_block = _html[_html.index('const SEG = ['):]
+_block = _block[:_block.index('];')]
+SEG = [(float(a), float(b), float(d), sc) for a, b, d, sc in
+       re.findall(r"\[([\d.]+), ([\d.]+), ([\d.]+), '(\w+)'\]", _block)]
+DUR = sum(d for _, _, d, _ in SEG)
+START = {}
+_acc = 0.0
+for _a, _b, _d, _sc in SEG:
+    START.setdefault(_sc, _acc)
+    _acc += _d
+END = {}
+_acc = 0.0
+for _a, _b, _d, _sc in SEG:
+    _acc += _d
+    END[_sc] = _acc
 
 
 def real(ti):
     """Internal page time -> real playback seconds."""
     acc = 0.0
-    for a, b, d in SEG:
+    for a, b, d, _ in SEG:
         if a <= ti <= b: return acc + (ti - a) / (b - a) * d
         acc += d
     return DUR
@@ -132,7 +137,8 @@ midi = lambda m: 440 * 2 ** ((m - 69) / 12)
 # ---------------- music bed ----------------
 BPM = 96; BEAT = 60 / BPM; BAR = 4 * BEAT
 CHORDS = [(57, [69, 72, 76]), (53, [65, 69, 72]), (48, [67, 72, 76]), (55, [67, 71, 74])]  # Am F C G
-DROP, STOP = real(1.5), real(13.5)
+DROP, STOP = START['twin'], START['end']
+BREAK = (START['early'], END['early'])   # earlier work: drums drop out, pad and arp carry it
 
 for bar in range(int(DUR / BAR) + 1):
     t0 = bar * BAR - 0.4
@@ -140,11 +146,10 @@ for bar in range(int(DUR / BAR) + 1):
     ln = BAR + 0.6
     for m in notes:
         n = int(ln * SR); t = np.arange(n) / SR
-        s = sum(tone(midi(m - 12) * d, ln, 0.5, 6.0, 'saw') for d in (0.997, 1.003)) * 0.5
-        s = lowpass(s, 850) * np.minimum(1, t / 0.6) * np.minimum(1, (ln - t) / 0.6)
-        add(s, max(0, t0), 0.05 if bar > 0 else 0.03, pan=(m % 3 - 1) * 0.4)
+        s_ = sum(tone(midi(m - 12) * d, ln, 0.5, 6.0, 'saw') for d in (0.997, 1.003)) * 0.5
+        s_ = lowpass(s_, 850) * np.minimum(1, t / 0.6) * np.minimum(1, (ln - t) / 0.6)
+        add(s_, max(0, t0), 0.05 if bar > 0 else 0.035, pan=(m % 3 - 1) * 0.4)
 
-BREAK = (real(25), real(30))   # earlier work: drums drop out, pad and arp carry it
 t = DROP
 while t < STOP - 0.01:
     k = int(round((t - DROP) / BEAT))
@@ -159,7 +164,7 @@ while t < STOP - 0.01:
     add(lowpass(tone(midi(root), 0.55, 0.005, 0.3, 'saw'), 240) * 2.2, t + 0.02, 0.5 if not brk else 0.3)
     t += BEAT
 
-a0, a1 = real(3.5), real(30)
+a0, a1 = START['bump_caret'], END['early']
 i = 0
 while a0 + i * BEAT / 2 < a1:
     tt = a0 + i * BEAT / 2
@@ -168,41 +173,64 @@ while a0 + i * BEAT / 2 < a1:
     add(pluck(midi(m), 0.35, 0.8), tt + BEAT / 4, 0.07, pan=0.5 * ((i % 2) * 2 - 1))
     i += 1
 
-# ---------------- cues (internal times, placed with real) ----------------
+# ---------------- cues ----------------
+# In-scene cues use internal times (placed with real()); cuts use scene starts.
 def cue(sig, ti, gain=1.0, pan=0.0): add(sig, real(ti), gain, pan)
 
-cue(tone(np.linspace(1400, 520, int(0.25 * SR)), 0.25, 0.002, 0.08), 0.05, 0.25)            # dot spawns
-cue(whoosh(1.0), 0.32, 0.05)                                                                  # stretch into pill
+# title: soft swell, the dot lands with a blip
+add(whoosh(1.2), 0.0, 0.08)
+for i, m in enumerate((57, 64, 69)): cue(tone(midi(m), 1.6, 0.2, 0.8, 'tri'), 30.0 + i * 0.1, 0.06, (i - 1) * 0.3)
+cue(tone(np.linspace(1400, 520, int(0.25 * SR)), 0.25, 0.002, 0.08), 31.45, 0.22)
+cue(whoosh(0.8), 0.32, 0.05)                                                                  # stretch into pill
 for i in range(29): cue(click(2600 + (i * 37) % 900), 0.72 + i * (0.4 / 29), 0.07, ((i % 5) - 2) * 0.15)  # typing
 cue(thock(), 1.25, 0.5); cue(click(4200), 1.25, 0.2)                                          # send
-add(whoosh(1.6), DROP - 1.6, 0.22)                                                            # riser to drop
+add(whoosh(1.4), DROP - 1.4, 0.22)                                                            # riser to drop
 for tp in (1.55, 1.95, 2.3): cue(pluck(midi(84), 0.2), tp, 0.07, 0.3)                         # phase ticks
 for i in range(70): cue(click(5200), 2.55 + i * (0.67 / 70), 0.02, ((i % 3) - 1) * 0.5)      # steady drain
-for tc in (3.5, 5.5, 7.5, 9.5): add(whoosh(0.5), real(tc) - 0.5, 0.26)                        # scene cuts
-add(whoosh(0.5), real(25) - 0.5, 0.22); add(whoosh(0.5), real(11.5) - 0.5, 0.26)
-cue(lowpass(noise(0.4, 0.15), 1200), 3.5, 0.4)
+for sc in ('bump_caret', 'bump_adopt', 'bump_sama', 'bump_kea', 'early', 'how1'):            # scene cuts
+    add(whoosh(0.5), START[sc] - 0.5, 0.26)
+for x in (40, 42, 44, 46):                                                                    # company intro cards
+    cue(lowpass(noise(0.4, 0.15), 1200), x, 0.35)
+    cue(tone(midi(57 + (x - 40)), 0.9, 0.004, 0.35, 'tri'), x + 0.05, 0.08)
+    cue(whoosh(0.35, rev=True), x + 0.95, 0.12)                                               # name tucks into the corner
+    cue(click(3400), x + 1.5, 0.1)
+# Adopt console: endpoints stream in, actions generate, toggles, refine, test run
+for i in range(8): cue(click(4200 + i * 120), 50.9 + i * 0.15, 0.06, 0.3)
+for i in range(6): cue(pluck(midi(76 + [0, 2, 4, 7, 9, 12][i]), 0.3, 1.0), 51.7 + i * 0.18, 0.1, -0.3 + i * 0.12)
+for i in range(6): cue(click(2600), 52.7 + i * 0.09, 0.08)
+cue(whoosh(0.4, rev=True), 53.35, 0.14, 0.6)
+for i in range(30): cue(click(3000 + (i * 47) % 800), 53.9 + i * (0.8 / 30), 0.05)
+cue(thock(), 54.85, 0.45)
+cue(bell(midi(84), 1.0), 54.95, 0.08)
+cue(thock(), 7.72, 0.6, -0.2); cue(thock(), 7.82, 0.6, 0.2)                                   # cmd K
+for i in range(10): cue(click(3000 + (i * 53) % 700), 8.02 + i * 0.032, 0.08)                 # typing
+cue(thock(), 8.5, 0.4); cue(whoosh(0.4, rev=True), 8.55, 0.18, 0.6)                           # enter + peek
 for i in range(4): cue(pluck(midi(72 + [0, 4, 7, 12][i]), 0.4), 3.95 + i * 0.16, 0.16, -0.3 + i * 0.2)  # nodes pop
 for i in range(4): cue(click(3800), 4.55 + i * 0.13, 0.14, 0.3)                              # checks
 for i in range(6): cue(click(2400 + i * 300), 4.6 + i * 0.08, 0.06)                          # 7x counter
 for i in range(4): cue(pluck(midi(76 + [0, 3, 7, 10][i]), 0.35, 1.2), 6.25 + i * 0.16, 0.15, 0.4)  # fields fill
 cue(bell(midi(88), 1.0), 7.0, 0.08)                                                            # submitted
-cue(thock(), 7.72, 0.6, -0.2); cue(thock(), 7.82, 0.6, 0.2)                                   # cmd K
-for i in range(10): cue(click(3000 + (i * 53) % 700), 8.02 + i * 0.032, 0.08)                 # typing
-cue(thock(), 8.5, 0.4); cue(whoosh(0.4, rev=True), 8.55, 0.18, 0.6)                           # enter + peek
-# Kea: ticket items print, then the kitchen chime
-for at in (21.95, 22.45, 23.0): cue(click(2200), at, 0.12); cue(pluck(midi(79), 0.25), at, 0.08, 0.4)
-cue(bell(midi(84), 1.2), 23.5, 0.09)
-# earlier work: one pluck per card
-for i in range(3): cue(pluck(midi([69, 72, 76][i]), 0.5, 0.9), 25.5 + i * 0.35, 0.14, -0.4 + i * 0.4)
-for i, tc in enumerate((11.5, 12.0, 12.5, 13.0)):                                              # how-I-work hits
-    cue(kick(0.6, 180, 38), tc, 0.8)
-    cue(lowpass(noise(0.5, 0.18), 3000), tc, 0.22)
-    for m in CHORDS[i][1]: cue(tone(midi(m), 0.9, 0.003, 0.3, 'tri'), tc, 0.07)
+# SamaCare extension: popover, autofill, tab switch, status captured, synced
+add(whoosh(0.4), START['sama2'] - 0.4, 0.14)
+cue(pluck(midi(84), 0.25), 60.85, 0.1, 0.5)
+cue(click(4200), 61.32, 0.14, 0.5)
+for i in range(6): cue(pluck(midi(76 + [0, 2, 4, 7, 9, 12][i]), 0.3, 1.1), 61.6 + i * 0.09, 0.12, 0.2)
+cue(whoosh(0.3, rev=True), 62.3, 0.12)
+cue(bell(midi(86), 1.2), 63.05, 0.09, 0.5)
+cue(whoosh(0.4), 63.2, 0.1, 0.4)
+cue(click(3200), 63.65, 0.14, 0.6)
+for at in (21.95, 22.45, 23.0): cue(click(2200), at, 0.12); cue(pluck(midi(79), 0.25), at, 0.08, 0.4)  # ticket prints
+cue(bell(midi(84), 1.2), 23.5, 0.09)                                                           # sent to kitchen
+for i in range(3): cue(pluck(midi([69, 72, 76][i]), 0.5, 0.9), 25.5 + i * 0.35, 0.14, -0.4 + i * 0.4)  # earlier-work cards
+for i, sc in enumerate(('how1', 'how2', 'how3')):                                       # principle hits
+    add(kick(0.6, 180, 38), START[sc], 0.8)
+    add(lowpass(noise(0.5, 0.18), 3000), START[sc], 0.22)
+    for m in CHORDS[i][1]: add(tone(midi(m), 0.9, 0.003, 0.3, 'tri'), START[sc], 0.07)
 for i in range(3): cue(pluck(midi(81 + [0, 3, 7][i]), 0.3), 12.12 + i * 0.07, 0.1)            # system chips
 for i in range(8): cue(tone(midi(79 + [0, 2, 4, 7, 9, 7, 4, 2][i]), 0.12, 0.001, 0.05, 'tri'), 13.1 + i * 0.047, 0.05)  # dock ripple
-cue(kick(1.2, 120, 28), 13.5, 1.1)
-cue(lowpass(noise(1.6, 0.6, 0.002), 700), 13.5, 0.5)
-cue(tone(np.linspace(1400, 520, int(0.25 * SR)), 0.25, 0.002, 0.08), 13.5, 0.2)
+add(kick(1.2, 120, 28), START['end'], 1.1)                                                     # end card
+add(lowpass(noise(1.6, 0.6, 0.002), 700), START['end'], 0.5)
+add(tone(np.linspace(1400, 520, int(0.25 * SR)), 0.25, 0.002, 0.08), START['end'], 0.2)
 for i, m in enumerate((69, 76, 81)): cue(bell(midi(m), 3.0), 14.5 + i * 0.01, 0.09, (i - 1) * 0.3)
 
 # ---------------- reverb + master ----------------
