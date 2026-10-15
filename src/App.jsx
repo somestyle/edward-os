@@ -1364,7 +1364,7 @@ const ChatView = ({ onNavigate }) => {
   // inside the live turn, so it has to be written down here or it is lost — and
   // the request has to be dropped, or it keeps burning quota into nothing.
   useEffect(() => {
-    inputRef.current?.focus();
+    inputRef.current?.focus({ preventScroll: true });
     return () => {
       phaseTimersRef.current.forEach(clearTimeout);
       abortControllerRef.current?.abort();
@@ -1567,7 +1567,7 @@ const ChatView = ({ onNavigate }) => {
     const partial = live?.text?.trim();
     setLive(null);
     if (partial) setMessages((prev) => [...prev, { role: 'system', text: partial }]);
-    inputRef.current?.focus();
+    inputRef.current?.focus({ preventScroll: true });
   };
 
   const settleTurn = useCallback((text) => {
@@ -1590,7 +1590,7 @@ const ChatView = ({ onNavigate }) => {
 
   const pickPrompt = (prompt) => {
     setInput(prompt);
-    inputRef.current?.focus();
+    inputRef.current?.focus({ preventScroll: true });
   };
 
   const clearChat = () => {
@@ -1602,7 +1602,7 @@ const ChatView = ({ onNavigate }) => {
     sessionStorage.removeItem(CHAT_STORAGE_KEY);
     setInput("");
     if (inputRef.current) inputRef.current.style.height = 'auto';
-    inputRef.current?.focus();
+    inputRef.current?.focus({ preventScroll: true });
   };
 
   const handleComposerKey = (e) => {
@@ -1763,7 +1763,7 @@ const ChatView = ({ onNavigate }) => {
       <span role="status" className="sr-only">{isBusy ? (phase || 'Answering') : ''}</span>
 
       {/* Input */}
-      <div className="pt-4 bg-[var(--bg-app)] transition-colors duration-300 z-20 pb-32 md:pb-20 relative">
+      <div className="pt-4 bg-[var(--bg-app)] transition-colors duration-300 z-20 pb-[var(--composer-pb,58px)] md:pb-20 relative">
         {detached && isBusy && (
           <button
             type="button"
@@ -2298,6 +2298,42 @@ function resolveInitialDarkMode() {
   return stored?.darkModeExplicit ? stored.darkMode : systemPrefersDark();
 }
 
+
+// On iOS (and Chrome on Android) an open keyboard shrinks the *visual* viewport but leaves the layout viewport
+// alone, then scrolls the page to bring the focused field into view. That shoves the top of the app off screen
+// and leaves the bottom layout stranded behind the keyboard. While the keyboard is up this pins the app to the
+// part of the screen you can actually see, so the top stays put and the middle gives up the space.
+const KB_CLOSED = { open: false, top: 0, height: 0, kb: 0 };
+function useKeyboardFit() {
+  const [fit, setFit] = useState(KB_CLOSED);
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return undefined;
+    let raf = 0;
+    const read = () => {
+      raf = 0;
+      // The keyboard is up when the visible area is much shorter than the layout viewport, wherever iOS has
+      // scrolled it. `kb` is how far the visible area's bottom edge sits above the layout viewport's bottom.
+      const shrink = window.innerHeight - vv.height;
+      const kb = Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop));
+      const next = shrink > 120 && vv.scale <= 1.05 ? { open: true, top: Math.round(vv.offsetTop), height: Math.round(vv.height), kb } : KB_CLOSED;
+      setFit((prev) => (prev.open === next.open && prev.top === next.top && prev.height === next.height && prev.kb === next.kb ? prev : next));
+    };
+    const schedule = () => { if (!raf) raf = requestAnimationFrame(read); };
+    vv.addEventListener('resize', schedule);
+    vv.addEventListener('scroll', schedule);
+    window.addEventListener('orientationchange', schedule);
+    read();
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+      vv.removeEventListener('resize', schedule);
+      vv.removeEventListener('scroll', schedule);
+      window.removeEventListener('orientationchange', schedule);
+    };
+  }, []);
+  return fit;
+}
+
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [darkMode, setDarkMode] = useState(resolveInitialDarkMode);
@@ -2353,10 +2389,18 @@ export default function App() {
     setScrollState({ dir: direction, y: currentY });
   };
 
+  const kbFit = useKeyboardFit();
+
   return (
     <div
-      className={`theme-${themeStyle} flex h-[100dvh] pb-[env(safe-area-inset-bottom)] font-sans text-stone-900 dark:text-white overflow-hidden transition-colors duration-300 ${darkMode ? 'dark' : ''}`}
-      style={{ background: 'var(--bg-app)' }}
+      data-kb={kbFit.open ? 'open' : undefined}
+      className={`theme-${themeStyle} flex ${kbFit.open ? 'fixed inset-x-0' : 'h-[100dvh] pb-[env(safe-area-inset-bottom)]'} font-sans text-stone-900 dark:text-white overflow-hidden transition-colors duration-300 ${darkMode ? 'dark' : ''}`}
+      style={{
+        background: 'var(--bg-app)',
+        // How far the composer reserves for the dock: its height plus a small gap, tighter with the keyboard up.
+        '--composer-pb': kbFit.open ? '72px' : '58px',
+        ...(kbFit.open ? { top: kbFit.top, height: kbFit.height } : null),
+      }}
     >
       {/* --- MAIN CONTENT AREA --- */}
       <main className="flex-1 flex flex-col h-full relative overflow-hidden">
@@ -2376,7 +2420,7 @@ export default function App() {
              className="absolute top-0 left-0 w-full h-[400px] z-0 [mask-image:linear-gradient(to_bottom,black,transparent)]"
            />
 
-           <div className={`w-full max-w-3xl mx-auto p-6 md:p-12 [@media(max-height:600px)]:py-4 relative z-10 ${activeTab === 'chat' ? 'h-full' : ''}`}>
+           <div className={`w-full max-w-3xl mx-auto p-6 md:p-12 [@media(max-height:600px)]:py-4 relative z-10 ${activeTab === 'chat' ? 'h-full chat-pane' : ''}`}>
               {activeTab === 'home' && <HomeView onNavigate={setActiveTab} />}
               {activeTab === 'career' && <CareerView scrollState={scrollState} />}
               {activeTab === 'projects' && <ProjectsView scrollState={scrollState} />}
@@ -2389,7 +2433,7 @@ export default function App() {
       </main>
 
       {/* --- UNIFIED FLOATING DOCK (Mobile & Desktop) --- */}
-      <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 w-auto">
+      <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 w-auto" style={kbFit.open ? { bottom: kbFit.kb + 10 } : undefined}>
         <div className="app-dock flex items-center gap-0.5 p-1.5 pr-4 pl-4">
           
           <DockIcon 

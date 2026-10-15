@@ -593,3 +593,6 @@ html, body {
   .si-role { font-size: 17px; }
 }
 @media (prefers-reduced-motion: reduce) { .si-card, .si-toast, .si-intro, .si-plus { transition: none; } }
+
+/* Keyboard up on a phone: the app is pinned to the visible area, so give the chat the room back. */
+[data-kb="open"] .chat-pane { padding-top: 0.5rem; padding-bottom: 0; }
