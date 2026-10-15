@@ -1,13 +1,13 @@
-"""Synthesises the reel soundtrack, cue for cue with public/reel/index.html.
+"""Synthesises the reel soundtrack, cue for cue with reel/index.html.
 
 Cues are written on the page's internal 15 s clock and placed with real(), the same
-SEG table the page uses. 96 BPM, so every scene cut lands on a bar. Writes public/reel/assets/soundtrack.wav; encode it to soundtrack.mp3 before rendering.
+SEG table the page uses. 96 BPM, so every scene cut lands on a bar. Writes reel/assets/soundtrack.wav; encode it to soundtrack.mp3 before rendering.
 """
 import numpy as np, wave, os, re
 
 SR = 48000
 # The timeline lives in the page; read it from there so picture and sound share it.
-_html = open(os.path.join(os.path.dirname(__file__), '..', 'public', 'reel', 'index.html')).read()
+_html = open(os.path.join(os.path.dirname(__file__), '..', 'reel', 'index.html')).read()
 _block = _html[_html.index('const SEG = ['):]
 _block = _block[:_block.index('];')]
 SEG = [(float(a), float(b), float(d), sc) for a, b, d, sc in
@@ -37,7 +37,7 @@ def real(ti):
 N = int(SR * DUR)
 L = np.zeros(N); R = np.zeros(N)
 rng = np.random.default_rng(7)
-ROOT = os.path.join(os.path.dirname(__file__), '..', 'public', 'reel', 'assets')
+ROOT = os.path.join(os.path.dirname(__file__), '..', 'reel', 'assets')
 
 
 def add(sig, t, gain=1.0, pan=0.0):
@@ -140,6 +140,8 @@ CHORDS = [(57, [69, 72, 76]), (53, [65, 69, 72]), (48, [67, 72, 76]), (55, [67, 
 DROP, STOP = START['twin'], START['end']
 BREAK = (START['early'], END['early'])   # earlier work: drums drop out, pad and arp carry it
 
+# Light and easy: a warm pad, a soft felt kick on 1 and 3, a snap on 3, a shaker,
+# and a quiet sine bass. The plucked arp carries the tune.
 for bar in range(int(DUR / BAR) + 1):
     t0 = bar * BAR - 0.4
     root, notes = CHORDS[bar % 4]
@@ -147,21 +149,28 @@ for bar in range(int(DUR / BAR) + 1):
     for m in notes:
         n = int(ln * SR); t = np.arange(n) / SR
         s_ = sum(tone(midi(m - 12) * d, ln, 0.5, 6.0, 'saw') for d in (0.997, 1.003)) * 0.5
-        s_ = lowpass(s_, 850) * np.minimum(1, t / 0.6) * np.minimum(1, (ln - t) / 0.6)
-        add(s_, max(0, t0), 0.05 if bar > 0 else 0.035, pan=(m % 3 - 1) * 0.4)
+        s_ = lowpass(s_, 1100) * np.minimum(1, t / 0.6) * np.minimum(1, (ln - t) / 0.6)
+        add(s_, max(0, t0), 0.065 if bar > 0 else 0.045, pan=(m % 3 - 1) * 0.4)
+    sh = tone(midi(notes[-1] + 12), ln, 0.8, 6.0) * np.minimum(1, (ln - np.arange(int(ln * SR)) / SR) / 0.6)
+    add(sh, max(0, t0), 0.025, pan=0.3)
+
+
+def snap():
+    x = noise(0.08, 0.012)
+    return lowpass(x - np.concatenate([[0], x[:-1]]), 5000) * 1.6
+
 
 t = DROP
 while t < STOP - 0.01:
     k = int(round((t - DROP) / BEAT))
     brk = BREAK[0] <= t < BREAK[1]
     if not brk:
-        add(kick(), t, 0.85)
-        if k % 2 == 1: add(clap(), t, 0.4, 0.1)
-        add(hat(0.03), t + BEAT / 4, 0.06, -0.35)
-        add(hat(0.03), t + 3 * BEAT / 4, 0.06, -0.35)
-    add(hat(), t + BEAT / 2, 0.2 if not brk else 0.1, 0.35)
-    root = CHORDS[int((t - DROP) // BAR) % 4][0] - 24
-    add(lowpass(tone(midi(root), 0.55, 0.005, 0.3, 'saw'), 240) * 2.2, t + 0.02, 0.5 if not brk else 0.3)
+        if k % 2 == 0: add(lowpass(kick(0.25, 120, 65), 900), t, 0.2)
+        if k % 4 == 2: add(snap(), t, 0.16, 0.15)
+    add(hat(0.05), t + BEAT / 2, 0.07 if not brk else 0.04, 0.35)
+    if k % 2 == 0:
+        root = CHORDS[int((t - DROP) // BAR) % 4][0] - 12
+        add(tone(midi(root), 1.2, 0.02, 0.5), t + 0.02, 0.1 if not brk else 0.06)
     t += BEAT
 
 a0, a1 = START['bump_caret'], END['early']
@@ -170,7 +179,7 @@ while a0 + i * BEAT / 2 < a1:
     tt = a0 + i * BEAT / 2
     notes = CHORDS[int((tt - DROP) // BAR) % 4][1]
     m = notes[i % 3] + (12 if i % 6 >= 3 else 0)
-    add(pluck(midi(m), 0.35, 0.8), tt + BEAT / 4, 0.07, pan=0.5 * ((i % 2) * 2 - 1))
+    add(pluck(midi(m), 0.4, 0.7), tt + BEAT / 4, 0.085, pan=0.5 * ((i % 2) * 2 - 1))
     i += 1
 
 # ---------------- cues ----------------
@@ -190,7 +199,7 @@ for i in range(70): cue(click(5200), 2.55 + i * (0.67 / 70), 0.02, ((i % 3) - 1)
 for sc in ('bump_caret', 'bump_adopt', 'bump_sama', 'bump_kea', 'early', 'how1'):            # scene cuts
     add(whoosh(0.5), START[sc] - 0.5, 0.26)
 for x in (40, 42, 44, 46):                                                                    # company intro cards
-    cue(lowpass(noise(0.4, 0.15), 1200), x, 0.35)
+    cue(lowpass(noise(0.4, 0.15), 1200), x, 0.1)
     cue(tone(midi(57 + (x - 40)), 0.9, 0.004, 0.35, 'tri'), x + 0.05, 0.08)
     cue(whoosh(0.35, rev=True), x + 0.95, 0.12)                                               # name tucks into the corner
     cue(click(3400), x + 1.5, 0.1)
@@ -223,13 +232,13 @@ for at in (21.95, 22.45, 23.0): cue(click(2200), at, 0.12); cue(pluck(midi(79), 
 cue(bell(midi(84), 1.2), 23.5, 0.09)                                                           # sent to kitchen
 for i in range(3): cue(pluck(midi([69, 72, 76][i]), 0.5, 0.9), 25.5 + i * 0.35, 0.14, -0.4 + i * 0.4)  # earlier-work cards
 for i, sc in enumerate(('how1', 'how2', 'how3')):                                       # principle hits
-    add(kick(0.6, 180, 38), START[sc], 0.8)
-    add(lowpass(noise(0.5, 0.18), 3000), START[sc], 0.22)
+    add(lowpass(kick(0.4, 130, 60), 900), START[sc], 0.25)
+    add(lowpass(noise(0.5, 0.18), 3000), START[sc], 0.07)
     for m in CHORDS[i][1]: add(tone(midi(m), 0.9, 0.003, 0.3, 'tri'), START[sc], 0.07)
 for i in range(3): cue(pluck(midi(81 + [0, 3, 7][i]), 0.3), 12.12 + i * 0.07, 0.1)            # system chips
 for i in range(8): cue(tone(midi(79 + [0, 2, 4, 7, 9, 7, 4, 2][i]), 0.12, 0.001, 0.05, 'tri'), 13.1 + i * 0.047, 0.05)  # dock ripple
-add(kick(1.2, 120, 28), START['end'], 1.1)                                                     # end card
-add(lowpass(noise(1.6, 0.6, 0.002), 700), START['end'], 0.5)
+add(lowpass(kick(0.8, 110, 50), 800), START['end'], 0.35)                                                     # end card
+add(lowpass(noise(1.6, 0.6, 0.002), 700), START['end'], 0.15)
 add(tone(np.linspace(1400, 520, int(0.25 * SR)), 0.25, 0.002, 0.08), START['end'], 0.2)
 for i, m in enumerate((69, 76, 81)): cue(bell(midi(m), 3.0), 14.5 + i * 0.01, 0.09, (i - 1) * 0.3)
 
@@ -244,7 +253,7 @@ wet_scale = np.max(np.abs(L)) / (np.max(np.abs(wetL)) + 1e-9)
 L2 = L + wetL * wet_scale * 0.18; R2 = R + wetR * wet_scale * 0.18
 fade = np.ones(N); fn = int(1.5 * SR); fade[-fn:] = np.linspace(1, 0, fn) ** 2
 mix = np.stack([L2, R2], 1) * fade[:, None]
-mix = np.tanh(mix / np.max(np.abs(mix)) * 1.6)
+mix = np.tanh(mix / np.max(np.abs(mix)) * 1.15)
 mix = mix / np.max(np.abs(mix)) * 0.89
 pcm = (mix * 32767).astype('<i2')
 out = os.path.join(ROOT, 'soundtrack.wav')

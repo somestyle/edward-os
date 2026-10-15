@@ -1,4 +1,5 @@
-// Renders public/reel/index.html frame by frame into an MP4 with its soundtrack.
+// Renders reel/index.html frame by frame into an MP4 with its soundtrack, then
+// writes the web encode and poster the Projects page uses (public/reel/).
 // Usage: node scripts/render-reel.mjs [--stills 0.5,3.2,...] [--fps 60]
 import { chromium } from 'playwright';
 import { spawn } from 'node:child_process';
@@ -7,12 +8,12 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const page_url = pathToFileURL(path.join(root, 'public/reel/index.html')).href + '?render=1';
+const page_url = pathToFileURL(path.join(root, 'reel/index.html')).href + '?render=1';
 const args = process.argv.slice(2);
 const opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
 const fps = Number(opt('--fps', 60));
 const stills = opt('--stills', null);
-const out = opt('--out', path.join(root, 'public/reel/edward-chu-showreel.mp4'));
+const out = opt('--out', path.join(root, 'reel/edward-chu-showreel.mp4'));
 const ffmpeg = process.env.FFMPEG || 'ffmpeg';
 const exe = [process.env.CHROMIUM, '/opt/pw-browsers/chromium'].find((p) => p && existsSync(p));
 
@@ -31,7 +32,7 @@ if (stills) {
   process.exit(0);
 }
 
-const audio = path.join(root, 'public/reel/assets/soundtrack.mp3');
+const audio = path.join(root, 'reel/assets/soundtrack.mp3');
 const ff = spawn(ffmpeg, [
   '-y', '-loglevel', 'error',
   '-f', 'image2pipe', '-framerate', String(fps), '-i', '-',
@@ -52,3 +53,9 @@ ff.stdin.end();
 await new Promise((r) => ff.on('close', r));
 await browser.close();
 console.log('wrote', out);
+
+// The site plays a lighter encode with a poster frame from the Projects page.
+const run = (args) => new Promise((r) => spawn(ffmpeg, ['-y', '-loglevel', 'error', ...args], { stdio: 'inherit' }).on('close', r));
+await run(['-i', out, '-c:v', 'libx264', '-crf', '24', '-preset', 'slow', '-vf', 'scale=1600:-2', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '128k', '-movflags', '+faststart', path.join(root, 'public/reel/edward-chu-showreel-web.mp4')]);
+await run(['-ss', '1.6', '-i', out, '-frames:v', '1', '-vf', 'scale=1280:-2', '-q:v', '4', path.join(root, 'public/reel/poster.jpg')]);
+console.log('wrote public/reel/edward-chu-showreel-web.mp4 and poster.jpg');
