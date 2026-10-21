@@ -1,23 +1,25 @@
 import * as THREE from 'three';
 
-// The EC monogram from the favicon as a thin die-cut sticker. Foil letters sit on
-// a white vinyl backing, and a glare streak slides across the surface as the
-// sticker tilts toward the pointer. Motion is deliberately small: a slow drift
-// on its own, a gentle tilt with the cursor, a single glare sweep on click.
+// "Ed" as a thin die-cut sticker. Foil letters sit on a white vinyl backing, and
+// a glare streak slides across the surface as the sticker tilts toward the
+// pointer. Motion is deliberately small: a slow drift on its own, a gentle tilt
+// with the cursor, a single glare sweep on click.
 //
 // variant 'sticker' (default) has the vinyl backing; 'chrome' is the letters
-// alone in brushed metal. Plain Three.js (r128); the React shell mounts it into
+// alone in polished metal. Plain Three.js (r128); the React shell mounts it into
 // a sized element and calls dispose() on unmount.
 
-// Logo geometry in logo units: E spans x -1.5..-0.32, the C ring is centred at
-// x 0.62 with radii 1 and 0.62, and both run y -1..1.
+// Letter geometry in logo units, drawn as paths so it looks the same on every
+// platform: the E spans x -1.5..-0.32 at cap height (y -1..1); the d is a ring
+// centred at (0.59, -0.25) with radii 0.75 and 0.39, plus a stem x 0.96..1.34
+// rising to cap height.
 const PAD = 0.32;
-const X0 = -1.5 - PAD, X1 = 1.62 + PAD, Y0 = -1 - PAD, Y1 = 1 + PAD;
+const X0 = -1.5 - PAD, X1 = 1.34 + PAD, Y0 = -1 - PAD, Y1 = 1 + PAD;
 const TEX_W = 1024;
 const SCALE = TEX_W / (X1 - X0);
 const TEX_H = Math.round((Y1 - Y0) * SCALE);
 
-function traceEC(ctx) {
+function traceEd(ctx) {
   const px = (x) => (x - X0) * SCALE, py = (y) => (Y1 - y) * SCALE;
   ctx.beginPath();
   const e = [[-1.5, -1], [-0.32, -1], [-0.32, -0.62], [-1.1, -0.62], [-1.1, -0.19], [-0.5, -0.19],
@@ -25,11 +27,13 @@ function traceEC(ctx) {
   ctx.moveTo(px(e[0][0]), py(e[0][1]));
   e.slice(1).forEach(([x, y]) => ctx.lineTo(px(x), py(y)));
   ctx.closePath();
-  const gap = THREE.MathUtils.degToRad(42), cx = px(0.62), cy = py(0);
-  ctx.moveTo(cx + Math.cos(-gap) * SCALE, cy + Math.sin(-gap) * SCALE);
-  ctx.arc(cx, cy, SCALE, -gap, gap, true);
-  ctx.arc(cx, cy, 0.62 * SCALE, gap, -gap, false);
-  ctx.closePath();
+  // d: the bowl is a ring (outer clockwise, inner hole anticlockwise), the stem a rectangle
+  const cx = px(0.59), cy = py(-0.25);
+  ctx.moveTo(cx + 0.75 * SCALE, cy);
+  ctx.arc(cx, cy, 0.75 * SCALE, 0, Math.PI * 2, false);
+  ctx.moveTo(cx + 0.39 * SCALE, cy);
+  ctx.arc(cx, cy, 0.39 * SCALE, 0, Math.PI * 2, true);
+  ctx.rect(px(0.96), py(1), 0.38 * SCALE, 2 * SCALE);
 }
 
 // One RGBA texture: R = letters, G = sticker backing (letters grown outward with
@@ -39,7 +43,7 @@ function buildMask(variant) {
   const letters = canvas(TEX_W, TEX_H);
   const lc = letters.getContext('2d');
   lc.fillStyle = '#fff';
-  traceEC(lc);
+  traceEd(lc);
   lc.fill('nonzero');
 
   const grow = canvas(TEX_W, TEX_H);

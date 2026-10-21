@@ -10,7 +10,7 @@ function hasWebGL() {
   }
 }
 
-// The EC sticker for the home intro. The scene lives in ecLogoScene.js; this
+// The "Ed" sticker for the home intro. The scene lives in ecLogoScene.js; this
 // shell mounts it, and falls back to the flat favicon if WebGL is unavailable.
 export default function EcLogo3D({ className = '' }) {
   const stageRef = useRef(null);
@@ -30,7 +30,7 @@ export default function EcLogo3D({ className = '' }) {
     <div
       ref={stageRef}
       role="img"
-      aria-label="EC monogram sticker"
+      aria-label="Ed"
       title="Click me"
       className={`${className} cursor-pointer select-none`}
     />
