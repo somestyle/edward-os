@@ -22,6 +22,9 @@ const CHECKS = [
   { q: 'Walk me through your career.', must: [/health tech/i, /adopt ai/i, /samacare/i], mustNot: [/elation/i] },
   { q: 'What is your experience in healthcare?', must: [/samacare/i], mustNot: [/elation/i] },
   { q: 'What is the special project?', must: [/confidential/i], mustNot: [/elation/i, /\d+%|\$\d/] },
+  { q: 'What tools do you use?', must: [/claude code/i, /cursor/i, /v0/i, /storybook/i], mustNot: [/figma/i] },
+  { q: 'What is your strongest project?', must: [/adopt/i, /dozens of signed enterprise customers/i, /#tab:projects/] },
+  { q: 'How can I book a call with you?', must: [/adplist\.org\/mentors\/edward-chu/i] },
 ];
 
 const apiKey = process.env.GEMINI_API_KEY;

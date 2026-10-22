@@ -127,8 +127,24 @@ function StreamingText({ source, onAdvance, onComplete }) {
 // every one of those needs a mapping here: the CSS reset has already stripped
 // list markers, list indentation and paragraph margins, and anything left
 // unmapped renders as undifferentiated body text.
+// Dispatched by `#tab:<id>` links in twin replies; App switches to that tab.
+const OPEN_TAB_EVENT = 'edward-os:open-tab';
+const LINKABLE_TABS = ['career', 'projects', 'contact'];
+
 const MD_COMPONENTS = {
   a: ({ href, children }) => {
+    const tab = href?.startsWith('#tab:') ? href.slice('#tab:'.length) : null;
+    if (tab && LINKABLE_TABS.includes(tab)) {
+      return (
+        <button
+          type="button"
+          onClick={() => window.dispatchEvent(new CustomEvent(OPEN_TAB_EVENT, { detail: { id: tab } }))}
+          className="underline text-inherit font-medium hover:opacity-80"
+        >
+          {children}
+        </button>
+      );
+    }
     // The twin can hand off to a widget: a `#widget:<id>` link opens it in place
     // instead of leaving the site.
     const widget = href?.startsWith('#widget:') ? href.slice('#widget:'.length) : null;
@@ -2342,6 +2358,12 @@ export default function App() {
   const [themeAccent, setThemeAccent] = useState(() => loadThemePreferences()?.accentColor ?? 'blue');
   const [scrollState, setScrollState] = useState({ dir: 'up', y: 0 });
   const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const onOpenTab = (e) => { if (LINKABLE_TABS.includes(e.detail?.id)) setActiveTab(e.detail.id); };
+    window.addEventListener(OPEN_TAB_EVENT, onOpenTab);
+    return () => window.removeEventListener(OPEN_TAB_EVENT, onOpenTab);
+  }, []);
   // Persist theme preferences to localStorage
   useEffect(() => {
     localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify({
