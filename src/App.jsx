@@ -1183,9 +1183,9 @@ const ProjectsView = ({ scrollState }) => {
             aria-label="Edward Chu showreel, 72 seconds"
           />
           <div className="p-5">
-            <h3 className="font-bold text-lg leading-snug text-stone-900 dark:text-white">Showreel · Selected work</h3>
+            <h3 className="font-bold text-lg leading-snug text-stone-900 dark:text-white">Showreel</h3>
             <p className="text-stone-500 dark:text-stone-400 text-sm leading-relaxed mt-1">
-              72 seconds across Caret Legal, Adopt AI, SamaCare, Kea AI and earlier work, designed and coded as a motion piece.
+              Selected work from Caret Legal, Adopt AI, SamaCare, Kea AI and earlier projects
             </p>
           </div>
        </div>
