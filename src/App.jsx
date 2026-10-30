@@ -1165,12 +1165,6 @@ const ProjectsView = ({ scrollState }) => {
         </div>
       </div>
 
-       <div className="relative z-10 mb-6">
-          <p className="text-stone-500 dark:text-stone-400 max-w-full text-base leading-relaxed">
-            Select recent projects case study adding soon.
-          </p>
-       </div>
-
        {/* Showreel: open to everyone, locked or not */}
        <div className="relative z-10 mb-6 bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 overflow-hidden">
           <video
